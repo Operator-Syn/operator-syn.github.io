@@ -50,11 +50,12 @@ document.addEventListener("DOMContentLoaded", function () {
     // Set greeting
     document.getElementById("greeting").textContent = getGreeting();
 
-    // Handle hover to temporarily change `.currently` button
+    // Handle hover and click to update `.currently`
     const navButtons = document.querySelectorAll('.navBarButton');
     let originalCurrently = document.querySelector('.navBarButton.currently');
 
     navButtons.forEach(button => {
+        // Hover effect
         button.addEventListener('mouseenter', () => {
             navButtons.forEach(btn => btn.classList.remove('currently'));
             button.classList.add('currently');
@@ -65,6 +66,13 @@ document.addEventListener("DOMContentLoaded", function () {
             if (originalCurrently) {
                 originalCurrently.classList.add('currently');
             }
+        });
+
+        // Click to update selection
+        button.addEventListener('click', () => {
+            navButtons.forEach(btn => btn.classList.remove('currently'));
+            button.classList.add('currently');
+            originalCurrently = button; // update reference
         });
     });
 

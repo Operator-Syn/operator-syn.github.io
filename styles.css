@@ -2,7 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}  
+}
 
 div {
     color: #E3F2FD;
@@ -13,7 +13,8 @@ p {
 }
 
 
-body, html {
+body,
+html {
     font-size: 10px;
     width: 100%;
     height: 100%;
@@ -35,9 +36,11 @@ body::before {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    filter: blur(0.8vh); /* Adjust blur intensity */
+    filter: blur(0.8vh);
+    /* Adjust blur intensity */
     z-index: 0;
-    pointer-events: none; /* Keep elements clickable */
+    pointer-events: none;
+    /* Keep elements clickable */
 }
 
 
@@ -54,8 +57,10 @@ body::before {
     text-align: center;
     font-size: 3rem;
     background: transparent;
-    opacity: 0; /* Start hidden */
-    transition: opacity 0.5s ease-in-out; /* Smooth fade transition */
+    opacity: 0;
+    /* Start hidden */
+    transition: opacity 0.5s ease-in-out;
+    /* Smooth fade transition */
     overflow: hidden;
 }
 
@@ -70,7 +75,8 @@ body::before {
 
 .active {
     display: flex;
-    opacity: 1; /* Fade in when active */
+    opacity: 1;
+    /* Fade in when active */
 }
 
 .buttons {
@@ -83,16 +89,21 @@ body::before {
 }
 
 #navBar {
-    position: fixed; /* or absolute */
+    position: fixed;
+    /* or absolute */
     top: 2.5vh;
     left: 0;
     width: 100%;
-    z-index: 1000; /* Ensures it stays on top */
+    z-index: 1000;
+    /* Ensures it stays on top */
     display: flex;
     justify-content: center;
-    gap:1vw; /*40px;*/
-    padding: 2vh 20vw;/*10px 300px;*/
-    background: rgba(28, 87, 137, 0.65);  /* Semi-transparent background */
+    gap: 1vw;
+    /*40px;*/
+    padding: 2vh 20vw;
+    /*10px 300px;*/
+    background: rgba(28, 87, 137, 0.65);
+    /* Semi-transparent background */
 }
 
 .navBarButton {
@@ -108,11 +119,11 @@ body::before {
     /* Simulated text outline */
     text-shadow:
         -0.1vh -0.1vw 0 black,
-         0.1vh -0.1vw 0 black,
-        -0.1vh  0.1vw 0 black,
-         0.1vh  0.1vw 0 black;
-    
-        transition:
+        0.1vh -0.1vw 0 black,
+        -0.1vh 0.1vw 0 black,
+        0.1vh 0.1vw 0 black;
+
+    transition:
         background 0.3s ease-out,
         color 0.3s ease-out,
         box-shadow 0.3s ease-out,
@@ -143,10 +154,14 @@ button {
 }
 
 .stat {
-    width: 500x;  /* Adjust as needed */
-    height: auto;  /* Maintains aspect ratio */
-    display: block; /* Ensures correct spacing */
-    margin: 10px auto; /* Centers images */
+    width: 500x;
+    /* Adjust as needed */
+    height: auto;
+    /* Maintains aspect ratio */
+    display: block;
+    /* Ensures correct spacing */
+    margin: 10px auto;
+    /* Centers images */
 }
 
 
@@ -159,7 +174,7 @@ button {
     grid-template-rows: repeat(6, 1fr);
     gap: 0.8vh;
 }
-    
+
 #catchphrase {
     overflow: hidden;
     text-align: left;
@@ -172,7 +187,6 @@ button {
 }
 
 #profile {
-    background-color: blue;
     height: 68vh;
     margin-left: 0.5vw;
     margin-right: 4vw;
@@ -196,7 +210,7 @@ button {
 
 #badges {
     border-radius: 0.4rem;
-    background-color: rgba(87, 131, 177, 0.50);;
+    background-color: rgba(87, 131, 177, 0.50);
     height: 50vh;
     margin-left: 0.5vw;
     margin-right: 0.5vw;
@@ -220,4 +234,72 @@ button {
 
 .h2 {
     font-size: 4.5vh;
+}
+
+.h3 {
+    font-size: 2.5vh;
+}
+
+.info-line {
+    margin-top: 0.5vh;
+}
+
+#topInfoLine {
+    margin-top: 2.75vh;
+}
+
+#profilePanelParent {
+    position: relative;
+    overflow: hidden;
+    top: 0.75vh;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 0.8vh;
+}
+
+#profileImage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    height: 16.40vh;
+}
+
+#profileImageContainer {
+    width: 15vh;           
+    height: 15vh;
+    overflow: hidden;       
+    border-radius: 50%;    
+}
+
+#profileImageContainer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;      
+    border-radius: 50%;     
+}
+
+#profileDetails {
+    background-color: rgba(87, 131, 177, 0.50);
+    border-radius: 0.4rem;
+    overflow: hidden;
+    text-align: center;
+    height: 15vh;
+}
+
+#profileEtc {
+    background-color: rgba(87, 131, 177, 0.50);
+    border-radius: 0.4rem;
+    overflow: hidden;
+    text-align: center;
+    height: 15vh;
+}
+
+#profileEtc2 {
+    background-color: rgba(87, 131, 177, 0.50);
+    border-radius: 0.4rem;
+    overflow: hidden;
+    text-align: center;
+    height: 15vh;
 }
