@@ -47,6 +47,13 @@ function getGreeting() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+    // Lazy load all images globally
+    document.querySelectorAll("img:not(.no-lazy)").forEach(img => {
+        if (!img.hasAttribute("loading")) {
+            img.setAttribute("loading", "lazy");
+        }
+    });
+
     // Set greeting
     document.getElementById("greeting").textContent = getGreeting();
 
