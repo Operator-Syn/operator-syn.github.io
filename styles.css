@@ -1,0 +1,44 @@
+* {
+
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "McLaren", sans-serif;
+
+}
+
+body, html {
+
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+}
+
+.page {
+
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 2rem;
+    color: black;
+    opacity: 0; /* Start all pages as hidden */
+    transition: opacity 0.5s ease-in-out; /* Smooth fade transition */
+
+}
+
+.active {
+    
+    display: flex;
+    opacity: 1; /* Fade in when active */
+
+}
+
+#page1 { background: #3498db; } /* Blue */
