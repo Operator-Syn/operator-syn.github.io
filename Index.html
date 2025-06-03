@@ -2,27 +2,68 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operation Start: Introduction</title>
-    <link rel="icon" type="png" href="icons/tabIcon.png">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=McLaren&display=swap" rel="stylesheet">
-
+    <title>Operator-Eury</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS -->
 </head>
 
 <body>
 
     <div class="page active" id="page1">
+        <div id="navBar">
+            <button class="navBarButton currently">Home</button>
+            <button class="navBarButton">Projects</button>
+            <button class="navBarButton">Certs</button>
+            <button class="navBarButton">Socials</button>
+        </div>
+        <div class="contentHolder">
 
-        <h1>Page 1 &#8617;</h1> 
-        <img class="stat" src="https://github-readme-stats.vercel.app/api?username=Operator-Eury&theme=dark&hide_border=false&include_all_commits=false&count_private=false" alt="GitHub Stats">
-        <img class="" src="https://nirzak-streak-stats.vercel.app/?user=Operator-Eury&theme=dark&hide_border=false" alt="GitHub Streak Stats">
+            <div id="homePanelParent">
+                <div id="catchphrase">Calm Interfaces, Seamless Experiences — Welcome Visitors!</div>
+                <div id="profile">2</div>
+                <div id="introduction"> 
+                    <div class="leftAlignFormat">
+                        <h2 class="unbold h2">Small yap about me yes</h2>
+                        <p><br>The quick brown fox jumps over the lazy dog</p>
+                    </div>
+                </div>
+                <div id="badges">
+                    <div class="leftAlignFormat">
+                        <h2 class="unbold h2">Badges</h2>
+                    </div>
+                </div>
+            </div>
+
+        </div>
 
     </div>
+
+    <div class="page" id="page2">
+        <h1>Page 2</h1>
+        <p id="greeting"></p>
+        <img class="stat"
+            src="https://github-readme-stats.vercel.app/api?username=Operator-Eury&theme=dark&hide_border=false&include_all_commits=false&count_private=false"
+            alt="GitHub Stats">
+        <img class="stat" src="https://nirzak-streak-stats.vercel.app/?user=Operator-Eury&theme=dark&hide_border=false"
+            alt="GitHub Streak Stats">
+    </div>
+
+    <div class="page" id="page3">
+        <h1>Page 3</h1>
+    </div>
+
+    <div class="page" id="page4">
+        <h1>Page 4</h1>
+    </div>
+
+    <div class="buttons">
+        <button onclick="prevPage()">Previous</button>
+        <button onclick="nextPage()">Next</button>
+    </div>
+
+    <script src="script.js"></script> <!-- Link to external JavaScript -->
+
 </body>
 
 </html>

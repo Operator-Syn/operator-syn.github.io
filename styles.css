@@ -1,22 +1,47 @@
 * {
-
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "McLaren", sans-serif;
+}  
 
+div {
+    color: #E3F2FD;
 }
 
-body, html {
+p {
+    font-size: 2.5vh;
+}
 
+
+body, html {
+    font-size: 10px;
     width: 100%;
     height: 100%;
     overflow: hidden;
-
+    background-color: rgba(28, 87, 137, 0.7);
+    display: flex;
+    justify-content: center;
+    position: relative;
 }
 
-.page {
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('Images/div-background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(0.8vh); /* Adjust blur intensity */
+    z-index: 0;
+    pointer-events: none; /* Keep elements clickable */
+}
 
+
+.page {
     width: 100vw;
     height: 100vh;
     position: absolute;
@@ -27,18 +52,172 @@ body, html {
     justify-content: center;
     align-items: center;
     text-align: center;
-    font-size: 2rem;
-    color: black;
-    opacity: 0; /* Start all pages as hidden */
+    font-size: 3rem;
+    background: transparent;
+    opacity: 0; /* Start hidden */
     transition: opacity 0.5s ease-in-out; /* Smooth fade transition */
+    overflow: hidden;
+}
 
+.contentHolder {
+    border-radius: 0.4rem;
+    width: 95vw;
+    height: 75vh;
+    position: relative;
+    top: 5vh;
+    background: rgba(28, 87, 137, 0.5);
 }
 
 .active {
-    
     display: flex;
     opacity: 1; /* Fade in when active */
-
 }
 
-#page1 { background: #3498db; } /* Blue */
+.buttons {
+    position: fixed;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+#navBar {
+    position: fixed; /* or absolute */
+    top: 2.5vh;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* Ensures it stays on top */
+    display: flex;
+    justify-content: center;
+    gap:1vw; /*40px;*/
+    padding: 2vh 20vw;/*10px 300px;*/
+    background: rgba(28, 87, 137, 0.65);  /* Semi-transparent background */
+}
+
+.navBarButton {
+    flex: 1;
+    font-size: 3.5vh;
+    cursor: pointer;
+    background: rgb(100, 181, 246);
+    color: rgb(227, 242, 253);
+    border: none;
+    border-radius: 0.5vh;
+    padding: 1.5vh 1vw;
+
+    /* Simulated text outline */
+    text-shadow:
+        -0.1vh -0.1vw 0 black,
+         0.1vh -0.1vw 0 black,
+        -0.1vh  0.1vw 0 black,
+         0.1vh  0.1vw 0 black;
+    
+        transition:
+        background 0.3s ease-out,
+        color 0.3s ease-out,
+        box-shadow 0.3s ease-out,
+        text-shadow 0.3s ease-in,
+        outline 0.3s ease-out;
+}
+
+
+.currently {
+    background: rgb(227, 242, 253);
+    color: black;
+    outline: 0.5vh solid black;
+    box-shadow: -0.2vh 0.4vh 0.9vh 0.7vh rgba(227, 242, 253, 0.5);
+}
+
+.navBarButton.currently {
+    text-shadow: none;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 2rem;
+    cursor: pointer;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+.stat {
+    width: 500x;  /* Adjust as needed */
+    height: auto;  /* Maintains aspect ratio */
+    display: block; /* Ensures correct spacing */
+    margin: 10px auto; /* Centers images */
+}
+
+
+#homePanelParent {
+    position: relative;
+    overflow: hidden;
+    top: 4vh;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: 0.8vh;
+}
+    
+#catchphrase {
+    overflow: hidden;
+    text-align: left;
+    font-size: 3vw;
+    height: 16vh;
+    margin-left: 4vw;
+    margin-right: 0.5vw;
+    margin-bottom: 0.5vh;
+    grid-column: span 4 / span 4;
+}
+
+#profile {
+    background-color: blue;
+    height: 68vh;
+    margin-left: 0.5vw;
+    margin-right: 4vw;
+    grid-column: span 2 / span 2;
+    grid-row: span 6 / span 6;
+    grid-column-start: 5;
+}
+
+#introduction {
+    border-radius: 0.4rem;
+    background-color: rgba(87, 131, 177, 0.50);
+    overflow: hidden;
+    height: 50vh;
+    margin-left: 4vw;
+    margin-right: 0.5vw;
+    margin-top: 0.5vh;
+    grid-column: span 2 / span 2;
+    grid-row: span 5 / span 5;
+    grid-row-start: 2;
+}
+
+#badges {
+    border-radius: 0.4rem;
+    background-color: rgba(87, 131, 177, 0.50);;
+    height: 50vh;
+    margin-left: 0.5vw;
+    margin-right: 0.5vw;
+    margin-top: 0.5vh;
+    grid-column: span 2 / span 2;
+    grid-row: span 5 / span 5;
+    grid-column-start: 3;
+    grid-row-start: 2;
+}
+
+.unbold {
+    font-weight: normal;
+}
+
+.leftAlignFormat {
+    text-align: left;
+    margin-top: 2vh;
+    margin-left: 2vw;
+    margin-right: 2vw;
+}
+
+.h2 {
+    font-size: 4.5vh;
+}
