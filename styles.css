@@ -10,6 +10,7 @@ div {
 
 p {
     font-size: 2.5vh;
+    line-height: 150%;
 }
 
 
@@ -188,6 +189,7 @@ button {
 
 #profile {
     height: 68vh;
+    width: 50vh;
     margin-left: 0.5vw;
     margin-right: 4vw;
     grid-column: span 2 / span 2;
@@ -200,6 +202,7 @@ button {
     background-color: rgba(87, 131, 177, 0.50);
     overflow: hidden;
     height: 50vh;
+    width: 60vh;
     margin-left: 4vw;
     margin-right: 0.5vw;
     margin-top: 0.5vh;
@@ -212,6 +215,7 @@ button {
     border-radius: 0.4rem;
     background-color: rgba(87, 131, 177, 0.50);
     height: 50vh;
+    width: 60vh;
     margin-left: 0.5vw;
     margin-right: 0.5vw;
     margin-top: 0.5vh;
@@ -245,7 +249,7 @@ button {
 }
 
 #topInfoLine {
-    margin-top: 2.75vh;
+    margin-top: 1.5vh;
 }
 
 #profilePanelParent {
@@ -323,4 +327,8 @@ button {
     width: 65%;
     height: 100%;
     object-fit: contain;
+}
+
+.justify {
+    text-align: justify;
 }
