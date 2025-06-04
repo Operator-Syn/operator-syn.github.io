@@ -13,6 +13,15 @@ p {
     line-height: 150%;
 }
 
+button {
+    padding: 0.75vh 0.55vw;
+    font-size: 1.5vh;
+    cursor: pointer;
+    background: rgba(28, 86, 137, 0.5);
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
 
 body,
 html {
@@ -59,9 +68,7 @@ body::before {
     font-size: 3rem;
     background: transparent;
     opacity: 0;
-    /* Start hidden */
     transition: opacity 0.5s ease-in-out;
-    /* Smooth fade transition */
     overflow: hidden;
 }
 
@@ -77,7 +84,7 @@ body::before {
 .active {
     display: flex;
     opacity: 1;
-    /* Fade in when active */
+    z-index: 99;
 }
 
 .buttons {
@@ -87,6 +94,7 @@ body::before {
     display: flex;
     justify-content: center;
     gap: 2rem;
+    z-index: 100;
 }
 
 #navBar {
@@ -100,9 +108,7 @@ body::before {
     display: flex;
     justify-content: center;
     gap: 1vw;
-    /*40px;*/
     padding: 2vh 20vw;
-    /*10px 300px;*/
     background: rgba(28, 87, 137, 0.65);
     /* Semi-transparent background */
 }
@@ -144,7 +150,7 @@ body::before {
     text-shadow: none;
 }
 
-button {
+.pbutton {
     padding: 10px 20px;
     font-size: 2rem;
     cursor: pointer;
@@ -155,14 +161,7 @@ button {
 }
 
 .stat {
-    width: 500x;
-    /* Adjust as needed */
-    height: auto;
-    /* Maintains aspect ratio */
-    display: block;
-    /* Ensures correct spacing */
-    margin: 10px auto;
-    /* Centers images */
+    width: 45vh;
 }
 
 
@@ -189,7 +188,6 @@ button {
 
 #profile {
     height: 68vh;
-    width: 50vh;
     margin-left: 0.5vw;
     margin-right: 4vw;
     grid-column: span 2 / span 2;
@@ -200,22 +198,23 @@ button {
 #introduction {
     border-radius: 0.4rem;
     background-color: rgba(87, 131, 177, 0.50);
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     height: 50vh;
-    width: 60vh;
     margin-left: 4vw;
     margin-right: 0.5vw;
     margin-top: 0.5vh;
     grid-column: span 2 / span 2;
     grid-row: span 5 / span 5;
     grid-row-start: 2;
+    scrollbar-color: rgba(28, 87, 137, 0.5) transparent;
 }
 
 #badges {
     border-radius: 0.4rem;
     background-color: rgba(87, 131, 177, 0.50);
+    overflow: hidden;
     height: 50vh;
-    width: 60vh;
     margin-left: 0.5vw;
     margin-right: 0.5vw;
     margin-top: 0.5vh;
@@ -236,6 +235,22 @@ button {
     margin-right: 2vw;
 }
 
+.centerAlignFormatNoMargin {
+    text-align: center;
+    
+}
+
+.rightAlignFormat {
+    text-align: right;
+    margin-top: 2vh;
+    margin-left: 2vw;
+    margin-right: 2vw;
+}
+
+.rightAlignFormatNoMargin {
+    text-align: right;
+}
+
 .h2 {
     font-size: 4.5vh;
 }
@@ -254,12 +269,13 @@ button {
 
 #profilePanelParent {
     position: relative;
+    height: 67vh;
     overflow: hidden;
     top: 0.75vh;
     display: grid;
     grid-template-columns: repeat(1, 1fr);
     grid-template-rows: repeat(5, 1fr);
-    gap: 0.8vh;
+    gap: 0.6vh;
 }
 
 #profileImage {
@@ -271,22 +287,23 @@ button {
 }
 
 #profileImageContainer {
-    width: 15vh;           
+    width: 15vh;
     height: 15vh;
-    overflow: hidden;       
-    border-radius: 50%;    
+    overflow: hidden;
+    border-radius: 50%;
 }
 
 #profileImageContainer img {
     width: 100%;
     height: 100%;
-    object-fit: cover;      
-    border-radius: 50%;     
+    object-fit: cover;
+    border-radius: 50%;
 }
 
 #profileDetails {
     background-color: rgba(87, 131, 177, 0.50);
     border-radius: 0.4rem;
+    margin-bottom: 1.8vh;
     overflow: hidden;
     text-align: center;
     height: 15vh;
@@ -295,6 +312,7 @@ button {
 #profileEtc {
     background-color: rgba(87, 131, 177, 0.50);
     border-radius: 0.4rem;
+    margin-bottom: 1.8vh;
     overflow: hidden;
     text-align: center;
     height: 15vh;
@@ -318,17 +336,22 @@ button {
     height: 15vh;
 }
 
-#profileEtc2 img {
-    display: flex;
-    margin-left: 10vh;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    width: 65%;
-    height: 100%;
-    object-fit: contain;
-}
-
 .justify {
     text-align: justify;
+}
+
+
+.badge {
+    height: 3vh;
+}
+
+.badgeContainer {
+    text-align: justify;
+    display: none;
+    overflow: hidden;
+}
+
+.badgeContainer.chosen {
+    display: block;
+    overflow: hidden;
 }
