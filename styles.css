@@ -187,7 +187,7 @@ body::before {
 }
 
 #profile {
-    margin:auto;
+    margin: auto;
     grid-column: span 2 / span 2;
     grid-row: span 2 / span 2;
     grid-column-start: 6;
@@ -212,7 +212,6 @@ body::before {
     height: 94%;
     width: 95%;
     margin-left: auto;
-    background-color: rgba(87, 131, 177, 0.50);
     overflow: hidden;
     grid-column: span 2 / span 2;
     grid-row: span 6 / span 6;
@@ -328,6 +327,7 @@ body::before {
 #profileEtc2 {
     background-color: rgba(87, 131, 177, 0.50);
     border-radius: 0.4rem;
+    cursor: pointer;
     height: 80%;
     width: 90%;
     margin-left: auto;
@@ -352,7 +352,6 @@ body::before {
 
 .badgeContainer {
     text-align: justify;
-    display: none;
     overflow: hidden;
 }
 
@@ -368,4 +367,36 @@ body::before {
 .verticalFlex {
     display: flex;
     flex-direction: column;
+}
+
+.flip-card {
+    background-color: rgba(87, 131, 177, 0.50);
+    position: relative;
+    height: 100%;
+    width: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.5s;
+}
+
+.flip-card-front,
+.flip-card-back {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    transition: transform 0.5s linear 0s;
+    text-align: left;
+    backface-visibility: hidden;
+}
+
+.flip-card-front {
+    margin-top: 2vh;
+    margin-left: 2vw;
+    margin-right: 2vw;
+}
+
+.flip-card-back {
+    display: flex;
+    margin-top: 2vh;
+    justify-content: center;
+    transform: rotateY(180deg);
 }
