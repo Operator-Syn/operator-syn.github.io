@@ -68,7 +68,7 @@ body::before {
     font-size: 3rem;
     background: transparent;
     opacity: 0;
-    transition: opacity 0.5s ease-in-out;
+    transition: opacity 0.30s ease-in-out;
     overflow: hidden;
 }
 
@@ -84,6 +84,7 @@ body::before {
 .cookingArea {
     width: 95%;
     height: 80%;
+    overflow: hidden;
     margin-left: auto;
     margin-right: auto;
     position: relative;
@@ -184,11 +185,12 @@ body::before {
     grid-row: span 2 / span 2;
 }
 
-#catchphrase {
+.catchphrase {
+    width: 100%;
     overflow: hidden;
     text-align: left;
     font-size: 3vw;
-    margin-left: 5%;
+    margin-left: 10%;
 }
 
 #profile {
@@ -200,7 +202,7 @@ body::before {
 
 #introduction {
     border-radius: 0.4rem;
-    height: 94%;
+    height: 93.55%;
     width: 90%;
     margin-left: auto;
     background-color: rgba(87, 131, 177, 0.50);
@@ -214,7 +216,7 @@ body::before {
 
 #badges {
     border-radius: 0.4rem;
-    height: 94%;
+    height: 93.55%;
     width: 95%;
     margin-left: auto;
     overflow: hidden;
@@ -261,6 +263,52 @@ body::before {
 
 .info-line {
     margin-top: 0.5vh;
+}
+
+.gridContentHolder {
+    width: auto;
+    overflow: hidden;
+    text-align: left;
+    font-size: 3vw;
+    margin-left: 6%;
+    margin-top: 1.49%;
+    overflow: hidden;
+    gap: 0rem;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(1, 1fr);
+}
+
+.dynamicGrid {
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-radius: 1rem;
+    background: rgba(20, 70, 110, 0.5);
+    margin-top: 1.5%;
+    margin-bottom: auto;
+    width: 94.5%;
+    height: 60vh; /* fixed height relative to viewport */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem; /* reduced gap for better layout */
+    padding: 2rem; /* reduced padding to save space */
+    scrollbar-color: rgba(185, 220, 235, 0.5) transparent;
+    box-sizing: border-box;
+}
+
+.gridItem {
+    height: 30vh;       /* fill grid cell height */
+    max-height: 100%;   /* limit to grid cell height */
+    overflow-y: auto;   /* scrollbar when content overflows */
+    background-color: rgba(87, 131, 177, 0.5);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+}
+
+
+.gridTitle {
+    font-size: 3.5vh;
 }
 
 #topInfoLine {
