@@ -100,4 +100,20 @@ document.addEventListener("DOMContentLoaded", function () {
             isTransitioning = false;
         }, 650); // Matches CSS transition time
     });
+
+    // Flip card hover via profileEtc2
+    const profileEtc2 = document.getElementById("profileEtc2");
+    const flipCards = document.querySelectorAll("#badges .flip-card");
+
+    profileEtc2.addEventListener("mouseenter", () => {
+        flipCards.forEach(card => {
+            card.style.transform = "rotateY(180deg)";
+        });
+    });
+
+    profileEtc2.addEventListener("mouseleave", () => {
+        flipCards.forEach(card => {
+            card.style.transform = "rotateY(0deg)";
+        });
+    });
 });
