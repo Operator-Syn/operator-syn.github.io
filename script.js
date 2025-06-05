@@ -29,22 +29,40 @@ function prevPage() {
 }
 
 function getGreeting() {
-    const now = new Date();
-    const hour = now.getHours();
-    let greeting;
+    function updateGreetingWithTime() {
+        const now = new Date();
+        let hour = now.getHours();
+        const minute = String(now.getMinutes()).padStart(2, '0');
+        const second = String(now.getSeconds()).padStart(2, '0');
+        const ampm = hour >= 12 ? 'PM' : 'AM';
 
-    if (hour >= 5 && hour < 12) {
-        greeting = "Good Morning";
-    } else if (hour >= 12 && hour < 14) {
-        greeting = "Good Noon";
-    } else if (hour >= 14 && hour < 18) {
-        greeting = "Good Afternoon";
-    } else {
-        greeting = "Good Evening";
+        let greeting;
+        if (hour >= 5 && hour < 12) {
+            greeting = "Good Morning!";
+        } else if (hour >= 12 && hour < 14) {
+            greeting = "Good Noon";
+        } else if (hour >= 14 && hour < 18) {
+            greeting = "Good Afternoon!";
+        } else {
+            greeting = "Good Evening!";
+        }
+
+        hour = hour % 12;
+        if (hour === 0) hour = 12;
+
+        const timeStr = `${String(hour).padStart(2, '0')}:${minute}:${second} ${ampm}`;
+        const fullText = `${greeting} \u2192 ${timeStr} <br> &#x274F; Would you like to see my recent Github Activities?`;
+
+        const greetingElem = document.getElementById("greeting");
+        if (greetingElem) {
+            greetingElem.innerHTML = fullText; // use innerHTML here
+        }
     }
 
-    return greeting;
+    updateGreetingWithTime();
+    setInterval(updateGreetingWithTime, 1000);
 }
+
 
 document.addEventListener("DOMContentLoaded", function () {
     // Lazy load all images globally
@@ -116,4 +134,19 @@ document.addEventListener("DOMContentLoaded", function () {
             card.style.transform = "rotateY(0deg)";
         });
     });
+
+    const projectsButton = document.getElementById('projectsButton');
+
+    projectsButton.addEventListener('click', () => {
+        currentPage = 2;
+        showPage(currentPage);
+    });
+
+    const homeButton = document.getElementById('homeButton');
+
+    homeButton.addEventListener('click', () => {
+        currentPage = 1;
+        showPage(currentPage);
+    });
+
 });
