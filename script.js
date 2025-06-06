@@ -159,16 +159,19 @@ document.addEventListener("DOMContentLoaded", function () {
         dialogElement.showModal();
         requestAnimationFrame(() => {
             dialogElement.classList.add('visible');
+            document.body.classList.add('dialog-open'); // 👈 add this
         });
     }
 
     // Make closeDialog globally accessible
     window.closeDialog = function () {
         dialogElement.classList.remove('visible');
+        document.body.classList.remove('dialog-open'); // 👈 remove this
         dialogElement.addEventListener('transitionend', () => {
             dialogElement.close();
         }, { once: true });
     };
+
 
 
     // ⬇️ Fix for Esc key transition
