@@ -497,9 +497,9 @@ body::before {
 #dialogCross {
     cursor: pointer;
     position: relative;
-    width: 6.4vh;
+    width: 6.5vh;
     bottom: 40%;
-    left: 88%;
+    left: 85%;
     font-size: 10vh;
     grid-column: 5;
 }
