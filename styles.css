@@ -37,7 +37,7 @@ html {
 
 body::before {
     content: "";
-    position: absolute;
+    position: relative;
     top: 0;
     left: 0;
     width: 100%;
@@ -47,10 +47,8 @@ body::before {
     background-position: center;
     background-repeat: no-repeat;
     filter: blur(0.8vh);
-    /* Adjust blur intensity */
     z-index: 0;
     pointer-events: none;
-    /* Keep elements clickable */
 }
 
 
@@ -111,7 +109,6 @@ body::before {
 
 #navBar {
     position: fixed;
-    /* or absolute */
     top: 2.5vh;
     left: 0;
     width: 100%;
@@ -557,7 +554,7 @@ body::before {
     grid-row-start: 5;
     padding: 5.5rem;
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
 }
 

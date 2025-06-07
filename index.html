@@ -12,10 +12,10 @@
 <body>
 
     <div id="navBar">
-        <button class="navBarButton currently" id="homeButton">Home</button>
-        <button class="navBarButton" id="projectsButton">Projects</button>
-        <button class="navBarButton" id="certsButton">Certs</button>
-        <button class="navBarButton" id="socialsButton">Socials</button>
+        <button class="navBarButton currently" id="homeButton" data-page="1">Home</button>
+        <button class="navBarButton" id="projectsButton" data-page="2">Projects</button>
+        <button class="navBarButton" id="certsButton" data-page="3">Certs</button>
+        <button class="navBarButton" id="socialsButton" data-page="4">Socials</button>
     </div>
 
     <div class="page active" id="page1">
@@ -364,7 +364,7 @@
         <h1>Page 4</h1>
     </div>
 
-    <script src="script.js"></script> <!-- Link to external JavaScript -->
+    <script src="script.js" defer></script> <!-- Link to external JavaScript -->
 
     <dialog id="itemDialog">
         <div id="dialogContent">
