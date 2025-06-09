@@ -107,6 +107,27 @@ body::before {
     z-index: 100;
 }
 
+#socialBar {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+    position: fixed;
+    bottom: 0vh;
+    width: 100%;
+    z-index: 1000;
+    /* Ensures it stays on top */
+    gap: 1vw;
+    padding-left: 2vw;
+    background: rgba(28, 87, 137, 0.65);
+    /* Semi-transparent background */
+}
+
+#socialBar img {
+    margin-top: auto;
+    margin-bottom: auto;
+    height: 100%;
+}
+
 #navBar {
     position: fixed;
     top: 2.5vh;
@@ -170,7 +191,8 @@ body::before {
 }
 
 .stat {
-    width: 45vh;
+    width: 100%;
+    max-width: 45vh;
 }
 
 
@@ -212,11 +234,13 @@ body::before {
 }
 
 #badges {
+    display: flex;
     border-radius: 0.4rem;
     height: 93.55%;
     width: 95%;
     margin-left: auto;
-    overflow: hidden;
+    margin-right: auto;
+
     grid-column: span 2 / span 2;
     grid-row: span 6 / span 6;
     grid-column-start: 4;
@@ -251,7 +275,7 @@ body::before {
 }
 
 .h2 {
-    font-size: vh;
+    font-size: 4.5vh;
 }
 
 .h3 {
@@ -407,12 +431,18 @@ body::before {
 
 
 .badge {
+    max-height: 3vh;
     height: 3vh;
+    flex-shrink: 0;
+    /* Prevent badges from shrinking */
 }
 
-.badgeContainer {
-    text-align: justify;
-    overflow: hidden;
+.badgeContainer p {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    /* Space between badges */
+    align-items: center;
 }
 
 .badgeContainer.chosen {
@@ -422,6 +452,11 @@ body::before {
 
 #statisticsLoadouts {
     margin-top: 7%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
 }
 
 .verticalFlex {
@@ -449,15 +484,14 @@ body::before {
 }
 
 .flip-card-front {
-    margin-top: 2vh;
-    margin-left: 2vw;
-    margin-right: 2vw;
+    display: flex;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-color: rgba(28, 87, 137, 0.5) transparent;
 }
 
 .flip-card-back {
-    display: flex;
-    margin-top: 2vh;
-    justify-content: center;
+
     transform: rotateY(180deg);
 }
 
@@ -589,7 +623,8 @@ body.dialog-open .cookingArea {
     box-shadow: none;
 }
 
-/* Prevent text selection highlight */ /*
+/* Prevent text selection highlight */
+/*
 #itemDialog {
     user-select: none;
     -webkit-user-select: none;
@@ -601,4 +636,10 @@ body.dialog-open .cookingArea {
 #itemDialog [tabindex] {
     pointer-events: auto;
     /* still clickable */
+}
+
+.socialIcon {
+    max-height: 3vh;
+    height: 3vh;
+    flex-shrink: 0;
 }
