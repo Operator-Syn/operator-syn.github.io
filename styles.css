@@ -2,6 +2,9 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    overflow-wrap: break-word; /* allows breaking */
+    word-wrap: break-word;     /* older support */
+    hyphens: auto;             /* auto-insert hyphens */
 }
 
 div {
@@ -111,6 +114,8 @@ body::before {
     display: flex;
     justify-content: flex-start;
     flex-direction: row;
+    overflow-x: hidden;
+    overflow-y: hidden;
     position: fixed;
     bottom: 0vh;
     width: 100%;
@@ -126,6 +131,12 @@ body::before {
     margin-top: auto;
     margin-bottom: auto;
     height: 100%;
+}
+
+#socialBar, #socialBar * {
+    overflow-wrap: normal;
+    word-wrap: normal;
+    hyphens: manual;
 }
 
 #navBar {
@@ -234,18 +245,22 @@ body::before {
 }
 
 #badges {
-    display: flex;
     border-radius: 0.4rem;
     height: 93.55%;
     width: 95%;
     margin-left: auto;
-    margin-right: auto;
-
+    background-color: rgba(87, 131, 177, 0.50);
+    overflow-x: hidden;
+    overflow-y: auto;
     grid-column: span 2 / span 2;
     grid-row: span 6 / span 6;
     grid-column-start: 4;
     grid-row-start: 3;
+    scrollbar-color: rgba(28, 87, 137, 0.5) transparent;
 }
+
+
+
 
 .unbold {
     font-weight: normal;
@@ -411,7 +426,6 @@ body::before {
 #profileEtc2 {
     background-color: rgba(87, 131, 177, 0.50);
     border-radius: 0.4rem;
-    cursor: pointer;
     height: 80%;
     width: 90%;
     margin-left: auto;
@@ -437,6 +451,12 @@ body::before {
     /* Prevent badges from shrinking */
 }
 
+#developmentLoadouts {
+    height: 100%;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
 .badgeContainer p {
     display: flex;
     flex-wrap: wrap;
@@ -450,50 +470,12 @@ body::before {
     overflow: hidden;
 }
 
-#statisticsLoadouts {
-    margin-top: 7%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
-}
-
 .verticalFlex {
     display: flex;
     flex-direction: column;
 }
 
-.flip-card {
-    background-color: rgba(87, 131, 177, 0.50);
-    position: relative;
-    height: 100%;
-    width: 100%;
-    transform-style: preserve-3d;
-    transition: transform 0.5s;
-}
 
-.flip-card-front,
-.flip-card-back {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    transition: transform 0.5s linear 0s;
-    text-align: left;
-    backface-visibility: hidden;
-}
-
-.flip-card-front {
-    display: flex;
-    overflow-x: hidden;
-    overflow-y: auto;
-    scrollbar-color: rgba(28, 87, 137, 0.5) transparent;
-}
-
-.flip-card-back {
-
-    transform: rotateY(180deg);
-}
 
 #itemDialog {
     position: fixed;

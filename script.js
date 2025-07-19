@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         hour = hour % 12 || 12;
         const timeStr = `${String(hour).padStart(2, '0')}:${minute}:${second} ${ampm}`;
-        const fullText = `${greeting} \u2192 ${timeStr} <br> &#x274F; Would you like to see my recent Github Activities?`;
+        const fullText = `${greeting} \u2192 ${timeStr} <br> &#x274F; Take a look around — I hope you find something that inspires you.`;
 
         const greetingElem = document.getElementById("greeting");
         if (greetingElem) greetingElem.innerHTML = fullText;
@@ -152,14 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => { isTransitioning = false; }, 650);
     });
 
-    if (profileEtc2) {
-        profileEtc2.addEventListener("mouseenter", () => {
-            flipCards.forEach(card => card.style.transform = "rotateY(180deg)");
-        });
-        profileEtc2.addEventListener("mouseleave", () => {
-            flipCards.forEach(card => card.style.transform = "rotateY(0deg)");
-        });
-    }
+
 
     function openDialog() {
         dialogElement.showModal();
