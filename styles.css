@@ -121,7 +121,7 @@ body::before {
 
 #socialBar a {
     text-decoration: none;
-    display: inline-block; 
+    display: inline-block;
     margin-top: auto;
     margin-bottom: auto;
     height: 100%;
@@ -137,17 +137,17 @@ body::before {
 #navBar {
     position: fixed;
     top: 2.5vh;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
     width: 100%;
     z-index: 1000;
-    /* Ensures it stays on top */
     display: flex;
     justify-content: center;
     gap: 1vw;
-    padding: 2vh 20vw;
+    padding: 1vw 20vw;
     background: rgba(28, 87, 137, 0.65);
-    /* Semi-transparent background */
 }
+
 
 .navBarButton {
     flex: 1;
@@ -204,7 +204,6 @@ body::before {
 
 #homePanelParent {
     margin: auto;
-    overflow: hidden;
     gap: 0.8vh;
     grid-column: span 4 / span 4;
     grid-row: span 2 / span 2;
@@ -212,9 +211,9 @@ body::before {
 
 .catchphrase {
     width: 100%;
-    overflow: hidden;
+    height: 100%;
     text-align: left;
-    font-size: 3vw;
+    font-size: 5.5vh;
     margin-left: 10%;
 }
 
@@ -299,7 +298,7 @@ body::before {
     width: auto;
     overflow: hidden;
     text-align: left;
-    font-size: 3vw;
+    font-size: 6vh;
     margin-left: 6%;
     margin-top: 1.49%;
     overflow: hidden;
@@ -351,7 +350,7 @@ body::before {
     font-size: 5.5rem;
 }
 
-#topInfoLine {
+.topInfoLine {
     margin-top: 1.5vh;
 }
 

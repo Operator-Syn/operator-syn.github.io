@@ -4,19 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operator-Eury</title> <!-- Title of the page -->
+    <title>Operator-Syn</title> <!-- Title of the page -->
     <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS -->
     <link rel="icon" href="Images/profile-circle.png" type="image/jpeg">
 </head>
 
 <body>
 
-    <div id="navBar">
-        <button class="navBarButton currently" id="homeButton" data-page="1">Home</button>
-        <button class="navBarButton" id="projectsButton" data-page="2">Projects</button>
-        <button class="navBarButton" id="certsButton" data-page="3">Certs</button>
-        <button class="navBarButton" id="snippetsButton" data-page="4">Snippets</button>
-    </div>
+    <nav>
+        <div id="navBar">
+            <button class="navBarButton currently" id="homeButton" data-page="1">Home</button>
+            <button class="navBarButton" id="projectsButton" data-page="2">Projects</button>
+            <button class="navBarButton" id="certsButton" data-page="3">Certs</button>
+            <button class="navBarButton" id="snippetsButton" data-page="4">Snippets</button>
+        </div>
+    </nav>
+
 
     <div class="page active" id="page1">
 
@@ -58,7 +61,7 @@
 
                     <div class="leftAlignFormat">
                         <h2 class="unbold h2">Development Loadouts</h2>
-                        <p class=""><br>Operating Systems<br></p>
+                        <p><br>Operating Systems<br></p>
                         <img src="https://img.shields.io/badge/Windows_11-0078d4?style=for-the-badge&logo=windows-11&logoColor=white"
                             alt="Windows OS Badge" class="badge">
                         <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black"
@@ -70,7 +73,7 @@
 
 
 
-                        <p class="justify">Programming Languages<br></p>
+                        <p>Programming Languages<br></p>
                         <img src="https://img.shields.io/badge/C-00599C?style=for-the-badge&logo=c&logoColor=white"
                             alt="C Language Badge" class="badge">
                         <img src="https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white"
@@ -80,17 +83,17 @@
                         <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue"
                             alt="Python Language Badge" class="badge">
 
-                        <p class="justify">Frameworks<br></p>
+                        <p>Frameworks<br></p>
                         <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white"
                             alt="Flutter Framework Badge" class="badge">
                         <img src="https://img.shields.io/badge/Apache-D22128?style=for-the-badge&logo=Apache&logoColor=white"
                             alt="Apache Framework Badge" class="badge">
 
-                        <p class="justify">Database<br></p>
+                        <p>Database<br></p>
                         <img src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white"
                             alt="MySQL Database Badge" class="badge">
 
-                        <p class="justify">Virtualization & Containerization<br></p>
+                        <p>Virtualization & Containerization<br></p>
                         <img src="https://img.shields.io/badge/Portainer-13BEF9?style=for-the-badge&logo=portainer&logoColor=white"
                             alt="Portainer Badge" class="badge">
                         <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white"
@@ -101,7 +104,7 @@
 
                 <div id="profileDetails">
 
-                    <div class="info-line" id="topInfoLine">
+                    <div class="info-line topInfoLine">
                         <p>Name: John-Ronan Beira</p>
                     </div>
                     <div class="info-line">
@@ -115,7 +118,9 @@
 
                 <div id="profileEtc">
                     <div id="socialBar">
-                        <p class="unbold"> Wanna connect? </p> <br>
+                        <div class="info-line topInfoLine">
+                            <p class="unbold"> Wanna connect? </p>
+                        </div>
                         <a href="https://www.facebook.com/one.young.blue.existing.entity" target="_blank"
                             rel="noopener noreferrer">
                             <img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white"
