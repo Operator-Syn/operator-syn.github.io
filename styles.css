@@ -2,9 +2,12 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    overflow-wrap: break-word; /* allows breaking */
-    word-wrap: break-word;     /* older support */
-    hyphens: auto;             /* auto-insert hyphens */
+    overflow-wrap: break-word;
+    /* allows breaking */
+    word-wrap: break-word;
+    /* older support */
+    hyphens: auto;
+    /* auto-insert hyphens */
 }
 
 div {
@@ -111,29 +114,21 @@ body::before {
 }
 
 #socialBar {
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: row;
     overflow-x: hidden;
-    overflow-y: hidden;
-    position: fixed;
-    bottom: 0vh;
-    width: 100%;
-    z-index: 1000;
-    /* Ensures it stays on top */
-    gap: 1vw;
-    padding-left: 2vw;
-    background: rgba(28, 87, 137, 0.65);
+    overflow-y: auto;
     /* Semi-transparent background */
 }
 
 #socialBar a {
+    text-decoration: none;
+    display: inline-block; 
     margin-top: auto;
     margin-bottom: auto;
     height: 100%;
 }
 
-#socialBar, #socialBar * {
+#socialBar,
+#socialBar * {
     overflow-wrap: normal;
     word-wrap: normal;
     hyphens: manual;
@@ -275,7 +270,6 @@ body::before {
 
 .centerAlignFormatNoMargin {
     text-align: center;
-
 }
 
 .rightAlignFormat {
@@ -415,8 +409,13 @@ body::before {
     margin-left: auto;
     margin-right: 6%;
     margin-bottom: auto;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     text-align: center;
+    scrollbar-color: rgba(28, 87, 137, 0.5) transparent;
+    overflow-wrap: normal;
+    word-wrap: normal;
+    hyphens: manual;
     grid-column: span 2 / span 2;
     grid-row: span 2 / span 2;
     grid-column-start: 6;
