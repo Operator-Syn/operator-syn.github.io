@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Operator-Syn</title> <!-- Title of the page -->
-    <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS -->
+    <link rel="stylesheet" href="styles/styles.css"> <!-- Link to external CSS -->
     <link rel="icon" href="Images/profile-circle.png" type="image/jpeg">
 </head>
 
@@ -13,10 +13,18 @@
 
     <nav>
         <div id="navBar">
-            <button class="navBarButton currently" id="homeButton" data-page="1">Home</button>
+            
+            <div class="navLeft">
+                Operator-Syn
+            </div>
+
+            <div class="navRight">
+                <button class="navBarButton currently" id="homeButton" data-page="1">Home</button>
             <button class="navBarButton" id="projectsButton" data-page="2">Projects</button>
             <button class="navBarButton" id="certsButton" data-page="3">Certs</button>
-            <button class="navBarButton" id="snippetsButton" data-page="4">Snippets</button>
+            <button class="navBarButton" id="snippetsButton" data-page="4">Snippets</button> 
+            </div>
+
         </div>
     </nav>
 
@@ -26,7 +34,7 @@
         <div class="cookingArea">
             <div class="page1ContentHolder">
 
-                <div id="homePanelParent">
+                <div id="cathphraseHolder">
 
                     <div class="catchphrase">Calm Interfaces, Seamless Experiences — Welcome Visitors!</div>
 
@@ -104,61 +112,61 @@
 
                 <div id="profileDetails">
 
-                    <div class="info-line topInfoLine">
-                        <p>Name: John-Ronan Beira</p>
-                    </div>
-                    <div class="info-line">
-                        <p>Course: BS Computer Science</p>
-                    </div>
-                    <div class="info-line">
-                        <p>Year: 3rd Year</p>
-                    </div>
+                    <p>Name: John-Ronan Beira</p>
+                    <p>Course: BS Computer Science</p>
+                    <p>Year: 3rd Year</p>
 
                 </div>
 
                 <div id="profileEtc">
                     <div id="socialBar">
+
                         <div class="info-line topInfoLine">
                             <p class="unbold"> Wanna connect? </p>
                         </div>
-                        <a href="https://www.facebook.com/one.young.blue.existing.entity" target="_blank"
-                            rel="noopener noreferrer">
-                            <img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white"
-                                alt="Facebook" class="socialIcon">
-                        </a>
-                        <a href="https://github.com/Operator-Syn" target="_blank" rel="noopener noreferrer">
-                            <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"
-                                alt="GitHub" class="socialIcon">
-                        </a>
-                        <a href="https://www.instagram.com/rohn_rohnann" target="_blank" rel="noopener noreferrer">
-                            <img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white"
-                                alt="Instagram" class="socialIcon">
-                        </a>
-                        <a href="https://www.linkedin.com/in/one-young-blue-existing-entity/" target="_blank"
-                            rel="noopener noreferrer">
-                            <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"
-                                alt="LinkedIn" class="socialIcon">
-                        </a>
-                        <a href="https://discord.com/users/565151069655662622" target="_blank"
-                            rel="noopener noreferrer">
-                            <img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white"
-                                alt="Discord" class="socialIcon">
-                        </a>
-                        <a href="https://steamcommunity.com/id/one-young-blue-entity/" target="_blank"
-                            rel="noopener noreferrer">
-                            <img src="https://img.shields.io/badge/Steam-000000?style=for-the-badge&logo=steam&logoColor=white"
-                                alt="Steam" class="socialIcon">
-                        </a>
-                        <a href="https://www.xbox.com/en-PH/play/user/Kashiede" target="_blank"
-                            rel="noopener noreferrer">
-                            <img src="https://img.shields.io/badge/Xbox-107C10?style=for-the-badge&logo=xbox&logoColor=white"
-                                alt="Xbox" class="socialIcon">
-                        </a>
-                        <a href="https://paypal.me/youngexistingentity?country.x=PH&locale.x=en_US" target="_blank"
-                            rel="noopener noreferrer">
-                            <img src="https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white"
-                                alt="PayPal" class="socialIcon">
-                        </a>
+
+                        <div id="socialDiv">
+
+                            <a href="https://www.facebook.com/one.young.blue.existing.entity" target="_blank"
+                                rel="noopener noreferrer">
+                                <img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white"
+                                    alt="Facebook" class="socialIcon">
+                            </a>
+                            <a href="https://github.com/Operator-Syn" target="_blank" rel="noopener noreferrer">
+                                <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"
+                                    alt="GitHub" class="socialIcon">
+                            </a>
+                            <a href="https://www.instagram.com/rohn_rohnann" target="_blank" rel="noopener noreferrer">
+                                <img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white"
+                                    alt="Instagram" class="socialIcon">
+                            </a>
+                            <a href="https://www.linkedin.com/in/one-young-blue-existing-entity/" target="_blank"
+                                rel="noopener noreferrer">
+                                <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"
+                                    alt="LinkedIn" class="socialIcon">
+                            </a>
+                            <a href="https://discord.com/users/565151069655662622" target="_blank"
+                                rel="noopener noreferrer">
+                                <img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white"
+                                    alt="Discord" class="socialIcon">
+                            </a>
+                            <a href="https://steamcommunity.com/id/one-young-blue-entity/" target="_blank"
+                                rel="noopener noreferrer">
+                                <img src="https://img.shields.io/badge/Steam-000000?style=for-the-badge&logo=steam&logoColor=white"
+                                    alt="Steam" class="socialIcon">
+                            </a>
+                            <a href="https://www.xbox.com/en-PH/play/user/Kashiede" target="_blank"
+                                rel="noopener noreferrer">
+                                <img src="https://img.shields.io/badge/Xbox-107C10?style=for-the-badge&logo=xbox&logoColor=white"
+                                    alt="Xbox" class="socialIcon">
+                            </a>
+                            <a href="https://paypal.me/youngexistingentity?country.x=PH&locale.x=en_US" target="_blank"
+                                rel="noopener noreferrer">
+                                <img src="https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white"
+                                    alt="PayPal" class="socialIcon">
+                            </a>
+
+                        </div>
 
                     </div>
                 </div>
@@ -635,7 +643,7 @@
 
             <div id="dialogParent">
                 <div id="dialogHeader">1</div>
-                <div id="dialogCross" class="largeCross rightAlignFormatNoMargin">&times;</div>
+                <div id="dialogCross" class="rightAlignFormatNoMargin">&times;</div>
                 <div id="dialogImage">3</div>
                 <div id="dialogImageCaption">4</div>
                 <div id="dialogBody">5</div>
