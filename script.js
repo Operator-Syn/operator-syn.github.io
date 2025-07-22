@@ -1,70 +1,14 @@
+// Keeps track of the currently visible page
 let currentPage = 1;
-const pages = document.querySelectorAll('.page');
-const totalPages = pages.length;
-
-function showPage(pageNumber) {
-    pages.forEach(page => page.classList.remove('active'));
-    pages[pageNumber - 1].classList.add('active');
-
-    // Dynamic navBarButton update
-    const navButtons = document.querySelectorAll('.navBarButton');
-    navButtons.forEach(btn => btn.classList.remove('currently'));
-
-    const activeButton = document.querySelector(`.navBarButton[data-page="${pageNumber}"]`);
-    if (activeButton) {
-        activeButton.classList.add('currently');
-        originalCurrently = activeButton;
-    }
-}
-
-function nextPage() {
-    currentPage = currentPage < totalPages ? currentPage + 1 : 1;
-    showPage(currentPage);
-}
-
-function prevPage() {
-    currentPage = currentPage > 1 ? currentPage - 1 : totalPages;
-    showPage(currentPage);
-}
-
-function getGreeting() {
-    function updateGreetingWithTime() {
-        const now = new Date();
-        let hour = now.getHours();
-        const minute = String(now.getMinutes()).padStart(2, '0');
-        const second = String(now.getSeconds()).padStart(2, '0');
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-
-        let greeting;
-        if (hour >= 5 && hour < 12) greeting = "Good Morning!";
-        else if (hour >= 12 && hour < 14) greeting = "Good Noon";
-        else if (hour >= 14 && hour < 18) greeting = "Good Afternoon!";
-        else greeting = "Good Evening!";
-
-        hour = hour % 12;
-        if (hour === 0) hour = 12;
-
-        const timeStr = `${String(hour).padStart(2, '0')}:${minute}:${second} ${ampm}`;
-        const fullText = `${greeting} \u2192 ${timeStr} <br> &#x274F; Would you like to see my recent Github Activities?`;
-
-        const greetingElem = document.getElementById("greeting");
-        if (greetingElem) {
-            greetingElem.innerHTML = fullText;
-        }
-    }
-
-    updateGreetingWithTime();
-    setInterval(updateGreetingWithTime, 1000);
-}
 
 document.addEventListener("DOMContentLoaded", () => {
-    const pages = Array.from(document.querySelectorAll('.page'));
-    const navButtons = Array.from(document.querySelectorAll('.navBarButton'));
-    const totalPages = pages.length;
-    let currentPage = 1;
-    let originalCurrently = document.querySelector('.navBarButton.currently');
-    let isTransitioning = false;
+    // ====== PAGE NAVIGATION VARIABLES ======
+    const pages = Array.from(document.querySelectorAll('.page')); // All page sections
+    const navButtons = Array.from(document.querySelectorAll('.navBarButton')); // Navigation buttons
+    const totalPages = pages.length; // Total number of pages
+    let isTransitioning = false; // Prevents rapid navigation during transitions
 
+    // ====== DIALOG ELEMENTS ======
     const dialogElement = document.getElementById('itemDialog');
     const dialogHeader = document.getElementById('dialogHeader');
     const dialogBody = document.getElementById('dialogBody');
@@ -72,19 +16,37 @@ document.addEventListener("DOMContentLoaded", () => {
     const dialogImageCaption = document.getElementById('dialogImageCaption');
     const closeButton = document.getElementById('closeBtn');
     const crossButton = document.getElementById('dialogCross');
-    const profileEtc2 = document.getElementById("profileEtc2");
-    const flipCards = document.querySelectorAll("#badges .flip-card");
 
+    // ====== MOBILE MENU ELEMENTS ======
+    const menuToggleButton = document.getElementById('menuToggleButton');
+    const closeMenuToggleButton = document.getElementById('closeMenuToggleButton');
+    const navLinksMobile = document.getElementById('navLinksMobile');
+
+    // ====== MOBILE MENU TOGGLE ======
+    if (menuToggleButton && navLinksMobile) {
+        menuToggleButton.addEventListener('click', () => {
+            navLinksMobile.classList.toggle('openMobileNav');
+        });
+    }
+
+    if (closeMenuToggleButton && navLinksMobile) {
+        closeMenuToggleButton.addEventListener('click', () => {
+            navLinksMobile.classList.remove('openMobileNav');
+        });
+    }
+
+    // ====== PAGE NAVIGATION ======
     function showPage(pageNumber) {
+        // Hide all pages, then show selected one
         pages.forEach(p => p.classList.remove('active'));
         pages[pageNumber - 1].classList.add('active');
 
+        // Clear all highlights
         navButtons.forEach(btn => btn.classList.remove('currently'));
-        const activeButton = document.querySelector(`.navBarButton[data-page="${pageNumber}"]`);
-        if (activeButton) {
-            activeButton.classList.add('currently');
-            originalCurrently = activeButton;
-        }
+
+        // Highlight all matching buttons (desktop + mobile)
+        const activeButtons = document.querySelectorAll(`.navBarButton[data-page="${pageNumber}"]`);
+        activeButtons.forEach(btn => btn.classList.add('currently'));
     }
 
     function changePage(offset) {
@@ -94,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
         showPage(currentPage);
     }
 
+    // ====== GREETING & CLOCK UPDATE ======
     function updateGreetingWithTime() {
         const now = new Date();
         let hour = now.getHours();
@@ -118,30 +81,41 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(updateGreetingWithTime, 1000);
     updateGreetingWithTime();
 
+    // ====== IMAGE OPTIMIZATION ======
     document.querySelectorAll("img:not(.no-lazy)").forEach(img => {
         if (!img.hasAttribute("loading")) img.setAttribute("loading", "lazy");
     });
 
+    // ====== NAV BUTTON INTERACTIVITY ======
+    function highlightPage(pageNumber) {
+        navButtons.forEach(btn => btn.classList.remove('currently'));
+        const matchingButtons = document.querySelectorAll(`.navBarButton[data-page="${pageNumber}"]`);
+        matchingButtons.forEach(btn => btn.classList.add('currently'));
+    }
+
     navButtons.forEach(button => {
+        // Hover effect (temporary highlight)
         button.addEventListener('mouseenter', () => {
-            navButtons.forEach(btn => btn.classList.remove('currently'));
-            button.classList.add('currently');
+            highlightPage(button.dataset.page);
         });
 
+        // Restore actual current page highlight after hover
         button.addEventListener('mouseleave', () => {
-            navButtons.forEach(btn => btn.classList.remove('currently'));
-            if (originalCurrently) originalCurrently.classList.add('currently');
+            highlightPage(currentPage);
         });
 
+        // On click: switch page & keep highlight in both menus
         button.addEventListener('click', () => {
             const targetPage = parseInt(button.dataset.page);
             if (!isNaN(targetPage)) {
                 currentPage = targetPage;
                 showPage(currentPage);
+                highlightPage(currentPage);
             }
         });
     });
 
+    // ====== KEYBOARD NAVIGATION ======
     document.addEventListener("keydown", event => {
         if (isTransitioning) return;
         isTransitioning = true;
@@ -152,8 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => { isTransitioning = false; }, 650);
     });
 
-
-
+    // ====== DIALOG HANDLING ======
     function openDialog() {
         dialogElement.showModal();
         requestAnimationFrame(() => {
@@ -180,6 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
     closeButton?.addEventListener('click', closeDialog);
     crossButton?.addEventListener('click', closeDialog);
 
+    // ====== GRID ITEM CLICK HANDLING ======
     document.addEventListener('click', e => {
         const item = e.target.closest('.gridItem');
         if (!item) return;
@@ -190,8 +164,11 @@ document.addEventListener("DOMContentLoaded", () => {
             ? `<img src="${item.dataset.image}" alt="Dialog Image" style="max-width: 100%;">`
             : '';
         dialogImageCaption.innerHTML = item.dataset.caption || '';
+
         openDialog();
     });
 
+    // Initialize by showing the first page & highlighting buttons
     showPage(currentPage);
+    highlightPage(currentPage);
 });

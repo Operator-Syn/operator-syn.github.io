@@ -1,5 +1,10 @@
 /* GLOBAL Variables support */
 @import url("page1.css");
+@import url(navbar.css);
+@import url(pages.css);
+@import url(formatting.css);
+@import url(dynamicGrid.css);
+@import url(dialog.css);
 
 * {
     margin: 0;
@@ -9,17 +14,8 @@
     /* allows breaking */
     word-wrap: break-word;
     /* older support */
-    hyphens: auto;
+    /* hyphens: auto; */
     /* auto-insert hyphens */
-}
-
-div {
-    color: #E3F2FD;
-}
-
-p {
-    font-size: 1rem;
-    line-height: 150%;
 }
 
 body,
@@ -32,6 +28,22 @@ html {
     display: flex;
     justify-content: center;
     position: relative;
+}
+
+div {
+    color: #E3F2FD;
+}
+
+p {
+    font-size: 1rem;
+    line-height: 150%;
+}
+
+button {
+    cursor: pointer;
+    background: rgba(28, 86, 137, 0.5);
+    color: white;
+    border: none;
 }
 
 dialog {
@@ -53,340 +65,13 @@ body.dialog-open .cookingArea {
 /* Background Blur */
 body::before {
     content: "";
-    position: relative;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
     background-image: url('/Images/div-background.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    filter: blur(0.8vh);
+    filter: blur(5px);
     z-index: 0;
     pointer-events: none;
-}
-
-/* Single Page Formatting */
-.page {
-    width: 100vw;
-    height: 100vh;
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background: transparent;
-    opacity: 0;
-    transition: opacity 0.30s ease-in-out;
-    overflow: hidden;
-}
-
-/* Active Page Marker */
-.active {
-    display: flex;
-    opacity: 1;
-    z-index: 99;
-}
-
-.cookingArea {
-    width: 95%;
-    height: 80%;
-    overflow: hidden;
-    margin-left: auto;
-    margin-right: auto;
-    position: relative;
-    background: rgba(28, 86, 137, 0.5);
-    border-radius: 10px;
-    margin-top: 5.5%;
-}
-
-#navBar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: fixed;
-    /* top: 1.5%; */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    z-index: 1000;
-    display: flex;
-    gap: 10px;
-    padding: 10px 25px;
-    background: rgba(28, 87, 137, 0.65);
-}
-
-.navRight {
-    display: flex;
-    flex-direction: row;
-    gap: 2px;
-}
-.navLeft {
-  white-space: nowrap;
-  text-wrap: nowrap;
-}
-
-
-.navBarButton {
-    font-size: 1rem;
-    cursor: pointer;
-    background: rgb(100, 181, 246);
-    color: rgb(227, 242, 253);
-    border: none;
-    padding: 10px 20px;
-
-    /* Simulated text outline */
-    text-shadow:
-        -1px -1px 0 black,
-        1px -1px 0 black,
-        -1px 1px 0 black,
-        1px 1px 0 black;
-
-    transition:
-        background 0.3s ease-out,
-        color 0.3s ease-out,
-        box-shadow 0.3s ease-out,
-        text-shadow 0.3s ease-in,
-        outline 0.3s ease-out;
-}
-
-
-.currently {
-    background: rgb(227, 242, 253);
-    color: black;
-    outline: 2.5px solid black;
-    box-shadow: -1px 3px 5px 3px rgba(227, 242, 253, 0.5);
-}
-
-.navBarButton.currently {
-    text-shadow: none;
-}
-
-.unbold {
-    font-weight: normal;
-}
-
-.leftAlignFormat {
-    text-align: left;
-    margin: 16px;
-}
-
-.centerAlignFormatNoMargin {
-    text-align: center;
-}
-
-.rightAlignFormat {
-    text-align: right;
-    margin: 16px;
-}
-
-.rightAlignFormatNoMargin {
-    text-align: right;
-}
-
-.h2 {
-    font-size: 2rem;
-}
-
-.info-line {
-    margin-top: 5px;
-}
-
-.gridContentHolder {
-    width: auto;
-    overflow: hidden;
-    text-align: left;
-    font-size: 6vh;
-    margin-left: 6%;
-    margin-top: 1.49%;
-    overflow: hidden;
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    grid-template-rows: repeat(1, 1fr);
-}
-
-.dynamicGrid {
-    overflow-x: hidden;
-    overflow-y: auto;
-    border-radius: 10px;
-    background: rgba(20, 70, 110, 0.5);
-    margin-top: 1.5%;
-    margin-bottom: auto;
-    width: 94.5%;
-    height: 60vh;
-    /* fixed height relative to viewport */
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    /* reduced gap for better layout */
-    padding: 20px;
-    /* reduced padding to save space */
-    scrollbar-color: rgba(185, 220, 235, 0.5) transparent;
-    box-sizing: border-box;
-}
-
-.gridItem {
-    height: 30vh;
-    /* fill grid cell height */
-    max-height: 100%;
-    /* limit to grid cell height */
-    overflow-y: auto;
-    /* scrollbar when content overflows */
-    background-color: rgba(87, 131, 177, 0.5);
-    padding: 20px;
-    border-radius: 10px;
-    box-sizing: border-box;
-    cursor: pointer;
-}
-
-.gridTitle {
-    font-size: 3.5vh;
-}
-
-.largeGridTitle {
-    font-size: 2rem;
-}
-
-.topInfoLine {
-    margin-top: 15px;
-}
-
-.justify {
-    text-align: justify;
-}
-
-.badgeContainer.chosen {
-    display: block;
-    overflow: hidden;
-}
-
-.verticalFlex {
-    display: flex;
-    flex-direction: column;
-}
-
-#itemDialog {
-    position: fixed;
-    border-radius: 10px;
-    background: rgba(28, 86, 137, 0.5);
-    top: 15.65%;
-    left: 2.5%;
-    height: 80.1vh;
-    width: 95vw;
-    overflow: hidden;
-    /* Prevent dialog scrolling */
-    padding: 0;
-    border: none;
-}
-
-/* Grid setup */
-#dialogParent {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: 10vh 40vh 12vh auto 5vh;
-    gap: 5px;
-    padding: 30px;
-    height: 100%;
-    box-sizing: border-box;
-}
-
-/* Header and cross */
-#dialogHeader {
-    grid-column: span 4;
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-}
-
-#dialogCross {
-    cursor: pointer;
-    position: relative;
-    width: 6.5vh;
-    bottom: 40%;
-    left: 85%;
-    font-size: 10vh;
-    grid-column: 5;
-}
-
-/* Image */
-#dialogImage {
-    grid-column: 4 / span 2;
-    grid-row: 2 / span 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-#dialogImage img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-}
-
-/* Image Caption — scrollable */
-#dialogImageCaption {
-    font-size: 1vh;
-    position: relative;
-    height: 12.7vh;
-    grid-column: 4 / span 2;
-    grid-row: 3;
-    overflow-y: auto;
-    padding: 8px;
-    scrollbar-color: rgba(227, 242, 253, 0.5) transparent;
-}
-
-.smallText {
-    font-size: 2vh;
-}
-
-/* Body — scrollable */
-#dialogBody {
-    grid-column: span 3 / span 3;
-    grid-row: span 3 / span 3;
-    grid-column-start: 1;
-    grid-row-start: 2;
-    overflow-y: auto;
-    padding: 8px;
-    scrollbar-color: rgba(227, 242, 253, 0.5) transparent;
-}
-
-/* Close Button */
-#dialogCloseButton {
-    grid-column: span 5 / span 5;
-    grid-row-start: 5;
-    padding: 0px;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-}
-
-#dialogCloseButton button {
-    background: rgba(46, 110, 168, 0.5);
-    font-size: 1.5rem;
-    padding: 10px 70px;
-}
-
-/* Prevent focus rings */
-#itemDialog *:focus {
-    outline: none;
-    box-shadow: none;
-}
-
-/* Optional: Prevent autofocus */
-#itemDialog button,
-#itemDialog [tabindex] {
-    pointer-events: auto;
-    /* still clickable */
-}
-
-.hyperlink {
-    margin-top: 16px;
-    background: rgba(46, 110, 168, 0.5);
-    font-size: 1rem;
-    padding: 10px 70px;
 }

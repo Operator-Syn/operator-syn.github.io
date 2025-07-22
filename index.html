@@ -13,21 +13,36 @@
 
     <nav>
         <div id="navBar">
-            
+
             <div class="navLeft">
                 Operator-Syn
             </div>
 
-            <div class="navRight">
+            <div class="navRightDesktop" id="navLinksDesktop">
                 <button class="navBarButton currently" id="homeButton" data-page="1">Home</button>
-            <button class="navBarButton" id="projectsButton" data-page="2">Projects</button>
-            <button class="navBarButton" id="certsButton" data-page="3">Certs</button>
-            <button class="navBarButton" id="snippetsButton" data-page="4">Snippets</button> 
+                <button class="navBarButton" id="projectsButton" data-page="2">Projects</button>
+                <button class="navBarButton" id="certsButton" data-page="3">Certs</button>
+                <button class="navBarButton" id="snippetsButton" data-page="4">Snippets</button>
+
+                
             </div>
 
+            <button class="menu-toggle" id="menuToggleButton">&#9776;</button>
+
         </div>
+
+        
     </nav>
 
+    <!-- Slide-in menu for mobile -->
+
+    <div class="navRightMobile" id="navLinksMobile">
+        <button class="menu-toggle" id="closeMenuToggleButton">&times;</button>
+        <button class="navBarButton" id="mobileHomeButton" data-page="1">Home</button>
+        <button class="navBarButton" id="mobileProjectsButton" data-page="2">Projects</button>
+        <button class="navBarButton" id="mobileCertsButton" data-page="3">Certs</button>
+        <button class="navBarButton" id="mobileSnippetsButton" data-page="4">Snippets</button>
+    </div>
 
     <div class="page active" id="page1">
 

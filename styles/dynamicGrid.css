@@ -1,0 +1,54 @@
+.gridContentHolder {
+    width: auto;
+    overflow: hidden;
+    text-align: left;
+    font-size: 6vh;
+    margin-left: 6%;
+    margin-top: 1.49%;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(1, 1fr);
+}
+
+.dynamicGrid {
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-radius: 10px;
+    background: rgba(20, 70, 110, 0.5);
+    margin-top: 1.5%;
+    margin-bottom: auto;
+    width: 94.5%;
+    height: 60vh;
+    /* fixed height relative to viewport */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    /* reduced gap for better layout */
+    padding: 20px;
+    /* reduced padding to save space */
+    scrollbar-color: rgba(185, 220, 235, 0.5) transparent;
+    box-sizing: border-box;
+}
+
+.gridItem {
+    height: 30vh;
+    /* fill grid cell height */
+    max-height: 100%;
+    /* limit to grid cell height */
+    overflow-y: auto;
+    /* scrollbar when content overflows */
+    background-color: rgba(87, 131, 177, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.gridTitle {
+    font-size: 3.5vh;
+}
+
+.largeGridTitle {
+    font-size: 2rem;
+}

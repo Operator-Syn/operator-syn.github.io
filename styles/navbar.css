@@ -1,0 +1,111 @@
+/* Navbar related CSS */
+#navBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    height: auto;
+    width: 100%;
+    z-index: 1000;
+    gap: 10px;
+    padding: 10px 25px;
+    background: rgba(28, 87, 137, 0.65);
+}
+
+.navLeft {
+    white-space: nowrap;
+    text-wrap: nowrap;
+}
+
+.navBarButton {
+    font-size: 1rem;
+    cursor: pointer;
+    background: rgb(100, 181, 246);
+    color: rgb(227, 242, 253);
+    border: none;
+    padding: 10px 20px;
+
+    /* Simulated text outline */
+    text-shadow:
+        -1px -1px 0 black,
+        1px -1px 0 black,
+        -1px 1px 0 black,
+        1px 1px 0 black;
+
+    transition:
+        background 0.3s ease-out,
+        color 0.3s ease-out,
+        box-shadow 0.3s ease-out,
+        text-shadow 0.3s ease-in,
+        outline 0.3s ease-out;
+}
+
+.currently {
+    background: rgb(227, 242, 253);
+    color: black;
+    outline: 2.5px solid black;
+    box-shadow: -1px 3px 5px 3px rgba(227, 242, 253, 0.5);
+}
+
+.navBarButton.currently {
+    text-shadow: none;
+}
+
+/* Desktop nav links shown by default */
+#navLinksDesktop {
+    display: flex;
+    gap: 2px;
+}
+
+/* Mobile menu hidden by default */
+#navLinksMobile {
+    display: none;
+}
+
+.menu-toggle {
+    display: none;
+    font-size: 1.65rem;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    z-index: 1100;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    /* Hide desktop nav in mobile */
+    #navLinksDesktop {
+        display: none;
+    }
+
+    #navLinksMobile {
+        position: fixed;
+        right: -250px;
+        width: 250px;
+        height: calc(100%);
+        background: rgba(28, 87, 137, 0.65);
+        flex-direction: column;
+        padding: 10px 25px;
+        transition: right 0.3s ease;
+        z-index: 1050;
+        display: flex;
+        gap: 10px;
+    }
+
+    #navLinksMobile> :first-child {
+        font-size: 2.5rem;
+        align-self: flex-end;
+        /* Push ONLY the first child (the close button) to the right */
+    }
+
+    #navLinksMobile.openMobileNav {
+        right: 0;
+    }
+}
