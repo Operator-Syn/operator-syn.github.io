@@ -9,6 +9,11 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    align-items: center;
+}
+
+.introTexts {
+    align-self: flex-start;
 }
 
 .dynamicGrid {
@@ -16,8 +21,6 @@
     overflow-y: auto;
     border-radius: 10px;
     background: rgba(20, 70, 110, 0.5);
-    margin-top: 1.5%;
-    margin-bottom: auto;
     width: 94.5%;
     height: 60vh;
     /* fixed height relative to viewport */
