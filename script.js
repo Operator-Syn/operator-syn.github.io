@@ -35,6 +35,18 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // ====== CLOSE MOBILE MENU ON OUTSIDE CLICK ======
+    document.addEventListener('click', (event) => {
+        const isClickInsideNav = navLinksMobile.contains(event.target);
+        const isClickOnToggle = menuToggleButton.contains(event.target);
+
+        if (navLinksMobile.classList.contains('openMobileNav') && !isClickInsideNav && !isClickOnToggle) {
+            navLinksMobile.classList.remove('openMobileNav');
+        }
+    });
+
+
+
     // ====== PAGE NAVIGATION ======
     function showPage(pageNumber) {
         // Hide all pages, then show selected one
@@ -111,8 +123,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 currentPage = targetPage;
                 showPage(currentPage);
                 highlightPage(currentPage);
+
+                // ✅ Close mobile menu after clicking a button
+                if (navLinksMobile.classList.contains('openMobileNav')) {
+                    navLinksMobile.classList.remove('openMobileNav');
+                }
             }
         });
+
     });
 
     // ====== KEYBOARD NAVIGATION ======

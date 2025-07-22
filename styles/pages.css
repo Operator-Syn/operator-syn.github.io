@@ -24,6 +24,7 @@
 }
 
 .cookingArea {
+    min-height: 0;
     width: 95%;
     height: 80%;
     overflow: hidden;
@@ -37,4 +38,18 @@
 
 body.mobileMenuOpen .cookingArea {
     display: none;
+}
+
+@media (max-width: 768px) {
+    .cookingArea {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .page {
+        overflow-y: auto;
+        /* allow page scroll */
+        align-items: flex-start;
+        /* push to top */
+    }
 }

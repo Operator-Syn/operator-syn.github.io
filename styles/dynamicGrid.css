@@ -2,13 +2,13 @@
     width: auto;
     overflow: hidden;
     text-align: left;
-    font-size: 6vh;
-    margin-left: 6%;
-    margin-top: 1.49%;
+    font-size: clamp(1rem, 3rem, 3rem);
+    padding: 1rem;
+    margin: 1rem;
+    gap: 16px;
     overflow: hidden;
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    grid-template-rows: repeat(1, 1fr);
+    display: flex;
+    flex-direction: column;
 }
 
 .dynamicGrid {
@@ -46,9 +46,24 @@
 }
 
 .gridTitle {
-    font-size: 3.5vh;
+    font-size: 2rem;
 }
 
 .largeGridTitle {
     font-size: 2rem;
+}
+
+@media (max-width: 768px) {
+    .dynamicGrid {
+        grid-template-columns: 1fr;
+        height: 100%;
+    }
+
+    .gridContentHolder, .largeGridTitle, .gridTitle {
+        font-size: clamp(1rem, 2rem, 1.25rem);
+    }
+
+    .gridItem {
+        height: 25vh;
+    }
 }

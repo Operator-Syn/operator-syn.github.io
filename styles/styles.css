@@ -16,14 +16,14 @@
     /* older support */
     /* hyphens: auto; */
     /* auto-insert hyphens */
+    scrollbar-color: rgba(185, 220, 235, 0.5) transparent;
 }
 
 body,
 html {
-    font-size: max(100%, calc(100% + 0.5vh));
+    font-size: max(100%, calc(100% + 0.25vh));
     width: 100%;
     height: 100%;
-    overflow: hidden;
     background-color: rgba(28, 87, 137, 0.7);
     display: flex;
     justify-content: center;
@@ -35,7 +35,7 @@ div {
 }
 
 p {
-    font-size: 1rem;
+    font-size: 1.15rem;
     line-height: 150%;
 }
 
@@ -74,4 +74,16 @@ body::before {
     filter: blur(5px);
     z-index: 0;
     pointer-events: none;
+}
+
+.headerDivider {
+    border: none;
+    border-bottom: 2px solid #E3F2FD;
+}
+
+@media (max-width: 768px) {
+p {
+    font-size: clamp(1rem, 1rem, 0.5rem);
+    line-height: 135%;
+}
 }
