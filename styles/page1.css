@@ -36,7 +36,6 @@
     align-items: center;
     overflow-y: auto;
     gap: 1rem;
-    padding: 1rem;
 }
 
 .profileContentRow {
@@ -109,7 +108,7 @@
 }
 
 .profileImage {
-    flex: 1.65;
+    flex: 0;
     align-content: center;
 }
 
@@ -156,7 +155,7 @@
     justify-content: space-evenly;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1174px) {
     .page1ContentHolder {
         flex-direction: column-reverse;
         height: auto;

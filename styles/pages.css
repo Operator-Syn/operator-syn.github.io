@@ -40,7 +40,7 @@ body.mobileMenuOpen .cookingArea {
     display: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1174px) {
     .cookingArea {
         max-height: 90vh;
         overflow-y: auto;
