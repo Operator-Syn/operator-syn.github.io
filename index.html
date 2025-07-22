@@ -4,18 +4,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operator-Eury</title> <!-- Title of the page -->
-    <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS -->
+    <title>Operator-Syn</title> <!-- Title of the page -->
+    <link rel="stylesheet" href="styles/styles.css"> <!-- Link to external CSS -->
     <link rel="icon" href="Images/profile-circle.png" type="image/jpeg">
 </head>
 
 <body>
 
-    <div id="navBar">
-        <button class="navBarButton currently" id="homeButton" data-page="1">Home</button>
-        <button class="navBarButton" id="projectsButton" data-page="2">Projects</button>
-        <button class="navBarButton" id="certsButton" data-page="3">Certs</button>
-        <button class="navBarButton" id="snippetsButton" data-page="4">Snippets</button>
+    <nav>
+        <div id="navBar">
+
+            <div class="navLeft">
+                Operator-Syn
+            </div>
+
+            <div class="navRightDesktop" id="navLinksDesktop">
+                <button class="navBarButton currently" id="homeButton" data-page="1">Home</button>
+                <button class="navBarButton" id="projectsButton" data-page="2">Projects</button>
+                <button class="navBarButton" id="certsButton" data-page="3">Certs</button>
+                <button class="navBarButton" id="snippetsButton" data-page="4">Snippets</button>
+
+
+            </div>
+
+            <button class="menu-toggle" id="menuToggleButton">&#9776;</button>
+
+        </div>
+
+
+    </nav>
+
+    <!-- Slide-in menu for mobile -->
+
+    <div class="navRightMobile" id="navLinksMobile">
+        <button class="menu-toggle" id="closeMenuToggleButton">&times;</button>
+        <button class="navBarButton" id="mobileHomeButton" data-page="1">Home</button>
+        <button class="navBarButton" id="mobileProjectsButton" data-page="2">Projects</button>
+        <button class="navBarButton" id="mobileCertsButton" data-page="3">Certs</button>
+        <button class="navBarButton" id="mobileSnippetsButton" data-page="4">Snippets</button>
     </div>
 
     <div class="page active" id="page1">
@@ -23,128 +49,184 @@
         <div class="cookingArea">
             <div class="page1ContentHolder">
 
-                <div id="homePanelParent">
+                <div class="leftSideHolder">
 
-                    <div class="catchphrase">Calm Interfaces, Seamless Experiences — Welcome Visitors!</div>
+                    <div class="catchphraseHolder">
+                        Calm Interfaces, Seamless Experiences — Welcome Visitors!
+                    </div>
 
+                    <div class="profileContentRow">
+
+                        <div class="introductionHolder">
+
+                            <div class="introductionHeader">Get to know 'lil more about me</div>
+                            <hr class="headerDivider">
+                            <div class="introductionContent">
+                                <p>Hello Everyone! I'm a Third Year Computer Science Student with hands-on experience in
+                                    Java, C++, Python, and MySQL. I am also comfortable working in Linux environments
+                                    and
+                                    using tools like Docker and Apache for development and deployment. Excited to work
+                                    on
+                                    real-world software challenges and grow through hands-on experience and team
+                                    collaboration.</p>
+                            </div>
+
+                        </div>
+
+                        <div class="developmentLoadoutsHolder">
+
+                            <div class="introductionHeader">Development Loadouts</div>
+                            <hr class="headerDivider">
+                            <div class="introductionContent">
+
+                                <p class="introductionContentLeft">Operating Systems</p>
+
+                                <div class="badgesHolder">
+                                    <img src="https://img.shields.io/badge/Windows_11-0078d4?style=for-the-badge&logo=windows-11&logoColor=white"
+                                        alt="Windows OS Badge">
+                                    <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black"
+                                        alt="Linux OS Badge">
+                                    <img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white"
+                                        alt="Ubuntu OS Badge">
+                                    <img src="https://img.shields.io/badge/Pop!_OS-48B9C7?style=for-the-badge&logo=Pop!_OS&logoColor=white"
+                                        alt="Pop!_OS Badge">
+                                </div>
+
+                                <p class="introductionContentLeft">Programming Languages</p>
+
+                                <div class="badgesHolder">
+                                    <img src="https://img.shields.io/badge/C-00599C?style=for-the-badge&logo=c&logoColor=white"
+                                        alt="C Language Badge">
+                                    <img src="https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white"
+                                        alt="C++ Language Badge">
+                                    <img src="https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white"
+                                        alt="Java Language Badge">
+                                    <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue"
+                                        alt="Python Language Badge">
+                                </div>
+
+                                <p class="introductionContentLeft">Frameworks</p>
+
+                                <div class="badgesHolder">
+                                    <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white"
+                                        alt="Flutter Framework Badge">
+                                    <img src="https://img.shields.io/badge/Apache-D22128?style=for-the-badge&logo=Apache&logoColor=white"
+                                        alt="Apache Framework Badge">
+                                </div>
+
+                                <p class="introductionContentLeft">Database</p>
+
+                                <div class="badgesHolder">
+                                    <img src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white"
+                                        alt="MySQL Database Badge">
+                                </div>
+
+                                <p class="introductionContentLeft">Virtualization & Containerization</p>
+                                <div class="badgesHolder">
+                                    <img src="https://img.shields.io/badge/Portainer-13BEF9?style=for-the-badge&logo=portainer&logoColor=white"
+                                        alt="Portainer Badge">
+                                    <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white"
+                                        alt="Docker Badge">
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
                 </div>
 
-                <div id="profile">
+                <div class="rightSideHolder">
 
-                    <div id="profileImage">
-                        <div id="profileImageContainer">
+                    <div class="profileImage">
+                        <div class="profileImageHolder">
                             <img src="Images/profile.jpg" class="no-lazy" alt="Profile Image">
                         </div>
                     </div>
 
-                </div>
-
-                <div id="introduction">
-
-                    <div class="leftAlignFormat">
-                        <h2 class="unbold h2">Get to know 'lil more about me</h2>
-                        <p class="justify"><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hello Everyone! I'm a Third Year
-                            Computer Science Student with hands-on experience in Java, C++, Python, and MySQL.
-                            I am also comfortable working in Linux environments and using tools like Docker and Apache
-                            for development and deployment.
-                            Excited to work on real-world software challenges and grow through hands-on experience and
-                            team collaboration.
-                        </p>
+                    <div class="profileDetailsHolder">
+                        <div>Name: John-Ronan Beira</div>
+                        <div>Program: BS Computer Science</div>
+                        <div>Year Level: 3rd Year</div>
                     </div>
 
-                </div>
+                    <div class="contactMeHolder">
 
-                <div id="badges">
-                    <div class="flip-card">
-                        <div class="flip-card-front">
-                            <div class="leftAlignFormat" id="developmentLoadouts">
-                                <h2 class="unbold h2">Development Loadouts</h2>
-                                <p class=""><br>Operating Systems<br></p>
-                                <img src="https://img.shields.io/badge/Windows_11-0078d4?style=for-the-badge&logo=windows-11&logoColor=white"
-                                    alt="Windows OS Badge" class="badge">
-                                <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black"
-                                    alt="Linux OS Badge" class="badge">
-                                <img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white"
-                                    alt="Ubuntu OS Badge" class="badge">
-                                <img src="https://img.shields.io/badge/Pop!_OS-48B9C7?style=for-the-badge&logo=Pop!_OS&logoColor=white"
-                                    alt="Pop!_OS Badge" class="badge">
+                        <div class="socialHeader">Let's connect!</div>
 
+                        <div class="socialWrapper">
 
+                            <div class="badgesHolder">
+                                <a href="https://www.facebook.com/one.young.blue.existing.entity" target="_blank"
+                                    rel="noopener noreferrer">
+                                    <img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white"
+                                        alt="Facebook" class="socialIcon">
+                                </a>
+                            </div>
 
-                                <p class="justify">Programming Languages<br></p>
-                                <img src="https://img.shields.io/badge/C-00599C?style=for-the-badge&logo=c&logoColor=white"
-                                    alt="C Language Badge" class="badge">
-                                <img src="https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white"
-                                    alt="C++ Language Badge" class="badge">
-                                <img src="https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white"
-                                    alt="Java Language Badge" class="badge">
-                                <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue"
-                                    alt="Python Language Badge" class="badge">
+                            <div class="badgesHolder">
+                                <a href="https://github.com/Operator-Syn" target="_blank" rel="noopener noreferrer">
+                                    <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"
+                                        alt="GitHub" class="socialIcon">
+                                </a>
+                            </div>
 
-                                <p class="justify">Frameworks<br></p>
-                                <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white"
-                                    alt="Flutter Framework Badge" class="badge">
-                                <img src="https://img.shields.io/badge/Apache-D22128?style=for-the-badge&logo=Apache&logoColor=white"
-                                    alt="Apache Framework Badge" class="badge">
+                            <div class="badgesHolder">
+                                <a href="https://www.instagram.com/rohn_rohnann" target="_blank"
+                                    rel="noopener noreferrer">
+                                    <img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white"
+                                        alt="Instagram" class="socialIcon">
+                                </a>
+                            </div>
 
-                                <p class="justify">Database<br></p>
-                                <img src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white"
-                                    alt="MySQL Database Badge" class="badge">
+                            <div class="badgesHolder">
+                                <a href="https://www.linkedin.com/in/one-young-blue-existing-entity/" target="_blank"
+                                    rel="noopener noreferrer">
+                                    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"
+                                        alt="LinkedIn" class="socialIcon">
+                                </a>
+                            </div>
 
-                                <p class="justify">Virtualization & Containerization<br></p>
-                                <img src="https://img.shields.io/badge/Portainer-13BEF9?style=for-the-badge&logo=portainer&logoColor=white"
-                                    alt="Portainer Badge" class="badge">
-                                <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white"
-                                    alt="Docker Badge" class="badge">
+                            <div class="badgesHolder">
+                                <a href="https://discord.com/users/565151069655662622" target="_blank"
+                                    rel="noopener noreferrer">
+                                    <img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white"
+                                        alt="Discord" class="socialIcon">
+                                </a>
+                            </div>
+
+                            <div class="badgesHolder">
+                                <a href="https://steamcommunity.com/id/one-young-blue-entity/" target="_blank"
+                                    rel="noopener noreferrer">
+                                    <img src="https://img.shields.io/badge/Steam-000000?style=for-the-badge&logo=steam&logoColor=white"
+                                        alt="Steam" class="socialIcon">
+                                </a>
+                            </div>
+
+                            <div class="badgesHolder">
+                                <a href="https://www.xbox.com/en-PH/play/user/Kashiede" target="_blank"
+                                    rel="noopener noreferrer">
+                                    <img src="https://img.shields.io/badge/Xbox-107C10?style=for-the-badge&logo=xbox&logoColor=white"
+                                        alt="Xbox" class="socialIcon">
+                                </a>
+                            </div>
+
+                            <div class="badgesHolder">
+                                <a href="https://paypal.me/youngexistingentity?country.x=PH&locale.x=en_US"
+                                    target="_blank" rel="noopener noreferrer">
+                                    <img src="https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white"
+                                        alt="PayPal" class="socialIcon">
+                                </a>
 
                             </div>
                         </div>
 
-                        <div class="flip-card-back">
-                            <div class="" id="statisticsLoadouts">
-
-                                <div class="centerAlignFormatNoMargin verticalFlex">
-
-                                    <img class="stat"
-                                        src="https://github-readme-stats.vercel.app/api/top-langs/?username=operator-syn&theme=dark&hide_border=false&include_all_commits=false&count_private=false&layout=compact"
-                                        alt="Top Languages">
-
-                                    <br>
-
-                                    <img class="stat"
-                                        src="https://nirzak-streak-stats.vercel.app/?user=operator-syn&theme=dark&hide_border=false"
-                                        alt="GitHub Streak Stats">
-                                </div>
-                            </div>
-                        </div>
-
-
-                    </div>
-                </div>
-
-                <div id="profileDetails">
-
-                    <div class="info-line" id="topInfoLine">
-                        <p>Name: John-Ronan Beira</p>
-                    </div>
-                    <div class="info-line">
-                        <p>Course: BS Computer Science</p>
-                    </div>
-                    <div class="info-line">
-                        <p>Year: 3rd Year</p>
                     </div>
 
-                </div>
-
-                <div id="profileEtc">
-
-                </div>
-
-                <div id="profileEtc2">
-                    <div class="leftAlignFormat">
+                    <div class="profileEtcHolder">
                         <p class="justify" id="greeting"></p>
                         <p class="justify"></p>
                     </div>
+
                 </div>
 
             </div>
@@ -175,7 +257,8 @@
                             Simple Student Information System
                         </p>
 
-                        <p class="unbold justify"><br>A school requirement. The Simple Student Information System is a CSV-based project for
+                        <p class="unbold justify"><br>A school requirement. The Simple Student Information System is a
+                            CSV-based project for
                             managing student, program, and college records with basic CRUD, search, and sort functions.
                         </p>
 
@@ -184,14 +267,38 @@
 
                     <div class="gridItem"
                         data-title="<p class='unbold largeGridTitle centerAlignFormatNoMargin'>Simple Student Information System (MySQL Version)</p>"
-                        data-content="<p class='unbold justify'><br>This is the second version of the Student Information System, now featuring MySQL Database implementation. It continues to support the management of student, program, and college records with core functionalities such as CRUD-L operations, search, and sorting. The MySQL database setup is containerized using Docker for improved portability and ease of deployment.</p>" 
-                        data-image="Images/Simple Student Information System (MySQL Version).png" 
-                        data-caption="<p class='unbold justify smallText'>Although this is the second version. The application is coded from scratch with Netbean's Matisse's Drag and Drop for Java Swing Applications with improved code structure and prim OOP Application.</p>
+                        data-content="<p class='unbold justify'><br>This is the second version of the Student Information System, now featuring MySQL Database implementation. It continues to support the management of student, program, and college records with core functionalities such as CRUD-L operations, search, and sorting. The MySQL database setup is containerized using Docker for improved portability and ease of deployment.</p>"
+                        data-image="Images/Simple Student Information System (MySQL Version).png" data-caption="<p class='unbold justify smallText'>Although this is the second version. The application is coded from scratch with Netbean's Matisse's Drag and Drop for Java Swing Applications with improved code structure and prim OOP Application.</p>
                         <a href='https://github.com/Operator-Eury/studentDatabaseMySQLIntegration' target='_blank' rel='noopener noreferrer'> 
                             <button class='hyperlink'>Lead me to the Repository</button>
                         </a>">
-                        <p class="unbold gridTitle centerAlignFormatNoMargin">Simple Student Information System (MySQL Version)</p>
-                        <p class="unbold justify"><br>A school requirement. The MySQL Database Implementation of the Simple Student Information System that was previously a CSV-based project for managing student, program, and college records with basic CRUD, search, and sort functions.</p>
+                        <p class="unbold gridTitle centerAlignFormatNoMargin">Simple Student Information System (MySQL
+                            Version)</p>
+                        <p class="unbold justify"><br>A school requirement. The MySQL Database Implementation of the
+                            Simple Student Information System that was previously a CSV-based project for managing
+                            student, program, and college records with basic CRUD, search, and sort functions.</p>
+                    </div>
+
+                    <div class="gridItem"
+                        data-title="<p class='unbold largeGridTitle centerAlignFormatNoMargin'> Simple Student Information System (CSV Version)</p>"
+                        data-content="<p class='unbold justify'><br>The Simple Student Information System is a CSV-based project for managing student, program, and college records with basic CRUD, search, and sort functions.</p>"
+                        data-image="Images/profile.jpg" data-caption="<p class='unbold justify smallText'>Loerem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+                            eiusmod tempor incididunt ut labore et
+                            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
+                            ut aliquip ex ea
+                            commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+                            dolore eu fugiat nulla pariatur.
+                            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
+                            anim id est laborum.</p>">
+
+                        <p class="unbold gridTitle centerAlignFormatNoMargin">
+                            Simple Student Information System
+                        </p>
+
+                        <p class="unbold justify"><br>The Simple Student Information System is a CSV-based project for
+                            managing student, program, and college records with basic CRUD, search, and sort functions.
+                        </p>
+
                     </div>
 
                     <div class="gridItem">
@@ -609,7 +716,7 @@
 
             <div id="dialogParent">
                 <div id="dialogHeader">1</div>
-                <div id="dialogCross" class="largeCross rightAlignFormatNoMargin">&times;</div>
+                <div id="dialogCross" class="rightAlignFormatNoMargin">&times;</div>
                 <div id="dialogImage">3</div>
                 <div id="dialogImageCaption">4</div>
                 <div id="dialogBody">5</div>
@@ -621,44 +728,6 @@
             </div>
         </div>
     </dialog>
-
-    <div id="socialBar">
-        <p class="unbold"> Wanna connect? </p>
-        <a href="https://www.facebook.com/one.young.blue.existing.entity" target="_blank" rel="noopener noreferrer">
-            <img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white"
-                alt="Facebook" class="socialIcon">
-        </a>
-        <a href="https://github.com/Operator-Eury" target="_blank" rel="noopener noreferrer">
-            <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"
-                alt="GitHub" class="socialIcon">
-        </a>
-        <a href="https://www.instagram.com/rohn_rohnann" target="_blank" rel="noopener noreferrer">
-            <img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white"
-                alt="Instagram" class="socialIcon">
-        </a>
-        <a href="https://www.linkedin.com/in/one-young-blue-existing-entity/" target="_blank" rel="noopener noreferrer">
-            <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"
-                alt="LinkedIn" class="socialIcon">
-        </a>
-        <a href="https://discord.com/users/565151069655662622" target="_blank" rel="noopener noreferrer">
-            <img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white"
-                alt="Discord" class="socialIcon">
-        </a>
-        <a href="https://steamcommunity.com/id/one-young-blue-entity/" target="_blank" rel="noopener noreferrer">
-            <img src="https://img.shields.io/badge/Steam-000000?style=for-the-badge&logo=steam&logoColor=white"
-                alt="Steam" class="socialIcon">
-        </a>
-        <a href="https://www.xbox.com/en-PH/play/user/Kashiede" target="_blank" rel="noopener noreferrer">
-            <img src="https://img.shields.io/badge/Xbox-107C10?style=for-the-badge&logo=xbox&logoColor=white" alt="Xbox"
-                class="socialIcon">
-        </a>
-        <a href="https://paypal.me/youngexistingentity?country.x=PH&locale.x=en_US" target="_blank"
-            rel="noopener noreferrer">
-            <img src="https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white"
-                alt="PayPal" class="socialIcon">
-        </a>
-
-    </div>
 
 </body>
 
