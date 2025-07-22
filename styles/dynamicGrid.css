@@ -1,7 +1,6 @@
 .gridContentHolder {
     width: auto;
     overflow: hidden;
-    text-align: left;
     font-size: clamp(1rem, 3rem, 3rem);
     padding: 1rem;
     margin: 1rem;
@@ -9,6 +8,12 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.introTexts {
+    align-self: flex-start;
 }
 
 .dynamicGrid {
@@ -16,8 +21,6 @@
     overflow-y: auto;
     border-radius: 10px;
     background: rgba(20, 70, 110, 0.5);
-    margin-top: 1.5%;
-    margin-bottom: auto;
     width: 94.5%;
     height: 60vh;
     /* fixed height relative to viewport */
@@ -28,7 +31,6 @@
     padding: 20px;
     /* reduced padding to save space */
     scrollbar-color: rgba(185, 220, 235, 0.5) transparent;
-    box-sizing: border-box;
 }
 
 .gridItem {
@@ -57,6 +59,7 @@
     .dynamicGrid {
         grid-template-columns: 1fr;
         height: 100%;
+        background-color: rgba(87, 131, 177, 0);
     }
 
     .gridContentHolder, .largeGridTitle, .gridTitle {
