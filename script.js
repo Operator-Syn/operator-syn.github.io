@@ -1,12 +1,12 @@
-// Keeps track of the currently visible page
+// Track the current visible page
 let currentPage = 1;
 
 document.addEventListener("DOMContentLoaded", () => {
-    // ====== PAGE NAVIGATION VARIABLES ======
-    const pages = Array.from(document.querySelectorAll('.page')); // All page sections
-    const navButtons = Array.from(document.querySelectorAll('.navBarButton')); // Navigation buttons
-    const totalPages = pages.length; // Total number of pages
-    let isTransitioning = false; // Prevents rapid navigation during transitions
+    // ====== PAGE NAVIGATION ELEMENTS ======
+    const pages = Array.from(document.querySelectorAll('.page'));
+    const navButtons = Array.from(document.querySelectorAll('.navBarButton'));
+    const totalPages = pages.length;
+    let isTransitioning = false;
 
     // ====== DIALOG ELEMENTS ======
     const dialogElement = document.getElementById('itemDialog');
@@ -22,11 +22,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeMenuToggleButton = document.getElementById('closeMenuToggleButton');
     const navLinksMobile = document.getElementById('navLinksMobile');
 
-    // ====== MOBILE MENU TOGGLE ======
+    // ====== TOGGLE MOBILE MENU (GPU-friendly) ======
     if (menuToggleButton && navLinksMobile) {
-        menuToggleButton.addEventListener('click', () => {
-            navLinksMobile.classList.toggle('openMobileNav');
-        });
+        const toggleMenu = () => {
+            requestAnimationFrame(() => {
+                navLinksMobile.classList.toggle('openMobileNav');
+            });
+        };
+        menuToggleButton.addEventListener('click', toggleMenu);
     }
 
     if (closeMenuToggleButton && navLinksMobile) {
@@ -35,30 +38,22 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ====== CLOSE MOBILE MENU ON OUTSIDE CLICK ======
+    // Close menu when clicking outside
     document.addEventListener('click', (event) => {
-        const isClickInsideNav = navLinksMobile.contains(event.target);
-        const isClickOnToggle = menuToggleButton.contains(event.target);
-
-        if (navLinksMobile.classList.contains('openMobileNav') && !isClickInsideNav && !isClickOnToggle) {
-            navLinksMobile.classList.remove('openMobileNav');
-        }
+        if (!navLinksMobile?.classList.contains('openMobileNav')) return;
+        const isInside = navLinksMobile.contains(event.target) || menuToggleButton.contains(event.target);
+        if (!isInside) navLinksMobile.classList.remove('openMobileNav');
     });
-
-
 
     // ====== PAGE NAVIGATION ======
     function showPage(pageNumber) {
-        // Hide all pages, then show selected one
-        pages.forEach(p => p.classList.remove('active'));
-        pages[pageNumber - 1].classList.add('active');
+        // Update visible page
+        pages.forEach((p, i) => p.classList.toggle('active', i === pageNumber - 1));
 
-        // Clear all highlights
-        navButtons.forEach(btn => btn.classList.remove('currently'));
-
-        // Highlight all matching buttons (desktop + mobile)
-        const activeButtons = document.querySelectorAll(`.navBarButton[data-page="${pageNumber}"]`);
-        activeButtons.forEach(btn => btn.classList.add('currently'));
+        // Update nav highlights (desktop + mobile)
+        navButtons.forEach(btn => {
+            btn.classList.toggle('currently', btn.dataset.page == pageNumber);
+        });
     }
 
     function changePage(offset) {
@@ -68,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
         showPage(currentPage);
     }
 
-    // ====== GREETING & CLOCK UPDATE ======
+    // ====== CLOCK & GREETING ======
     function updateGreetingWithTime() {
         const now = new Date();
         let hour = now.getHours();
@@ -93,54 +88,40 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(updateGreetingWithTime, 1000);
     updateGreetingWithTime();
 
-    // ====== IMAGE OPTIMIZATION ======
+    // ====== IMAGE LAZY LOADING ======
     document.querySelectorAll("img:not(.no-lazy)").forEach(img => {
         if (!img.hasAttribute("loading")) img.setAttribute("loading", "lazy");
     });
 
     // ====== NAV BUTTON INTERACTIVITY ======
-    function highlightPage(pageNumber) {
-        navButtons.forEach(btn => btn.classList.remove('currently'));
-        const matchingButtons = document.querySelectorAll(`.navBarButton[data-page="${pageNumber}"]`);
-        matchingButtons.forEach(btn => btn.classList.add('currently'));
-    }
-
     navButtons.forEach(button => {
-        // Hover effect (temporary highlight)
+        const pageNum = parseInt(button.dataset.page);
+        if (isNaN(pageNum)) return;
+
+        // Hover highlight
         button.addEventListener('mouseenter', () => {
-            highlightPage(button.dataset.page);
+            navButtons.forEach(btn => btn.classList.toggle('currently', btn.dataset.page == pageNum));
         });
 
-        // Restore actual current page highlight after hover
         button.addEventListener('mouseleave', () => {
-            highlightPage(currentPage);
+            navButtons.forEach(btn => btn.classList.toggle('currently', btn.dataset.page == currentPage));
         });
 
-        // On click: switch page & keep highlight in both menus
+        // Click to navigate
         button.addEventListener('click', () => {
-            const targetPage = parseInt(button.dataset.page);
-            if (!isNaN(targetPage)) {
-                currentPage = targetPage;
-                showPage(currentPage);
-                highlightPage(currentPage);
-
-                // ✅ Close mobile menu after clicking a button
-                if (navLinksMobile.classList.contains('openMobileNav')) {
-                    navLinksMobile.classList.remove('openMobileNav');
-                }
-            }
+            currentPage = pageNum;
+            showPage(currentPage);
+            navLinksMobile?.classList.remove('openMobileNav'); // Auto-close on mobile
         });
-
     });
 
     // ====== KEYBOARD NAVIGATION ======
     document.addEventListener("keydown", event => {
         if (isTransitioning) return;
+        if (!["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp"].includes(event.key)) return;
+
         isTransitioning = true;
-
-        if (["ArrowRight", "ArrowDown"].includes(event.key)) changePage(1);
-        else if (["ArrowLeft", "ArrowUp"].includes(event.key)) changePage(-1);
-
+        changePage(["ArrowRight", "ArrowDown"].includes(event.key) ? 1 : -1);
         setTimeout(() => { isTransitioning = false; }, 650);
     });
 
@@ -148,17 +129,15 @@ document.addEventListener("DOMContentLoaded", () => {
     function openDialog() {
         dialogElement.showModal();
 
-        // Reset scroll positions so dialog starts at top every time
-        dialogElement.scrollTop = 0;         // Scroll the dialog itself to top
-        dialogBody.scrollTop = 0;            // Reset body content
-        dialogImageCaption.scrollTop = 0;    // Reset image caption content
-
         requestAnimationFrame(() => {
+            dialogElement.scrollTop = 0;
+            dialogBody.scrollTop = 0;
+            dialogImageCaption.scrollTop = 0;
+
             dialogElement.classList.add('visible');
             document.body.classList.add('dialog-open');
         });
     }
-
 
     window.closeDialog = () => {
         dialogElement.classList.remove('visible');
@@ -168,12 +147,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }, { once: true });
     };
 
-    if (dialogElement) {
-        dialogElement.addEventListener('cancel', e => {
-            e.preventDefault();
-            closeDialog();
-        });
-    }
+    dialogElement?.addEventListener('cancel', e => {
+        e.preventDefault();
+        closeDialog();
+    });
 
     closeButton?.addEventListener('click', closeDialog);
     crossButton?.addEventListener('click', closeDialog);
@@ -183,17 +160,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const item = e.target.closest('.gridItem');
         if (!item) return;
 
-        dialogHeader.innerHTML = item.dataset.title || '';
+        dialogHeader.innerHTML = item.dataset.title || '';  // Restore HTML
         dialogBody.innerHTML = item.dataset.content || '';
         dialogImage.innerHTML = item.dataset.image
             ? `<img src="${item.dataset.image}" alt="Dialog Image" style="max-width: 100%;">`
             : '';
-        dialogImageCaption.innerHTML = item.dataset.caption || '';
+        dialogImageCaption.innerHTML = item.dataset.caption || '';  // Restore HTML
 
         openDialog();
     });
 
-    // Initialize by showing the first page & highlighting buttons
+    // Initialize first page
     showPage(currentPage);
-    highlightPage(currentPage);
 });
