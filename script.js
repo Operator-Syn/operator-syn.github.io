@@ -147,11 +147,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // ====== DIALOG HANDLING ======
     function openDialog() {
         dialogElement.showModal();
+
+        // Reset scroll positions so dialog starts at top every time
+        dialogElement.scrollTop = 0;         // Scroll the dialog itself to top
+        dialogBody.scrollTop = 0;            // Reset body content
+        dialogImageCaption.scrollTop = 0;    // Reset image caption content
+
         requestAnimationFrame(() => {
             dialogElement.classList.add('visible');
             document.body.classList.add('dialog-open');
         });
     }
+
 
     window.closeDialog = () => {
         dialogElement.classList.remove('visible');

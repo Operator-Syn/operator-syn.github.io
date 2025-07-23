@@ -3,19 +3,20 @@
 @import url(navbar.css);
 @import url(pages.css);
 @import url(formatting.css);
-@import url(dialog.css);
 @import url(flexDynamicGrid.css);
+@import url(flexDialog.css);
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    overflow-wrap: break-word;
-    /* allows breaking */
+    /* Force text to wrap properly */
+    white-space: normal;
+    /* Allows multi-line wrapping */
     word-wrap: break-word;
-    /* older support */
-    /* hyphens: auto; */
-    /* auto-insert hyphens */
+    /* Breaks long words when needed */
+    overflow-wrap: anywhere;
+    /* Ensures even long strings break gracefully */
     scrollbar-color: rgba(185, 220, 235, 0.5) transparent;
 }
 
@@ -83,8 +84,8 @@ body::before {
 }
 
 @media (max-width: 768px) {
-p {
-    font-size: clamp(1rem, 1rem, 0.5rem);
-    line-height: 135%;
-}
+    p {
+        font-size: clamp(1rem, 1rem, 0.5rem);
+        line-height: 135%;
+    }
 }

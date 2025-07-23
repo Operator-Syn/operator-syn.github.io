@@ -1,0 +1,169 @@
+#itemDialog {
+    width: 95%;
+    height: 80%;
+    position: fixed;
+    /* Take it out of the normal flow */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -42.75%);
+    /* Move it back to center */
+    align-content: center;
+    background: rgba(28, 86, 137, 0.5);
+    border: 0;
+    border-radius: 10px;
+    display: flex;
+}
+
+#dialogParent {
+    display: flex;
+    flex-direction: row;
+    padding: 16px;
+    gap: 16px;
+    height: 100%;
+    width: 100%;
+}
+
+.dialogLeftSide {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.dialogRightSide {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#dialogHeader {
+    flex: 1;
+}
+
+#dialogCross {
+    font-size: 2.5rem;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.dialogCrossWrapper {
+    flex: 0.5;
+    display: flex;
+    justify-content: flex-end;
+}
+
+#dialogImage {
+    flex: 7;
+    width: 100%;
+    /* Fill the container horizontally */
+
+    display: flex;
+    /* If you want to center text/icons inside */
+    align-items: center;
+    overflow: hidden;
+}
+
+#dialogImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+
+#dialogImageCaption {
+    padding: 8px;
+    flex: 1.5;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#dialogBody {
+    padding: 8px;
+    flex: 8;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100%;
+}
+
+#dialogCloseButton {
+    padding: 8px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex: 1;
+}
+
+#dialogCloseButton button {
+    background: rgba(46, 110, 168, 0.5);
+    font-size: 1.5rem;
+    padding: 10px 70px;
+}
+
+.hyperlink {
+    background: rgba(46, 110, 168, 0.5);
+    font-size: 1rem;
+    padding: 10px 40px;
+}
+
+/* Prevent focus rings */
+#itemDialog *:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Optional: Prevent autofocus */
+#itemDialog button,
+#itemDialog [tabindex] {
+    pointer-events: auto;
+    /* still clickable */
+}
+
+@media (max-width: 1185px) {
+
+    #itemDialog {
+        transform: translate(-50%, -48%);
+    }
+
+    #dialogParent {
+        flex-direction: column;
+        gap: 0px;
+    }
+
+    /* Manually reorder items instead of reversing the flow */
+    .dialogRightSide {
+        order: 1;
+        flex: 1;
+        /* Appears first (top) */
+    }
+
+    .dialogLeftSide {
+        order: 2;
+        /* Appears second (bottom) */
+    }
+
+    /* Make the image caption expand instead of scroll */
+    #dialogImageCaption {
+        flex: unset;
+        /* Stop it from being a fixed ratio flex item */
+        max-height: none;
+        /* No max height limit */
+        overflow: visible;
+        /* Disable scrollbar */
+    }
+
+    #dialogCloseButton button,
+    .hyperlink {
+        border: 2px solid rgba(120, 180, 220, 0.8);
+        font-size: clamp(0.25rem, 2rem, 0.75rem);
+    }
+
+    #dialogCloseButton button {
+        padding: 10px 20px;
+    }
+
+    .hyperlink {
+        padding: 10px 10px;
+    }
+
+}
