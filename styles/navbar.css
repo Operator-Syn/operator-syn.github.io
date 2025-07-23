@@ -43,6 +43,21 @@
         outline 0.3s ease-out;
 }
 
+.navBarButton:not(.currently):hover {
+    background: rgb(129, 199, 245); /* lighter blue */
+    /* Keep text color the same as default */
+    color: rgb(227, 242, 253);
+    outline: none;
+    box-shadow: -1px 3px 5px 3px rgba(129, 199, 245, 0.4);
+    text-shadow:
+        -1px -1px 0 black,
+        1px -1px 0 black,
+        -1px 1px 0 black,
+        1px 1px 0 black; /* keeps outline effect */
+}
+
+
+
 .currently {
     background: rgb(227, 242, 253);
     color: black;
@@ -64,6 +79,20 @@
 #navLinksMobile {
     display: none;
 }
+
+#navLinksMobile a {
+    display: block;
+    width: 100%;
+    /* makes each link stretch full width */
+    text-decoration: none;
+    /* removes underline */
+}
+
+#navLinksMobile a button {
+    width: 100%;
+    /* ensures button itself stretches as before */
+}
+
 
 .menu-toggle {
     display: none;
