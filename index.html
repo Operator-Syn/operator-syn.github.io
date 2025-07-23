@@ -4,27 +4,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operator-Syn</title>
+    <title>Operator-Syn | Portfolio & Homepage</title>
+    <meta name="description"
+        content="Discover John-Ronan Beira’s portfolio — a Computer Science student skilled in Java, C++, Python, MySQL, Linux, and more.">
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Operator-Syn Portfolio",
+      "url": "https://operator-syn.github.io/",
+      "description": "Discover John-Ronan Beira’s portfolio — a Computer Science student skilled in Java, C++, Python, MySQL, Linux, and more.",
+      "author": {
+        "@type": "Person",
+        "name": "John-Ronan Beira"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Operator-Syn Portfolio",
+        "url": "https://operator-syn.github.io/"
+      }
+    }
+    </script>
 
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Operator-Syn Portfolio">
-    <meta property="og:description" content="A showcase of my projects, experiments, and creative works.">
+    <meta property="og:title" content="Operator-Syn | Portfolio & Homepage">
+    <meta property="og:description"
+        content="Discover John-Ronan Beira’s portfolio — a Computer Science student skilled in Java, C++, Python, MySQL, Linux, and more.">
     <meta property="og:image" content="https://operator-syn.github.io/Images/preview.png">
     <meta property="og:url" content="https://operator-syn.github.io/">
     <meta property="og:type" content="website">
 
     <!-- Twitter Card (for Twitter previews) -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Operator-Syn Portfolio">
-    <meta name="twitter:description" content="A showcase of my projects, experiments, and creative works.">
+    <meta name="twitter:title" content="Operator-Syn | Portfolio & Homepage">
+    <meta name="twitter:description"
+        content="Discover John-Ronan Beira’s portfolio — a Computer Science student skilled in Java, C++, Python, MySQL, Linux, and more.">
     <meta name="twitter:image" content="https://operator-syn.github.io/Images/preview.png">
 
     <!-- Favicon -->
-    <link rel="icon" href="Images/profile-circle.png" type="image/png">
+    <link rel="icon" href="Images/profile-encircle.png" type="image/png">
 
     <!-- Your CSS -->
     <link rel="stylesheet" href="styles/styles.css">
 </head>
+
 
 
 <body>
@@ -37,13 +62,12 @@
             </div>
 
             <div class="navRightDesktop" id="navLinksDesktop">
-                <button class="navBarButton currently" id="homeButton" data-page="1">Home</button>
-                <button class="navBarButton" id="projectsButton" data-page="2">Projects</button>
-                <button class="navBarButton" id="certsButton" data-page="3">Certs</button>
-                <button class="navBarButton" id="snippetsButton" data-page="4">Snippets</button>
-
-
+                <a href="index.html"><button class="navBarButton currently" id="homeButton">Home</button></a>
+                <a href="projects.html"><button class="navBarButton" id="projectsButton">Projects</button></a>
+                <a href="certifications.html"><button class="navBarButton" id="certsButton">Certs</button></a>
+                <a href="snippets.html"><button class="navBarButton" id="snippetsButton">Snippets</button></a>
             </div>
+
 
             <button class="menu-toggle" id="menuToggleButton">&#9776;</button>
 
@@ -56,353 +80,208 @@
 
     <div class="navRightMobile" id="navLinksMobile">
         <button class="menu-toggle" id="closeMenuToggleButton">&times;</button>
-        <button class="navBarButton" id="mobileHomeButton" data-page="1">Home</button>
-        <button class="navBarButton" id="mobileProjectsButton" data-page="2">Projects</button>
-        <button class="navBarButton" id="mobileCertsButton" data-page="3">Certs</button>
-        <button class="navBarButton" id="mobileSnippetsButton" data-page="4">Snippets</button>
+        <a href="index.html"><button class="navBarButton currently">Home</button></a>
+        <a href="projects.html"><button class="navBarButton">Projects</button></a>
+        <a href="certifications.html"><button class="navBarButton">Certs</button></a>
+        <a href="snippets.html"><button class="navBarButton">Snippets</button></a>
     </div>
 
-    <div class="page active" id="page1">
+    <main>
 
-        <div class="cookingArea">
-            <div class="page1ContentHolder">
+        <div class="page active" id="page1">
 
-                <div class="leftSideHolder">
+            <div class="cookingArea">
+                <div class="page1ContentHolder">
 
-                    <div class="catchphraseHolder">
-                        Calm Interfaces, Seamless Experiences — Welcome Visitors!
+                    <div class="leftSideHolder">
+
+                        <div class="catchphraseHolder">
+                            Calm Interfaces, Seamless Experiences — Welcome Visitors!
+                        </div>
+
+                        <div class="profileContentRow">
+
+                            <div class="introductionHolder">
+
+                                <div class="introductionHeader">Get to know 'lil more about me</div>
+                                <hr class="headerDivider">
+                                <div class="introductionContent">
+                                    <p>Hello Everyone! I'm a Third Year Computer Science Student with hands-on
+                                        experience in
+                                        Java, C++, Python, and MySQL. I am also comfortable working in Linux
+                                        environments
+                                        and
+                                        using tools like Docker and Apache for development and deployment. Excited to
+                                        work
+                                        on
+                                        real-world software challenges and grow through hands-on experience and team
+                                        collaboration.</p>
+                                </div>
+
+                            </div>
+
+                            <div class="developmentLoadoutsHolder">
+
+                                <div class="introductionHeader">Development Loadouts</div>
+                                <hr class="headerDivider">
+                                <div class="introductionContent">
+
+                                    <p class="introductionContentLeft">Operating Systems</p>
+
+                                    <div class="badgesHolder">
+                                        <img src="https://img.shields.io/badge/Windows_11-0078d4?style=for-the-badge&logo=windows-11&logoColor=white"
+                                            alt="Windows OS Badge">
+                                        <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black"
+                                            alt="Linux OS Badge">
+                                        <img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white"
+                                            alt="Ubuntu OS Badge">
+                                        <img src="https://img.shields.io/badge/Pop!_OS-48B9C7?style=for-the-badge&logo=Pop!_OS&logoColor=white"
+                                            alt="Pop!_OS Badge">
+                                    </div>
+
+                                    <p class="introductionContentLeft">Programming Languages</p>
+
+                                    <div class="badgesHolder">
+                                        <img src="https://img.shields.io/badge/C-00599C?style=for-the-badge&logo=c&logoColor=white"
+                                            alt="C Language Badge">
+                                        <img src="https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white"
+                                            alt="C++ Language Badge">
+                                        <img src="https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white"
+                                            alt="Java Language Badge">
+                                        <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue"
+                                            alt="Python Language Badge">
+                                    </div>
+
+                                    <p class="introductionContentLeft">Frameworks</p>
+
+                                    <div class="badgesHolder">
+                                        <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white"
+                                            alt="Flutter Framework Badge">
+                                        <img src="https://img.shields.io/badge/Apache-D22128?style=for-the-badge&logo=Apache&logoColor=white"
+                                            alt="Apache Framework Badge">
+                                    </div>
+
+                                    <p class="introductionContentLeft">Database</p>
+
+                                    <div class="badgesHolder">
+                                        <img src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white"
+                                            alt="MySQL Database Badge">
+                                    </div>
+
+                                    <p class="introductionContentLeft">Virtualization & Containerization</p>
+                                    <div class="badgesHolder">
+                                        <img src="https://img.shields.io/badge/Portainer-13BEF9?style=for-the-badge&logo=portainer&logoColor=white"
+                                            alt="Portainer Badge">
+                                        <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white"
+                                            alt="Docker Badge">
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
                     </div>
 
-                    <div class="profileContentRow">
+                    <div class="rightSideHolder">
 
-                        <div class="introductionHolder">
+                        <div class="profileImage">
+                            <div class="profileImageHolder">
+                                <img src="Images/profile.jpg" class="no-lazy" alt="Profile Image">
+                            </div>
+                        </div>
 
-                            <div class="introductionHeader">Get to know 'lil more about me</div>
-                            <hr class="headerDivider">
-                            <div class="introductionContent">
-                                <p>Hello Everyone! I'm a Third Year Computer Science Student with hands-on experience in
-                                    Java, C++, Python, and MySQL. I am also comfortable working in Linux environments
-                                    and
-                                    using tools like Docker and Apache for development and deployment. Excited to work
-                                    on
-                                    real-world software challenges and grow through hands-on experience and team
-                                    collaboration.</p>
+                        <div class="profileDetailsHolder">
+                            <div>Name: John-Ronan Beira</div>
+                            <div>Program: BS Computer Science</div>
+                            <div>Year Level: 3rd Year</div>
+                        </div>
+
+                        <div class="contactMeHolder">
+
+                            <div class="socialHeader">Let's connect!</div>
+
+                            <div class="socialWrapper">
+
+                                <div class="badgesHolder">
+                                    <a href="https://www.facebook.com/one.young.blue.existing.entity" target="_blank"
+                                        rel="noopener noreferrer">
+                                        <img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white"
+                                            alt="Facebook" class="socialIcon">
+                                    </a>
+                                </div>
+
+                                <div class="badgesHolder">
+                                    <a href="https://github.com/Operator-Syn" target="_blank" rel="noopener noreferrer">
+                                        <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"
+                                            alt="GitHub" class="socialIcon">
+                                    </a>
+                                </div>
+
+                                <div class="badgesHolder">
+                                    <a href="https://www.instagram.com/rohn_rohnann" target="_blank"
+                                        rel="noopener noreferrer">
+                                        <img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white"
+                                            alt="Instagram" class="socialIcon">
+                                    </a>
+                                </div>
+
+                                <div class="badgesHolder">
+                                    <a href="https://www.linkedin.com/in/one-young-blue-existing-entity/"
+                                        target="_blank" rel="noopener noreferrer">
+                                        <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"
+                                            alt="LinkedIn" class="socialIcon">
+                                    </a>
+                                </div>
+
+                                <div class="badgesHolder">
+                                    <a href="https://discord.com/users/565151069655662622" target="_blank"
+                                        rel="noopener noreferrer">
+                                        <img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white"
+                                            alt="Discord" class="socialIcon">
+                                    </a>
+                                </div>
+
+                                <div class="badgesHolder">
+                                    <a href="https://steamcommunity.com/id/one-young-blue-entity/" target="_blank"
+                                        rel="noopener noreferrer">
+                                        <img src="https://img.shields.io/badge/Steam-000000?style=for-the-badge&logo=steam&logoColor=white"
+                                            alt="Steam" class="socialIcon">
+                                    </a>
+                                </div>
+
+                                <div class="badgesHolder">
+                                    <a href="https://www.xbox.com/en-PH/play/user/Kashiede" target="_blank"
+                                        rel="noopener noreferrer">
+                                        <img src="https://img.shields.io/badge/Xbox-107C10?style=for-the-badge&logo=xbox&logoColor=white"
+                                            alt="Xbox" class="socialIcon">
+                                    </a>
+                                </div>
+
+                                <div class="badgesHolder">
+                                    <a href="https://paypal.me/youngexistingentity?country.x=PH&locale.x=en_US"
+                                        target="_blank" rel="noopener noreferrer">
+                                        <img src="https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white"
+                                            alt="PayPal" class="socialIcon">
+                                    </a>
+
+                                </div>
                             </div>
 
                         </div>
 
-                        <div class="developmentLoadoutsHolder">
-
-                            <div class="introductionHeader">Development Loadouts</div>
-                            <hr class="headerDivider">
-                            <div class="introductionContent">
-
-                                <p class="introductionContentLeft">Operating Systems</p>
-
-                                <div class="badgesHolder">
-                                    <img src="https://img.shields.io/badge/Windows_11-0078d4?style=for-the-badge&logo=windows-11&logoColor=white"
-                                        alt="Windows OS Badge">
-                                    <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black"
-                                        alt="Linux OS Badge">
-                                    <img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white"
-                                        alt="Ubuntu OS Badge">
-                                    <img src="https://img.shields.io/badge/Pop!_OS-48B9C7?style=for-the-badge&logo=Pop!_OS&logoColor=white"
-                                        alt="Pop!_OS Badge">
-                                </div>
-
-                                <p class="introductionContentLeft">Programming Languages</p>
-
-                                <div class="badgesHolder">
-                                    <img src="https://img.shields.io/badge/C-00599C?style=for-the-badge&logo=c&logoColor=white"
-                                        alt="C Language Badge">
-                                    <img src="https://img.shields.io/badge/C%2B%2B-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white"
-                                        alt="C++ Language Badge">
-                                    <img src="https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white"
-                                        alt="Java Language Badge">
-                                    <img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue"
-                                        alt="Python Language Badge">
-                                </div>
-
-                                <p class="introductionContentLeft">Frameworks</p>
-
-                                <div class="badgesHolder">
-                                    <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white"
-                                        alt="Flutter Framework Badge">
-                                    <img src="https://img.shields.io/badge/Apache-D22128?style=for-the-badge&logo=Apache&logoColor=white"
-                                        alt="Apache Framework Badge">
-                                </div>
-
-                                <p class="introductionContentLeft">Database</p>
-
-                                <div class="badgesHolder">
-                                    <img src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white"
-                                        alt="MySQL Database Badge">
-                                </div>
-
-                                <p class="introductionContentLeft">Virtualization & Containerization</p>
-                                <div class="badgesHolder">
-                                    <img src="https://img.shields.io/badge/Portainer-13BEF9?style=for-the-badge&logo=portainer&logoColor=white"
-                                        alt="Portainer Badge">
-                                    <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white"
-                                        alt="Docker Badge">
-                                </div>
-                            </div>
-
+                        <div class="profileEtcHolder">
+                            <p class="justify" id="greeting"></p>
+                            <p class="justify"></p>
                         </div>
-
-                    </div>
-                </div>
-
-                <div class="rightSideHolder">
-
-                    <div class="profileImage">
-                        <div class="profileImageHolder">
-                            <img src="Images/profile.jpg" class="no-lazy" alt="Profile Image">
-                        </div>
-                    </div>
-
-                    <div class="profileDetailsHolder">
-                        <div>Name: John-Ronan Beira</div>
-                        <div>Program: BS Computer Science</div>
-                        <div>Year Level: 3rd Year</div>
-                    </div>
-
-                    <div class="contactMeHolder">
-
-                        <div class="socialHeader">Let's connect!</div>
-
-                        <div class="socialWrapper">
-
-                            <div class="badgesHolder">
-                                <a href="https://www.facebook.com/one.young.blue.existing.entity" target="_blank"
-                                    rel="noopener noreferrer">
-                                    <img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white"
-                                        alt="Facebook" class="socialIcon">
-                                </a>
-                            </div>
-
-                            <div class="badgesHolder">
-                                <a href="https://github.com/Operator-Syn" target="_blank" rel="noopener noreferrer">
-                                    <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"
-                                        alt="GitHub" class="socialIcon">
-                                </a>
-                            </div>
-
-                            <div class="badgesHolder">
-                                <a href="https://www.instagram.com/rohn_rohnann" target="_blank"
-                                    rel="noopener noreferrer">
-                                    <img src="https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white"
-                                        alt="Instagram" class="socialIcon">
-                                </a>
-                            </div>
-
-                            <div class="badgesHolder">
-                                <a href="https://www.linkedin.com/in/one-young-blue-existing-entity/" target="_blank"
-                                    rel="noopener noreferrer">
-                                    <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"
-                                        alt="LinkedIn" class="socialIcon">
-                                </a>
-                            </div>
-
-                            <div class="badgesHolder">
-                                <a href="https://discord.com/users/565151069655662622" target="_blank"
-                                    rel="noopener noreferrer">
-                                    <img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white"
-                                        alt="Discord" class="socialIcon">
-                                </a>
-                            </div>
-
-                            <div class="badgesHolder">
-                                <a href="https://steamcommunity.com/id/one-young-blue-entity/" target="_blank"
-                                    rel="noopener noreferrer">
-                                    <img src="https://img.shields.io/badge/Steam-000000?style=for-the-badge&logo=steam&logoColor=white"
-                                        alt="Steam" class="socialIcon">
-                                </a>
-                            </div>
-
-                            <div class="badgesHolder">
-                                <a href="https://www.xbox.com/en-PH/play/user/Kashiede" target="_blank"
-                                    rel="noopener noreferrer">
-                                    <img src="https://img.shields.io/badge/Xbox-107C10?style=for-the-badge&logo=xbox&logoColor=white"
-                                        alt="Xbox" class="socialIcon">
-                                </a>
-                            </div>
-
-                            <div class="badgesHolder">
-                                <a href="https://paypal.me/youngexistingentity?country.x=PH&locale.x=en_US"
-                                    target="_blank" rel="noopener noreferrer">
-                                    <img src="https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white"
-                                        alt="PayPal" class="socialIcon">
-                                </a>
-
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="profileEtcHolder">
-                        <p class="justify" id="greeting"></p>
-                        <p class="justify"></p>
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-
-
-    </div>
-
-    <div class="page" id="page2">
-
-        <div class="cookingArea">
-
-            <div class="gridContentHolder">
-
-                <div class="introTexts">Light and easy, just a small creation I've been working on.</div>
-
-                <div class="dynamicGrid">
-
-                    <div class="gridItem"
-                        data-title="<p class='unbold largeGridTitle centerAlignFormatNoMargin'>Simple Student Information System (CSV Version)</p>"
-                        data-content="<p class='unbold justify'><br>This is a demo GUI application for managing a simple student database stored in CSV files. The Simple Student Information System is a CSV-based project for managing student, program, and college records with basic CRUD-L, search, and sort functions.</p>"
-                        data-image="Images/Simple Student Information System (CSV Version).png" data-caption="<p class='unbold justify smallText'>Made with IntelliJ IDEA’s GUI Designer Note: Form files created by IntelliJ may not be readable or compatible with other IDEs.</p> 
-                        <a href='https://github.com/Operator-Eury/CCC151-Development-Environment' target='_blank' rel='noopener noreferrer'> 
-                            <button class='hyperlink'>Lead me to the Repository</button>
-                        </a>">
-
-                        <p class="unbold gridTitle centerAlignFormatNoMargin">
-                            Simple Student Information System
-                        </p>
-
-                        <p class="unbold justify"><br>A school requirement. The Simple Student Information System is a
-                            CSV-based project for
-                            managing student, program, and college records with basic CRUD, search, and sort functions.
-                        </p>
-
-                    </div>
-
-
-                    <div class="gridItem"
-                        data-title="<p class='unbold largeGridTitle centerAlignFormatNoMargin'>Simple Student Information System (MySQL Version)</p>"
-                        data-content="<p class='unbold justify'><br>This is the second version of the Student Information System, now featuring MySQL Database implementation. It continues to support the management of student, program, and college records with core functionalities such as CRUD-L operations, search, and sorting. The MySQL database setup is containerized using Docker for improved portability and ease of deployment.</p>"
-                        data-image="Images/Simple Student Information System (MySQL Version).png" data-caption="<p class='unbold justify smallText'>Although this is the second version. The application is coded from scratch with Netbean's Matisse's Drag and Drop for Java Swing Applications with improved code structure and prim OOP Application.</p>
-                        <a href='https://github.com/Operator-Eury/studentDatabaseMySQLIntegration' target='_blank' rel='noopener noreferrer'> 
-                            <button class='hyperlink'>Lead me to the Repository</button>
-                        </a>">
-                        <p class="unbold gridTitle centerAlignFormatNoMargin">Simple Student Information System (MySQL
-                            Version)</p>
-                        <p class="unbold justify"><br>A school requirement. The MySQL Database Implementation of the
-                            Simple Student Information System that was previously a CSV-based project for managing
-                            student, program, and college records with basic CRUD, search, and sort functions.</p>
-                    </div>
-
-                    <div class="gridItem"
-                        data-title="<p class='unbold largeGridTitle centerAlignFormatNoMargin'> Stay tuned for more!</p>"
-                        data-content="<p class='unbold justify'><br>This won't be the end of things.</p>" data-caption="<p class='unbold justify smallText'>Loerem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                            eiusmod tempor incididunt ut labore et
-                            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-                            ut aliquip ex ea
-                            commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                            dolore eu fugiat nulla pariatur.
-                            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                            anim id est laborum.</p>">
-                        <p class="unbold gridTitle centerAlignFormatNoMargin">Coming Soon...</p>
-                        <p class="unbold justify"><br></p>
                     </div>
 
                 </div>
             </div>
 
-        </div>
-
-    </div>
-
-    <div class="page" id="page3">
-        <div class="cookingArea">
-
-            <div class="gridContentHolder">
-
-                <div class="introTexts">Not just certificates, but quiet proof of progress!</div>
-
-                <div class="dynamicGrid">
-
-                    <div class="gridItem"
-                        data-title="<p class='unbold largeGridTitle centerAlignFormatNoMargin'>Loerem ipsum dolor</p>"
-                        data-content="<p class='unbold justify'><br>TLoerem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                            eiusmod tempor incididunt ut labore et
-                            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-                            ut aliquip ex ea
-                            commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                            dolore eu fugiat nulla pariatur.
-                            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                            anim id est laborum.</p>" data-image="" data-caption="<p class='unbold justify smallText'>Loerem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                            eiusmod tempor incididunt ut labore et
-                            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-                            ut aliquip ex ea
-                            commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                            dolore eu fugiat nulla pariatur.
-                            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                            anim id est laborum.</p>">
-                        <p class="unbold gridTitle centerAlignFormatNoMargin">Item 1</p>
-                        <p class="unbold justify"><br> Loerem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                            eiusmod tempor incididunt ut labore et
-                            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-                            ut aliquip ex ea
-                            commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                            dolore eu fugiat nulla pariatur.
-                            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                            anim id est laborum.</p>
-                    </div>
-
-                </div>
-            </div>
 
         </div>
-    </div>
 
-    <div class="page" id="page4">
-        <div class="cookingArea">
-
-            <div class="gridContentHolder">
-
-                <div class="introTexts">Notes that don't ask for attention—just deserve it!</div>
-
-                <div class="dynamicGrid">
-
-                    <div class="gridItem"
-                        data-title="<p class='unbold largeGridTitle centerAlignFormatNoMargin'>Loerem ipsum dolor</p>"
-                        data-content="<p class='unbold justify'><br>TLoerem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                            eiusmod tempor incididunt ut labore et
-                            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-                            ut aliquip ex ea
-                            commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                            dolore eu fugiat nulla pariatur.
-                            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                            anim id est laborum.</p>" data-caption="<p class='unbold justify smallText'>Loerem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                            eiusmod tempor incididunt ut labore et
-                            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-                            ut aliquip ex ea
-                            commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                            dolore eu fugiat nulla pariatur.
-                            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                            anim id est laborum.</p>">
-                        <p class="unbold gridTitle centerAlignFormatNoMargin">Item 1</p>
-                        <p class="unbold justify"><br> Loerem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                            eiusmod tempor incididunt ut labore et
-                            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-                            ut aliquip ex ea
-                            commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                            dolore eu fugiat nulla pariatur.
-                            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                            anim id est laborum.</p>
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
-    </div>
+    </main>
 
     <script src="script.js" defer></script> <!-- Link to external JavaScript -->
 

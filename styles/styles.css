@@ -6,6 +6,15 @@
 @import url(flexDynamicGrid.css);
 @import url(flexDialog.css);
 
+main {
+    opacity: 1;
+    transition: opacity 0.2s ease-in-out;
+}
+
+main.fade-out {
+    opacity: 0;
+}
+
 * {
     margin: 0;
     padding: 0;
