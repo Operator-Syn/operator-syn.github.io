@@ -142,6 +142,16 @@
         /* Appears second (bottom) */
     }
 
+    #dialogBody {
+        height: auto;
+        /* Expand based on content */
+        max-height: none;
+        /* Remove any hidden limits */
+        overflow: visible;
+        /* Disable scrolling */
+    }
+
+
     /* Make the image caption expand instead of scroll */
     #dialogImageCaption {
         flex: unset;
