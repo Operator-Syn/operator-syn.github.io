@@ -1,75 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flexbox Navbar</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flexbox Navbar</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-    body {
-      font-family: Arial, sans-serif;
-    }
+      body {
+        font-family: Arial, sans-serif;
+      }
 
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background-color: #333;
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.75rem 2rem;
-      z-index: 1000;
-    }
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #333;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 2rem;
+        z-index: 1000;
+      }
 
-    .nav-left {
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
+      .nav-left {
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
 
-    .nav-right {
-      display: flex;
-      gap: 1.5rem;
-    }
+      .nav-right {
+        display: flex;
+        gap: 1.5rem;
+      }
 
-    .nav-right a {
-      color: white;
-      text-decoration: none;
-      transition: color 0.3s ease;
-    }
+      .nav-right a {
+        color: white;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
 
-    .nav-right a:hover {
-      color: #f0a500;
-    }
+      .nav-right a:hover {
+        color: #f0a500;
+      }
 
-    main {
-      margin-top: 70px; /* Prevents content from being hidden under fixed navbar */
-      padding: 2rem;
-    }
-  </style>
-</head>
-<body>
-  <nav>
-    <div class="nav-left">MyBrand</div>
-    <div class="nav-right">
-      <a href="#home">Home</a>
-      <a href="#about">About</a>
-      <a href="#services">Services</a>
-      <a href="#contact">Contact</a>
-    </div>
-  </nav>
+      main {
+        margin-top: 70px; /* Prevents content from being hidden under fixed navbar */
+        padding: 2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-left">MyBrand</div>
+      <div class="nav-right">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
 
-  <main>
-    <h1>Welcome to My Website</h1>
-    <p>This is sample content to show how the fixed navbar works.</p>
-    <!-- Add your content here -->
-  </main>
-</body>
+    <main>
+      <h1>Welcome to My Website</h1>
+      <p>This is sample content to show how the fixed navbar works.</p>
+      <!-- Add your content here -->
+    </main>
+  </body>
 </html>

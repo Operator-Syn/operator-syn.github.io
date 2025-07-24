@@ -1,169 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Operator-Syn | Notes & Snippets</title>
-    <meta name="description"
-        content="Read personal notes and snippets by John-Ronan Beira — covering programming, server setups, tools, and practical guides for tech and development.">
+    <meta
+      name="description"
+      content="Read personal notes and snippets by John-Ronan Beira — covering programming, server setups, tools, and practical guides for tech and development."
+    />
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      "name": "Notes & Snippets - John-Ronan Beira",
-      "url": "https://operator-syn.github.io/snippets.html",
-      "description": "Read personal notes and snippets by John-Ronan Beira — covering programming, server setups, tools, and practical guides for tech and development.",
-      "author": {
-        "@type": "Person",
-        "name": "John-Ronan Beira"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "Operator-Syn Portfolio",
-        "url": "https://operator-syn.github.io/"
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Notes & Snippets - John-Ronan Beira",
+        "url": "https://operator-syn.github.io/snippets.html",
+        "description": "Read personal notes and snippets by John-Ronan Beira — covering programming, server setups, tools, and practical guides for tech and development.",
+        "author": {
+          "@type": "Person",
+          "name": "John-Ronan Beira"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Operator-Syn Portfolio",
+          "url": "https://operator-syn.github.io/"
+        }
       }
-    }
     </script>
 
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Operator-Syn | Notes & Snippets">
-    <meta property="og:description"
-        content="Read personal notes and snippets by John-Ronan Beira — covering programming, server setups, tools, and practical guides for tech and development.">
-    <meta property="og:image" content="https://operator-syn.github.io/Images/preview.png">
-    <meta property="og:url" content="https://operator-syn.github.io/snippets.html">
-    <meta property="og:type" content="website">
+    <meta property="og:title" content="Operator-Syn | Notes & Snippets" />
+    <meta
+      property="og:description"
+      content="Read personal notes and snippets by John-Ronan Beira — covering programming, server setups, tools, and practical guides for tech and development."
+    />
+    <meta
+      property="og:image"
+      content="https://operator-syn.github.io/Images/preview.png"
+    />
+    <meta
+      property="og:url"
+      content="https://operator-syn.github.io/snippets.html"
+    />
+    <meta property="og:type" content="website" />
 
     <!-- Twitter Card (for Twitter previews) -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Operator-Syn | Notes & Snippets">
-    <meta name="twitter:description"
-        content="Read personal notes and snippets by John-Ronan Beira — covering programming, server setups, tools, and practical guides for tech and development.">
-    <meta name="twitter:image" content="https://operator-syn.github.io/Images/preview.png">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Operator-Syn | Notes & Snippets" />
+    <meta
+      name="twitter:description"
+      content="Read personal notes and snippets by John-Ronan Beira — covering programming, server setups, tools, and practical guides for tech and development."
+    />
+    <meta
+      name="twitter:image"
+      content="https://operator-syn.github.io/Images/preview.png"
+    />
 
     <!-- Favicon -->
-    <link rel="icon" href="Images/profile-encircle.png" type="image/png">
+    <link rel="icon" href="Images/profile-encircle.png" type="image/png" />
 
     <!-- Your CSS -->
-    <link rel="stylesheet" href="styles/styles.css">
-</head>
+    <link rel="stylesheet" href="styles/styles.css" />
+  </head>
 
-
-
-<body>
-
+  <body>
     <nav>
-        <div id="navBar">
+      <div id="navBar">
+        <div class="navLeft">Operator-Syn</div>
 
-            <div class="navLeft">
-                Operator-Syn
-            </div>
-
-            <div class="navRightDesktop" id="navLinksDesktop">
-                <a href="index.html"><button class="navBarButton" id="homeButton">Home</button></a>
-                <a href="projects.html"><button class="navBarButton" id="projectsButton">Projects</button></a>
-                <a href="certifications.html"><button class="navBarButton" id="certsButton">Certs</button></a>
-                <a href="snippets.html"><button class="navBarButton currently" id="snippetsButton">Snippets</button></a>
-            </div>
-
-
-            <button class="menu-toggle" id="menuToggleButton">&#9776;</button>
-
+        <div class="navRightDesktop" id="navLinksDesktop">
+          <a href="index.html"
+            ><button class="navBarButton" id="homeButton">Home</button></a
+          >
+          <a href="projects.html"
+            ><button class="navBarButton" id="projectsButton">
+              Projects
+            </button></a
+          >
+          <a href="certifications.html"
+            ><button class="navBarButton" id="certsButton">Certs</button></a
+          >
+          <a href="snippets.html"
+            ><button class="navBarButton currently" id="snippetsButton">
+              Snippets
+            </button></a
+          >
         </div>
 
-
+        <button class="menu-toggle" id="menuToggleButton">&#9776;</button>
+      </div>
     </nav>
 
     <!-- Slide-in menu for mobile -->
 
     <div class="navRightMobile" id="navLinksMobile">
-        <button class="menu-toggle" id="closeMenuToggleButton">&times;</button>
-        <a href="index.html"><button class="navBarButton">Home</button></a>
-        <a href="projects.html"><button class="navBarButton">Projects</button></a>
-        <a href="certifications.html"><button class="navBarButton">Certs</button></a>
-        <a href="snippets.html"><button class="navBarButton currently">Snippets</button></a>
+      <button class="menu-toggle" id="closeMenuToggleButton">&times;</button>
+      <a href="index.html"><button class="navBarButton">Home</button></a>
+      <a href="projects.html"><button class="navBarButton">Projects</button></a>
+      <a href="certifications.html"
+        ><button class="navBarButton">Certs</button></a
+      >
+      <a href="snippets.html"
+        ><button class="navBarButton currently">Snippets</button></a
+      >
     </div>
 
     <main>
-
-        <div class="page active" id="page4">
-            <div class="cookingArea">
-
-                <div class="gridContentHolder">
-
-                    <div class="introTexts">Notes that don't ask for attention—just deserve it!</div>
-
-                    <div class="dynamicGrid">
-
-                        <div class="gridItem"
-                            data-title="<p class='unbold largeGridTitle centerAlignFormatNoMargin'>Loerem ipsum dolor</p>"
-                            data-content="<p class='unbold justify'><br>TLoerem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                            eiusmod tempor incididunt ut labore et
-                            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-                            ut aliquip ex ea
-                            commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                            dolore eu fugiat nulla pariatur.
-                            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                            anim id est laborum.</p>" data-caption="<p class='unbold justify smallText'>Loerem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                            eiusmod tempor incididunt ut labore et
-                            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
-                            ut aliquip ex ea
-                            commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                            dolore eu fugiat nulla pariatur.
-                            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                            anim id est laborum.</p>">
-                            <p class="unbold gridTitle centerAlignFormatNoMargin">Item 1</p>
-                            <p class="unbold justify"><br> Loerem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                                do
-                                eiusmod tempor incididunt ut labore et
-                                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                                nisi
-                                ut aliquip ex ea
-                                commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-                                dolore eu fugiat nulla pariatur.
-                                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-                                mollit
-                                anim id est laborum.</p>
-                        </div>
-
-                    </div>
-                </div>
-
+      <div class="page active" id="page4">
+        <div class="cookingArea">
+          <div class="gridContentHolder">
+            <div class="introTexts">
+              Notes that don't ask for attention—just deserve it!
             </div>
-        </div>
 
+            <div class="dynamicGrid">
+              <div
+                class="gridItem"
+                data-title="<p class='unbold largeGridTitle centerAlignFormatNoMargin'>Loerem ipsum dolor</p>"
+                data-content="<p class='unbold justify'><br>TLoerem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+                            eiusmod tempor incididunt ut labore et
+                            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
+                            ut aliquip ex ea
+                            commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+                            dolore eu fugiat nulla pariatur.
+                            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
+                            anim id est laborum.</p>"
+                data-caption="<p class='unbold justify smallText'>Loerem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+                            eiusmod tempor incididunt ut labore et
+                            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
+                            ut aliquip ex ea
+                            commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
+                            dolore eu fugiat nulla pariatur.
+                            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
+                            anim id est laborum.</p>"
+              >
+                <p class="unbold gridTitle centerAlignFormatNoMargin">Item 1</p>
+                <p class="unbold justify">
+                  <br />
+                  Loerem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                  irure dolor in reprehenderit in voluptate velit esse cillum
+                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                  cupidatat non proident, sunt in culpa qui officia deserunt
+                  mollit anim id est laborum.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
 
-    <script src="script.js" defer></script> <!-- Link to external JavaScript -->
+    <script src="script.js" defer></script>
+    <!-- Link to external JavaScript -->
 
     <dialog id="itemDialog">
-        <div id="dialogContent">
+      <div id="dialogContent">
+        <div id="dialogParent">
+          <div class="dialogLeftSide">
+            <div id="dialogHeader">1</div>
+            <div id="dialogBody">5</div>
 
-            <div id="dialogParent">
-
-                <div class="dialogLeftSide">
-                    <div id="dialogHeader">1</div>
-                    <div id="dialogBody">5</div>
-
-                    <div id="dialogCloseButton">
-                        <button onclick="closeDialog()">Close</button>
-                    </div>
-                </div>
-
-                <div class="dialogRightSide">
-                    <div class="dialogCrossWrapper">
-                        <div id="dialogCross" class="rightAlignFormatNoMargin">&times;</div>
-                    </div>
-                    <div id="dialogImage">3</div>
-                    <div id="dialogImageCaption">4</div>
-                </div>
-
+            <div id="dialogCloseButton">
+              <button onclick="closeDialog()">Close</button>
             </div>
+          </div>
+
+          <div class="dialogRightSide">
+            <div class="dialogCrossWrapper">
+              <div id="dialogCross" class="rightAlignFormatNoMargin">
+                &times;
+              </div>
+            </div>
+            <div id="dialogImage">3</div>
+            <div id="dialogImageCaption">4</div>
+          </div>
         </div>
+      </div>
     </dialog>
-
-</body>
-
+  </body>
 </html>

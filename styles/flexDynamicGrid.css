@@ -1,72 +1,72 @@
 .gridContentHolder {
-    background: rgba(28, 86, 137, 0.5);
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow-y: auto;
-    padding: 16px;
+  background: rgba(28, 86, 137, 0.5);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  padding: 16px;
 }
 
 .dynamicGrid {
-    padding: 16px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 30px;
-    /* optional spacing between items */
-    background: rgba(20, 70, 110, 0.5);
-    border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  /* optional spacing between items */
+  background: rgba(20, 70, 110, 0.5);
+  border-radius: 10px;
 }
 
 .gridItem {
-    flex: 0 0 calc(33.333% - 20px);
-    /* 3 columns per row */
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-height: 35vh;
-    min-height: 35vh;
-    /* or whatever height you prefer */
-    overflow-y: auto;
-    overflow-x: hidden;
-    background-color: rgba(87, 131, 177, 0.5);
-    padding: 10px;
-    border-radius: 10px;
+  flex: 0 0 calc(33.333% - 20px);
+  /* 3 columns per row */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-height: 35vh;
+  min-height: 35vh;
+  /* or whatever height you prefer */
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: rgba(87, 131, 177, 0.5);
+  padding: 10px;
+  border-radius: 10px;
 }
 
 .gridTitle {
-    font-size: 2rem;
+  font-size: 2rem;
 }
 
 .largeGridTitle {
-    font-size: 2rem;
+  font-size: 2rem;
 }
 
 .introTexts {
-    font-size: clamp(1rem, 3rem, 3rem);
-    align-self: flex-start;
-    padding: 0px 0px 0px 2rem;
+  font-size: clamp(1rem, 3rem, 3rem);
+  align-self: flex-start;
+  padding: 0px 0px 0px 2rem;
 }
 
 @media (max-width: 1180px) {
-    .gridItem {
-        flex: 0 0 calc(100% - 20px);
-        min-height: 25vh;
-        max-height: 25vh;
-        /* 1 column per row on small screens */
-    }
+  .gridItem {
+    flex: 0 0 calc(100% - 20px);
+    min-height: 25vh;
+    max-height: 25vh;
+    /* 1 column per row on small screens */
+  }
 
-    .dynamicGrid {
-        background-color: rgba(28, 86, 137, 0);
-    }
+  .dynamicGrid {
+    background-color: rgba(28, 86, 137, 0);
+  }
 
-    .introTexts,
-    .largeGridTitle,
-    .gridTitle {
-        font-size: clamp(1rem, 2rem, 1.25rem);
-    }
+  .introTexts,
+  .largeGridTitle,
+  .gridTitle {
+    font-size: clamp(1rem, 2rem, 1.25rem);
+  }
 
-    .introTexts {
-        padding: 0px 0px 0px 0px;
-    }
+  .introTexts {
+    padding: 0px 0px 0px 0px;
+  }
 }

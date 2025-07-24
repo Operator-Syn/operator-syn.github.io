@@ -1,35 +1,33 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <title>Dialog Test</title>
-</head>
+  </head>
 
-<body>
+  <body>
     <!-- The dialog -->
     <dialog id="testDialog">
-        <p>This is a test dialog!</p>
-        <button id="closeBtn">Close</button>
+      <p>This is a test dialog!</p>
+      <button id="closeBtn">Close</button>
     </dialog>
 
     <!-- Button to open the dialog -->
     <button id="openBtn">Open Dialog</button>
 
     <script>
-        const dialog = document.getElementById("testDialog");
-        const openBtn = document.getElementById("openBtn");
-        const closeBtn = document.getElementById("closeBtn");
+      const dialog = document.getElementById("testDialog");
+      const openBtn = document.getElementById("openBtn");
+      const closeBtn = document.getElementById("closeBtn");
 
-        // Show dialog
-        openBtn.addEventListener("click", () => {
-            dialog.showModal();  // Or dialog.show() for a non-modal version
-        });
+      // Show dialog
+      openBtn.addEventListener("click", () => {
+        dialog.showModal(); // Or dialog.show() for a non-modal version
+      });
 
-        // Close dialog
-        closeBtn.addEventListener("click", () => {
-            dialog.close();
-        });
+      // Close dialog
+      closeBtn.addEventListener("click", () => {
+        dialog.close();
+      });
     </script>
-</body>
-
+  </body>
 </html>

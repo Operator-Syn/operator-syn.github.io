@@ -7,94 +7,94 @@
 @import url(flexDialog.css);
 
 main {
-    opacity: 1;
-    transition: opacity 0.2s ease-in-out;
+  opacity: 1;
+  transition: opacity 0.2s ease-in-out;
 }
 
 main.fade-out {
-    opacity: 0;
+  opacity: 0;
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    /* Force text to wrap properly */
-    white-space: normal;
-    /* Allows multi-line wrapping */
-    word-wrap: break-word;
-    /* Breaks long words when needed */
-    overflow-wrap: anywhere;
-    /* Ensures even long strings break gracefully */
-    scrollbar-color: rgba(185, 220, 235, 0.5) transparent;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* Force text to wrap properly */
+  white-space: normal;
+  /* Allows multi-line wrapping */
+  word-wrap: break-word;
+  /* Breaks long words when needed */
+  overflow-wrap: anywhere;
+  /* Ensures even long strings break gracefully */
+  scrollbar-color: rgba(185, 220, 235, 0.5) transparent;
 }
 
 body,
 html {
-    font-size: max(100%, calc(100% + 0.25vh));
-    width: 100%;
-    height: 100%;
-    background-color: rgba(28, 87, 137, 0.7);
-    display: flex;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
+  font-size: max(100%, calc(100% + 0.25vh));
+  width: 100%;
+  height: 100%;
+  background-color: rgba(28, 87, 137, 0.7);
+  display: flex;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
 
 div {
-    color: #E3F2FD;
+  color: #e3f2fd;
 }
 
 p {
-    font-size: 1.15rem;
-    line-height: 150%;
+  font-size: 1.15rem;
+  line-height: 150%;
 }
 
 button {
-    cursor: pointer;
-    background: rgba(28, 86, 137, 0.5);
-    color: white;
-    border: none;
+  cursor: pointer;
+  background: rgba(28, 86, 137, 0.5);
+  color: white;
+  border: none;
 }
 
 dialog {
-    opacity: 0;
-    transition: opacity 0.3s ease;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 dialog.visible {
-    opacity: 1;
+  opacity: 1;
 }
 
 body.dialog-open .cookingArea {
-    opacity: 0;
-    pointer-events: none;
-    /* Optional: prevent clicks */
-    transition: opacity 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+  /* Optional: prevent clicks */
+  transition: opacity 0.3s ease;
 }
 
 /* Background Blur */
 body::before {
-    content: "";
-    width: 100%;
-    height: 100%;
-    background-image: url('/Images/div-background.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    filter: blur(5px);
-    z-index: 0;
-    pointer-events: none;
+  content: "";
+  width: 100%;
+  height: 100%;
+  background-image: url("/Images/div-background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(5px);
+  z-index: 0;
+  pointer-events: none;
 }
 
 .headerDivider {
-    border: none;
-    border-bottom: 2px solid #E3F2FD;
+  border: none;
+  border-bottom: 2px solid #e3f2fd;
 }
 
 @media (max-width: 768px) {
-    p {
-        font-size: clamp(1rem, 1rem, 0.5rem);
-        line-height: 135%;
-    }
+  p {
+    font-size: clamp(1rem, 1rem, 0.5rem);
+    line-height: 135%;
+  }
 }

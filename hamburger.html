@@ -1,134 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Slide-In Navbar</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Slide-In Navbar</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-    body {
-      font-family: Arial, sans-serif;
-    }
+      body {
+        font-family: Arial, sans-serif;
+      }
 
-    nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background-color: #333;
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 4rem;
-      z-index: 1000;
-    }
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #333;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 4rem;
+        z-index: 1000;
+      }
 
-    .nav-left {
-      font-size: 1.5rem;
-      font-weight: bold;
-      white-space: nowrap;
-    }
+      .nav-left {
+        font-size: 1.5rem;
+        font-weight: bold;
+        white-space: nowrap;
+      }
 
-    .menu-toggle {
-      display: none;
-      font-size: 1.8rem;
-      background: none;
-      border: none;
-      color: white;
-      cursor: pointer;
-      z-index: 1100;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 1.5rem;
-    }
-
-    .nav-links a {
-      color: white;
-      text-decoration: none;
-      transition: color 0.3s ease;
-    }
-
-    .nav-links a:hover {
-      color: #f0a500;
-    }
-
-    /* Mobile Styles */
-    @media (max-width: 768px) {
       .menu-toggle {
-        display: block;
+        display: none;
+        font-size: 1.8rem;
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        z-index: 1100;
       }
 
       .nav-links {
-        position: fixed;
-        top: 70px;
-        right: -250px;
-        width: 250px;
-        height: calc(100% - 70px);
-        background-color: #333;
-        flex-direction: column;
-        padding: 2rem 1rem;
-        transition: right 0.3s ease;
-        z-index: 1050;
+        display: flex;
+        gap: 1.5rem;
       }
 
-      .nav-links.active {
-        right: 0;
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        transition: color 0.3s ease;
       }
 
-      /* Hide nav-links inline in nav for mobile */
-      nav .nav-links {
-        display: none;
+      .nav-links a:hover {
+        color: #f0a500;
       }
-    }
 
-    main {
-      margin-top: 70px;
-      padding: 2rem;
-    }
-  </style>
-</head>
-<body>
+      /* Mobile Styles */
+      @media (max-width: 768px) {
+        .menu-toggle {
+          display: block;
+        }
 
-  <nav>
-    <div class="nav-left">MyBrand</div>
-    <div class="nav-links" id="navLinksDesktop">
+        .nav-links {
+          position: fixed;
+          top: 70px;
+          right: -250px;
+          width: 250px;
+          height: calc(100% - 70px);
+          background-color: #333;
+          flex-direction: column;
+          padding: 2rem 1rem;
+          transition: right 0.3s ease;
+          z-index: 1050;
+        }
+
+        .nav-links.active {
+          right: 0;
+        }
+
+        /* Hide nav-links inline in nav for mobile */
+        nav .nav-links {
+          display: none;
+        }
+      }
+
+      main {
+        margin-top: 70px;
+        padding: 2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="nav-left">MyBrand</div>
+      <div class="nav-links" id="navLinksDesktop">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <button class="menu-toggle" id="menuToggleButton">&#9776;</button>
+    </nav>
+
+    <!-- Slide-in menu for mobile -->
+    <div class="nav-links" id="navLinksMobile">
       <a href="#home">Home</a>
       <a href="#about">About</a>
       <a href="#services">Services</a>
       <a href="#contact">Contact</a>
     </div>
-    <button class="menu-toggle" id="menuToggleButton">&#9776;</button>
-  </nav>
 
-  <!-- Slide-in menu for mobile -->
-  <div class="nav-links" id="navLinksMobile">
-    <a href="#home">Home</a>
-    <a href="#about">About</a>
-    <a href="#services">Services</a>
-    <a href="#contact">Contact</a>
-  </div>
+    <main>
+      <h1>Slide-In Sidebar Below Navbar</h1>
+      <p>
+        This is your page content. Resize the screen to see the responsive
+        behavior.
+      </p>
+    </main>
 
-  <main>
-    <h1>Slide-In Sidebar Below Navbar</h1>
-    <p>This is your page content. Resize the screen to see the responsive behavior.</p>
-  </main>
+    <script>
+      const menuToggleButton = document.getElementById("menuToggleButton");
+      const navLinksMobile = document.getElementById("navLinksMobile");
 
-  <script>
-    const menuToggleButton = document.getElementById('menuToggleButton');
-    const navLinksMobile = document.getElementById('navLinksMobile');
-
-    menuToggleButton.addEventListener('click', () => {
-      navLinksMobile.classList.toggle('active');
-    });
-  </script>
-
-</body>
+      menuToggleButton.addEventListener("click", () => {
+        navLinksMobile.classList.toggle("active");
+      });
+    </script>
+  </body>
 </html>
