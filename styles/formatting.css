@@ -1,37 +1,37 @@
 .unbold {
-    font-weight: normal;
+  font-weight: normal;
 }
 
 .leftAlignFormat {
-    text-align: left;
-    margin: 16px;
+  text-align: left;
+  margin: 16px;
 }
 
 .centerAlignFormatNoMargin {
-    text-align: center;
+  text-align: center;
 }
 
 .rightAlignFormat {
-    text-align: right;
-    margin: 16px;
+  text-align: right;
+  margin: 16px;
 }
 
 .rightAlignFormatNoMargin {
-    text-align: right;
+  text-align: right;
 }
 
 .h2 {
-    font-size: 2rem;
+  font-size: 2rem;
 }
 
 .info-line {
-    margin-top: 5px;
+  margin-top: 5px;
 }
 
 .topInfoLine {
-    margin-top: 15px;
+  margin-top: 15px;
 }
 
 .justify {
-    text-align: justify;
+  text-align: justify;
 }
