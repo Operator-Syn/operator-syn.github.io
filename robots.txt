@@ -1,4 +1,3 @@
 User-agent: *
 Allow: /
-
 Sitemap: https://operator-syn.github.io/sitemap.xml
