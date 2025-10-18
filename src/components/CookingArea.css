@@ -1,0 +1,17 @@
+#wrapper {
+    /* flex: 1; */
+    display: grid;
+    place-items: center;
+}
+
+#cookingArea {
+    background: rgba(28, 86, 137, 0.5);
+    border-radius: 1rem;
+}
+
+@media (max-width: 992px) {
+    #cookingArea {
+        border-radius: 0.45rem;
+    }
+}
+

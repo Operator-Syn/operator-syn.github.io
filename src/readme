@@ -1,0 +1,24 @@
+Source Folder (src)
+-------------------
+
+This folder contains all the application source code.
+
+What goes here:
+- Entry point files (e.g., main.jsx, index.css)
+- Core application logic
+- Organized subfolders such as:
+  • components/  → reusable React components
+  • assets/      → static resources imported in code
+  • pages/       → top-level views or routes (optional)
+  • hooks/       → custom React hooks (optional)
+  • utils/       → helper functions or services (optional)
+
+What does NOT go here:
+- Build outputs (those go in "dist")
+- Configuration files (they stay in the project root)
+- Static files served as-is (they belong in the "public" folder)
+
+Notes:
+- Keep the src folder clean and modular.
+- Each subfolder can include its own README.txt to explain its purpose.
+- This structure can grow as the app becomes more complex.

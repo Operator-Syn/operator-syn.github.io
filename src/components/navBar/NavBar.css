@@ -1,0 +1,55 @@
+.navbar {
+background: rgba(28, 87, 137, 0.65);
+}
+
+a.navbar-brand {
+    padding: 0.5rem;
+}
+
+.navbar .container-fluid {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+.navbar .nav-link,
+.navbar .navbar-brand {
+    font-size: 1.25rem;
+    color: rgb(227, 242, 253);
+    font-weight: bold;
+}
+
+.navbar .navbar-brand {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 1.5rem;
+    text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black,
+        1px 1px 0 black;
+}
+
+.nav-item {
+    cursor: pointer;
+    border: none;
+
+    /* Simulated text outline */
+    text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black,
+        1px 1px 0 black;
+
+    transition: background 0.5s ease-out, color 0.5s ease-out,
+        box-shadow 0.5s ease-out, text-shadow 0.5s ease-in, outline 0.5s ease-out;
+}
+
+.navbar .nav-link:hover {
+    color: #FFD700;
+    /* slightly darker gold for hover */
+}
+
+.navbar .nav-link.active {
+    color: #FFFF00
+}
+
+@media (max-width: 992px) {
+.navbar .navbar-brand {
+    margin-left: 0;
+    margin-right: 0;
+}
+}
