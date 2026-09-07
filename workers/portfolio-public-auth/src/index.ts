@@ -76,6 +76,17 @@ function sameOrigin(request: Request, environment: PublicAuthEnvironment): boole
   );
 }
 
+function isInternalAdminRequest(request: Request, environment: PublicAuthEnvironment): boolean {
+  const configured = environment.ADMIN_INTERNAL_KEY;
+  const supplied = request.headers.get("X-Admin-Internal-Key");
+  return (
+    typeof configured === "string" &&
+    configured.length > 0 &&
+    supplied !== null &&
+    supplied === configured
+  );
+}
+
 function jsonError(
   code: string,
   message: string,
@@ -304,6 +315,134 @@ async function isAdmin(request: Request, environment: PublicAuthEnvironment): Pr
   } catch {
     return false;
   }
+}
+
+type AdminUserSummary = {
+  subject: string;
+  email: string;
+  displayName: string | null;
+  pictureUrl: string | null;
+  updatedAt: number;
+  quota: Awaited<ReturnType<typeof readRollingQuota>>;
+  activeSessions: number;
+  activeThreads: number;
+  threads: Array<Pick<ThreadRow, "id" | "created_at" | "updated_at" | "title">>;
+};
+
+async function countRows(
+  environment: PublicAuthEnvironment,
+  query: string,
+  ...bindings: unknown[]
+): Promise<number> {
+  const row = await environment.AUTH_DB.prepare(query)
+    .bind(...bindings)
+    .first<{ count: number }>();
+  return Number(row?.count ?? 0);
+}
+
+async function loadAdminUser(
+  environment: PublicAuthEnvironment,
+  subject: string,
+): Promise<AdminUserSummary | null> {
+  const user = await environment.AUTH_DB.prepare(
+    "SELECT sub, email, display_name, picture_url, quota_epoch, disabled_at, updated_at FROM users WHERE sub = ?1",
+  )
+    .bind(subject)
+    .first<UserRow & { updated_at: number }>();
+  if (!user) return null;
+
+  const now = Date.now();
+  const [quota, activeSessions, activeThreads, threads] = await Promise.all([
+    readRollingQuota(environment, subject, now),
+    countRows(
+      environment,
+      "SELECT COUNT(*) AS count FROM sessions WHERE sub = ?1 AND expires_at > ?2 AND revoked_at IS NULL",
+      subject,
+      now,
+    ),
+    countRows(
+      environment,
+      "SELECT COUNT(*) AS count FROM threads WHERE sub = ?1 AND deleted_at IS NULL",
+      subject,
+    ),
+    environment.AUTH_DB.prepare(
+      "SELECT id, created_at, updated_at, title FROM threads WHERE sub = ?1 AND deleted_at IS NULL ORDER BY updated_at DESC LIMIT 20",
+    )
+      .bind(subject)
+      .all<Pick<ThreadRow, "id" | "created_at" | "updated_at" | "title">>(),
+  ]);
+
+  return {
+    subject: user.sub,
+    email: user.email,
+    displayName: user.display_name,
+    pictureUrl: safeGoogleProfilePictureUrl(user.picture_url),
+    updatedAt: Number(user.updated_at),
+    quota,
+    activeSessions,
+    activeThreads,
+    threads: threads.results,
+  };
+}
+
+function encodeAdminCursor(updatedAt: number, subject: string): string {
+  return btoa(`${updatedAt}:${subject}`);
+}
+
+function decodeAdminCursor(
+  value: string | undefined,
+): { updatedAt: number; subject: string } | null {
+  if (!value || value.length > 256) return null;
+  try {
+    const decoded = atob(value);
+    const separator = decoded.indexOf(":");
+    const updatedAt = Number(decoded.slice(0, separator));
+    const subject = decoded.slice(separator + 1);
+    if (!Number.isSafeInteger(updatedAt) || !subject || subject.length > 256) return null;
+    return { updatedAt, subject };
+  } catch {
+    return null;
+  }
+}
+
+async function resetAdminSubject(
+  environment: PublicAuthEnvironment,
+  subject: string,
+  now: number,
+): Promise<void> {
+  await environment.AUTH_DB.batch([
+    environment.AUTH_DB.prepare("DELETE FROM rolling_token_usage WHERE sub = ?1").bind(subject),
+    environment.AUTH_DB.prepare(
+      "UPDATE users SET quota_epoch = quota_epoch + 1, updated_at = ?1 WHERE sub = ?2",
+    ).bind(now, subject),
+    environment.AUTH_DB.prepare(
+      "UPDATE sessions SET revoked_at = ?1 WHERE sub = ?2 AND revoked_at IS NULL",
+    ).bind(now, subject),
+    environment.AUTH_DB.prepare(
+      "UPDATE agent_tokens SET consumed_at = ?1 WHERE sub = ?2 AND consumed_at IS NULL",
+    ).bind(now, subject),
+  ]);
+}
+
+async function resetAllAdminSubjects(
+  environment: PublicAuthEnvironment,
+  now: number,
+): Promise<void> {
+  await environment.AUTH_DB.batch([
+    environment.AUTH_DB.prepare("DELETE FROM rolling_token_usage"),
+    environment.AUTH_DB.prepare(
+      "UPDATE users SET quota_epoch = quota_epoch + 1, updated_at = ?1",
+    ).bind(now),
+    environment.AUTH_DB.prepare(
+      "UPDATE sessions SET revoked_at = ?1 WHERE revoked_at IS NULL",
+    ).bind(now),
+    environment.AUTH_DB.prepare(
+      "UPDATE agent_tokens SET consumed_at = ?1 WHERE consumed_at IS NULL",
+    ).bind(now),
+    environment.AUTH_DB.prepare(
+      "UPDATE agent_control SET estimated_neurons = 0, paused = 0, pause_reason = NULL, utc_day = ?1, updated_at = ?2 WHERE id = 1",
+    ).bind(new Date(now).toISOString().slice(0, 10), now),
+  ]);
 }
 
 async function loadControl(environment: PublicAuthEnvironment): Promise<AgentControlRow | null> {
@@ -874,6 +1013,153 @@ app.post("/admin/control", async (c) => {
     .bind(paused ? 1 : 0, paused ? reason : null, Date.now())
     .run();
   return c.json({ paused, reason: paused ? reason : null });
+});
+
+// These routes are reachable only through the Eury admin gateway's service
+// binding. They intentionally do not accept browser cookies or expose thread
+// messages; the gateway supplies the server-held internal key.
+app.get("/internal/admin/agent/status", async (c) => {
+  if (!isInternalAdminRequest(c.req.raw, c.env)) return c.body(null, 403);
+  const control = await loadControl(c.env);
+  if (!control) return jsonError("CONTROL_UNAVAILABLE", "Agent control is unavailable.", 503);
+  const [users, activeSessions, activeThreads] = await Promise.all([
+    countRows(c.env, "SELECT COUNT(*) AS count FROM users"),
+    countRows(
+      c.env,
+      "SELECT COUNT(*) AS count FROM sessions WHERE expires_at > ?1 AND revoked_at IS NULL",
+      Date.now(),
+    ),
+    countRows(c.env, "SELECT COUNT(*) AS count FROM threads WHERE deleted_at IS NULL"),
+  ]);
+  return c.json({
+    paused: control.paused !== 0,
+    reason: control.pause_reason,
+    updatedAt: Number(control.updated_at ?? 0),
+    rollingBudget: ROLLING_TOKEN_BUDGET,
+    rollingWindowSeconds: ROLLING_TOKEN_WINDOW_SECONDS,
+    users,
+    activeSessions,
+    activeThreads,
+  });
+});
+
+app.get("/internal/admin/agent/users", async (c) => {
+  if (!isInternalAdminRequest(c.req.raw, c.env)) return c.body(null, 403);
+  const requestUrl = new URL(c.req.url);
+  const query = requestUrl.searchParams.get("query")?.trim() ?? "";
+  if (query.length > 100) return jsonError("INVALID_QUERY", "That user search is too long.", 400);
+  const limit = Number(requestUrl.searchParams.get("limit") ?? 25);
+  if (!Number.isInteger(limit) || limit < 1 || limit > 50) {
+    return jsonError("INVALID_LIMIT", "User page size must be between 1 and 50.", 400);
+  }
+  const rawCursor = requestUrl.searchParams.get("cursor") ?? undefined;
+  const cursor = rawCursor === undefined ? null : decodeAdminCursor(rawCursor);
+  if (rawCursor !== undefined && !cursor) {
+    return jsonError("INVALID_CURSOR", "That user page is no longer available.", 400);
+  }
+
+  const where: string[] = [];
+  const bindings: unknown[] = [];
+  if (query) {
+    where.push("(LOWER(email) LIKE ? OR LOWER(COALESCE(display_name, '')) LIKE ?)");
+    const pattern = `%${query.toLowerCase()}%`;
+    bindings.push(pattern, pattern);
+  }
+  if (cursor) {
+    where.push("(updated_at < ? OR (updated_at = ? AND sub < ?))");
+    bindings.push(cursor.updatedAt, cursor.updatedAt, cursor.subject);
+  }
+  bindings.push(limit + 1);
+  const result = await c.env.AUTH_DB.prepare(
+    `SELECT sub, email, display_name, picture_url, updated_at FROM users${
+      where.length ? ` WHERE ${where.join(" AND ")}` : ""
+    } ORDER BY updated_at DESC, sub DESC LIMIT ?`,
+  )
+    .bind(...bindings)
+    .all<UserRow & { updated_at: number }>();
+  const page = result.results.slice(0, limit);
+  const users = await Promise.all(
+    page.map(async (user) => {
+      const [quota, activeSessions, activeThreads] = await Promise.all([
+        readRollingQuota(c.env, user.sub),
+        countRows(
+          c.env,
+          "SELECT COUNT(*) AS count FROM sessions WHERE sub = ?1 AND expires_at > ?2 AND revoked_at IS NULL",
+          user.sub,
+          Date.now(),
+        ),
+        countRows(
+          c.env,
+          "SELECT COUNT(*) AS count FROM threads WHERE sub = ?1 AND deleted_at IS NULL",
+          user.sub,
+        ),
+      ]);
+      return {
+        subject: user.sub,
+        email: user.email,
+        displayName: user.display_name,
+        pictureUrl: safeGoogleProfilePictureUrl(user.picture_url),
+        updatedAt: Number(user.updated_at),
+        quota,
+        activeSessions,
+        activeThreads,
+      };
+    }),
+  );
+  const hasMore = result.results.length > limit;
+  const last = page.at(-1);
+  return c.json({
+    users,
+    nextCursor: hasMore && last ? encodeAdminCursor(Number(last.updated_at), last.sub) : null,
+    hasMore,
+  });
+});
+
+app.get("/internal/admin/agent/users/:sub", async (c) => {
+  if (!isInternalAdminRequest(c.req.raw, c.env)) return c.body(null, 403);
+  const subject = c.req.param("sub").trim();
+  if (!subject || subject.length > 256)
+    return jsonError("INVALID_SUBJECT", "That user is invalid.", 400);
+  const user = await loadAdminUser(c.env, subject);
+  if (!user) return jsonError("USER_NOT_FOUND", "That user is not available.", 404);
+  return c.json(user);
+});
+
+app.post("/internal/admin/agent/control", async (c) => {
+  if (!isInternalAdminRequest(c.req.raw, c.env)) return c.body(null, 403);
+  const body = await readBody(c.req.raw);
+  if (typeof body.paused !== "boolean") {
+    return jsonError("PAUSE_REQUIRED", "paused must be a boolean.", 400);
+  }
+  const reason = typeof body.reason === "string" ? body.reason.trim().slice(0, 200) : null;
+  if (body.paused && !reason) {
+    return jsonError("PAUSE_REASON_REQUIRED", "A pause reason is required.", 400);
+  }
+  await c.env.AUTH_DB.prepare(
+    "UPDATE agent_control SET paused = ?1, pause_reason = ?2, updated_at = ?3 WHERE id = 1",
+  )
+    .bind(body.paused ? 1 : 0, body.paused ? reason : null, Date.now())
+    .run();
+  return c.json({ paused: body.paused, reason: body.paused ? reason : null });
+});
+
+app.post("/internal/admin/agent/users/:sub/reset", async (c) => {
+  if (!isInternalAdminRequest(c.req.raw, c.env)) return c.body(null, 403);
+  const subject = c.req.param("sub").trim();
+  if (!subject || subject.length > 256)
+    return jsonError("INVALID_SUBJECT", "That user is invalid.", 400);
+  const user = await c.env.AUTH_DB.prepare("SELECT sub FROM users WHERE sub = ?1")
+    .bind(subject)
+    .first<{ sub: string }>();
+  if (!user) return jsonError("USER_NOT_FOUND", "That user is not available.", 404);
+  await resetAdminSubject(c.env, subject, Date.now());
+  return c.json({ reset: true, subject });
+});
+
+app.post("/internal/admin/agent/reset", async (c) => {
+  if (!isInternalAdminRequest(c.req.raw, c.env)) return c.body(null, 403);
+  await resetAllAdminSubjects(c.env, Date.now());
+  return c.json({ reset: true, subject: "all" });
 });
 
 async function cleanupExpired(environment: PublicAuthEnvironment): Promise<void> {
