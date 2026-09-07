@@ -4,7 +4,24 @@ import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import type { Context } from "hono";
 import type { Bindings } from "../../bindings";
+import { hasOnlyKnownKeys, readContentRecord } from "../../utils/contentValidation";
 import { respondWithInternalError } from "../../utils/serverErrors";
+
+const MAX_MEDIA_BYTES = 100 * 1024 * 1024;
+
+function isAllowedMediaType(value: unknown): value is string {
+  return typeof value === "string" && /^(image|video)\/[a-z0-9.+-]+$/i.test(value);
+}
+
+function sanitizeFileName(value: unknown): string | null {
+  if (typeof value !== "string" || value.length === 0 || value.length > 200) return null;
+  const sanitized = value.replace(/[^a-z0-9.]/gi, "_").toLowerCase();
+  return sanitized === "." || sanitized === ".." ? null : sanitized;
+}
+
+function isSafeKey(key: string, prefix: string): boolean {
+  return key.startsWith(prefix) && !key.includes("..") && !key.includes("\\");
+}
 
 // Factory function to create a controller for a specific bucket directory
 export const createMediaController = (prefix: string) => ({
@@ -30,8 +47,13 @@ export const createMediaController = (prefix: string) => ({
       const formData = await c.req.formData();
       const file = formData.get("file");
       if (!file || !(file instanceof File)) return c.json({ error: "No file provided" }, 400);
+      if (file.size > MAX_MEDIA_BYTES)
+        return c.json({ error: "File exceeds the 100 MB limit" }, 413);
+      if (!isAllowedMediaType(file.type))
+        return c.json({ error: "Only image and video files are supported" }, 415);
 
-      const safeName = file.name.replace(/[^a-z0-9.]/gi, "_").toLowerCase();
+      const safeName = sanitizeFileName(file.name);
+      if (!safeName) return c.json({ error: "Filename is invalid" }, 400);
       const key = `${prefix}${crypto.randomUUID()}-${safeName}`;
 
       const arrayBuffer = await file.arrayBuffer();
@@ -45,10 +67,15 @@ export const createMediaController = (prefix: string) => ({
 
   presign: async (c: Context<{ Bindings: Bindings }>) => {
     try {
-      const { filename, contentType } = await c.req.json();
-      if (!filename) return c.json({ error: "Filename is required" }, 400);
+      const body = await readContentRecord(c.req.raw ?? c.req);
+      if (!body || !hasOnlyKnownKeys(body, ["filename", "contentType"])) {
+        return c.json({ error: "filename and contentType are required" }, 400);
+      }
+      const safeName = sanitizeFileName(body.filename);
+      if (!safeName) return c.json({ error: "Filename is invalid" }, 400);
+      if (!isAllowedMediaType(body.contentType))
+        return c.json({ error: "Only image and video files are supported" }, 415);
 
-      const safeName = filename.replace(/[^a-z0-9.]/gi, "_").toLowerCase();
       const key = `${prefix}${crypto.randomUUID()}-${safeName}`;
 
       const client = new S3Client({
@@ -64,7 +91,7 @@ export const createMediaController = (prefix: string) => ({
       const command = new PutObjectCommand({
         Bucket: c.env.R2_BUCKET_NAME,
         Key: key,
-        ContentType: contentType || "application/octet-stream",
+        ContentType: body.contentType,
       });
 
       const uploadUrl = await getSignedUrl(client, command, { expiresIn: 300 });
@@ -77,7 +104,7 @@ export const createMediaController = (prefix: string) => ({
 
   get: async (c: Context<{ Bindings: Bindings }>) => {
     const key = c.req.param("key");
-    if (!key) return c.json({ error: "Key is required" }, 400);
+    if (!key || !isSafeKey(key, prefix)) return c.json({ error: "Key is invalid" }, 400);
 
     const object = await c.env.BUCKET.get(key);
     if (!object) return c.json({ error: "Object not found" }, 404);
@@ -94,12 +121,16 @@ export const createMediaController = (prefix: string) => ({
   update: async (c: Context<{ Bindings: Bindings }>) => {
     try {
       const key = c.req.param("key");
-      if (!key) return c.json({ error: "Key is required" }, 400);
+      if (!key || !isSafeKey(key, prefix)) return c.json({ error: "Key is invalid" }, 400);
 
       const formData = await c.req.formData();
       const file = formData.get("file");
       if (!file || !(file instanceof File))
         return c.json({ error: "No replacement file provided" }, 400);
+      if (file.size > MAX_MEDIA_BYTES)
+        return c.json({ error: "File exceeds the 100 MB limit" }, 413);
+      if (!isAllowedMediaType(file.type))
+        return c.json({ error: "Only image and video files are supported" }, 415);
 
       const arrayBuffer = await file.arrayBuffer();
       await c.env.BUCKET.put(key, arrayBuffer, { httpMetadata: { contentType: file.type } });
@@ -112,7 +143,7 @@ export const createMediaController = (prefix: string) => ({
   delete: async (c: Context<{ Bindings: Bindings }>) => {
     try {
       const key = c.req.param("key");
-      if (!key) return c.json({ error: "Key is required" }, 400);
+      if (!key || !isSafeKey(key, prefix)) return c.json({ error: "Key is invalid" }, 400);
 
       const object = await c.env.BUCKET.head(key);
       if (!object) return c.json({ error: "Resource not found" }, 404);
