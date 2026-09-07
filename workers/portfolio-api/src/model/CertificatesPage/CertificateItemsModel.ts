@@ -98,7 +98,10 @@ export class CertificateItemsModel {
     const fields: string[] = [];
     const values: unknown[] = [];
 
+    const allowedKeys = new Set(["type", "url", "display_order"]);
+
     for (const [key, value] of Object.entries(item)) {
+      if (!allowedKeys.has(key)) continue;
       fields.push(`${key} = ?`);
       values.push(value);
     }
