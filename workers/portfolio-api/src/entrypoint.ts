@@ -12,6 +12,7 @@ import { SectionsController } from "./controller/HomePage/SectionsController";
 import { SectionItemsController } from "./controller/HomePage/SectionsItemsController";
 import { SettingsController } from "./controller/HomePage/SettingsController";
 import { createMediaController, MediaController } from "./controller/Media/MediaController";
+import { OrderingController } from "./controller/OrderingController";
 import { GalleryController } from "./controller/ProjectPage/GalleryController";
 import { ProjectsController } from "./controller/ProjectPage/ProjectsController";
 import { ProjectsPageController } from "./controller/ProjectsPageController";
@@ -23,6 +24,17 @@ const CertificatesMedia = createMediaController("Certificates/");
 
 const app = new Hono<{ Bindings: Bindings }>();
 const API_V2_PREFIX = "/api/v2";
+const ADMIN_WRITE_ORIGINS = new Set([
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:5174",
+  "http://localhost:3000",
+  "https://www.syn-forge.com",
+  "https://syn-forge.com",
+  "https://personal-portfolio.syn-forge.com",
+  "https://atelier.syn-forge.com",
+]);
 
 const noStoreByDefault: MiddlewareHandler<{ Bindings: Bindings }> = async (c, next) => {
   await next();
@@ -42,19 +54,7 @@ app.use(
     origin: (origin) => {
       if (!origin) return "";
 
-      const allowedOrigins = [
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:5174",
-        "http://localhost:3000",
-        "https://www.syn-forge.com",
-        "https://syn-forge.com",
-        "https://personal-portfolio.syn-forge.com",
-        "https://atelier.syn-forge.com",
-      ];
-
-      if (allowedOrigins.includes(origin)) return origin;
+      if (ADMIN_WRITE_ORIGINS.has(origin)) return origin;
       return "";
     },
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -109,6 +109,23 @@ app.get("/api/certificates/:certId/items", CertificateItemsController.listByCert
 // ==========================================
 
 app.use("/api/*", async (c, next) => {
+  const internalKey = c.req.header("X-Admin-Internal-Key");
+  if (
+    typeof c.env.ADMIN_INTERNAL_KEY === "string" &&
+    c.env.ADMIN_INTERNAL_KEY.length > 0 &&
+    internalKey === c.env.ADMIN_INTERNAL_KEY
+  ) {
+    await next();
+    return;
+  }
+
+  if (
+    !["GET", "HEAD", "OPTIONS"].includes(c.req.method) &&
+    !ADMIN_WRITE_ORIGINS.has(c.req.header("Origin") ?? "")
+  ) {
+    return c.json({ error: "Origin is not allowed" }, 403);
+  }
+
   const cookie = c.req.header("Cookie");
 
   if (!cookie || !cookie.includes("auth_token")) {
@@ -147,6 +164,7 @@ app.post("/api/certificates/media/presign", CertificatesMedia.presign);
 app.post("/api/project", ProjectsController.create);
 app.put("/api/project/:id", ProjectsController.update);
 app.delete("/api/project/:id", ProjectsController.delete);
+app.put("/api/projects/order", OrderingController.projects);
 
 // --- GALLERY (Write) ---
 app.post("/api/gallery", GalleryController.create);
@@ -157,6 +175,7 @@ app.delete("/api/gallery/:id", GalleryController.delete);
 app.post("/api/certificates", CertificatesController.create);
 app.put("/api/certificates/:id", CertificatesController.update);
 app.delete("/api/certificates/:id", CertificatesController.delete);
+app.put("/api/certificates/order", OrderingController.certificates);
 
 // --- CERTIFICATE ITEMS (Write) ---
 app.post("/api/certificates/items", CertificateItemsController.create);
@@ -176,7 +195,9 @@ app.delete("/api/settings/:key", SettingsController.delete);
 // --- PROFILE (Write) ---
 app.post("/api/profile", ProfileController.create);
 app.put("/api/profile", ProfileController.update);
+app.delete("/api/profile/:id{[0-9]+}", ProfileController.deleteById);
 app.delete("/api/profile/:label", ProfileController.delete);
+app.put("/api/profile/:id", ProfileController.updateById);
 
 // --- SECTIONS (Write) ---
 app.post("/api/sections", SectionsController.create);
