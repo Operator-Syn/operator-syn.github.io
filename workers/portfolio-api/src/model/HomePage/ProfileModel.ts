@@ -24,6 +24,13 @@ export class ProfileModel {
     return res.results;
   }
 
+  async getById(id: number) {
+    return this.db
+      .prepare("SELECT id, label, value, display_order FROM profile_info WHERE id=?")
+      .bind(id)
+      .first<ProfileRow>();
+  }
+
   async create(label: string, value: string, display_order: number) {
     return this.db
       .prepare(
@@ -43,7 +50,38 @@ export class ProfileModel {
       .first<ProfileRow>();
   }
 
+  async updateById(
+    id: number,
+    changes: { label?: string; value?: string; display_order?: number },
+  ) {
+    const fields: string[] = [];
+    const values: unknown[] = [];
+    if (changes.label !== undefined) {
+      fields.push("label=?");
+      values.push(changes.label);
+    }
+    if (changes.value !== undefined) {
+      fields.push("value=?");
+      values.push(changes.value);
+    }
+    if (changes.display_order !== undefined) {
+      fields.push("display_order=?");
+      values.push(changes.display_order);
+    }
+    if (fields.length === 0) return null;
+    return this.db
+      .prepare(
+        `UPDATE profile_info SET ${fields.join(", ")} WHERE id=? RETURNING id, label, value, display_order`,
+      )
+      .bind(...values, id)
+      .first<ProfileRow>();
+  }
+
   async delete(label: string) {
     await this.db.prepare("DELETE FROM profile_info WHERE label=?").bind(label).run();
+  }
+
+  async deleteById(id: number) {
+    await this.db.prepare("DELETE FROM profile_info WHERE id=?").bind(id).run();
   }
 }
