@@ -108,12 +108,20 @@ export class ProjectsModel {
     const fields: string[] = [];
     const values: unknown[] = [];
 
-    // Filter out id and created_at if they accidentally get passed in the body
+    const allowedKeys = new Set([
+      "title",
+      "type",
+      "url",
+      "short_description",
+      "long_description",
+      "project_link",
+      "display_order",
+    ]);
+
     for (const [key, value] of Object.entries(project)) {
-      if (key !== "id" && key !== "created_at") {
-        fields.push(`${key}=?`);
-        values.push(value);
-      }
+      if (!allowedKeys.has(key)) continue;
+      fields.push(`${key}=?`);
+      values.push(value);
     }
 
     if (!fields.length) return;
