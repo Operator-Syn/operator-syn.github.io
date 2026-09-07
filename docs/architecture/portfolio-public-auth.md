@@ -178,6 +178,16 @@ placeholder.
 
 ## Administrative controls
 
+The Eury admin gateway reaches the additive internal routes
+`/internal/admin/agent/status`, `/internal/admin/agent/users`,
+`/internal/admin/agent/users/:sub`, `/internal/admin/agent/control`,
+`/internal/admin/agent/users/:sub/reset`, and `/internal/admin/agent/reset`
+through a private service binding. They require the server-held
+`X-Admin-Internal-Key` and return only operational summaries: control state,
+bounded user identity, quota totals, active counts, and recent thread
+metadata. They never return transcript messages, reasoning, prompts, tool
+payloads, session hashes, or OAuth artifacts.
+
 The admin reset endpoint is protected by the existing admin auth Worker and
 increments the user quota epoch, revokes sessions, and clears that subject's
 rolling reservations. Historical token rows are marked consumed for schema
