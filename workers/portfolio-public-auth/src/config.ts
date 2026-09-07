@@ -17,6 +17,8 @@ export type PublicAuthEnvironment = {
   SESSION_COOKIE_SAME_SITE: string;
   GOOGLE_REDIRECT_URI: string;
   ADMIN_AUTH_ENDPOINT: string;
+  /** Server-held credential accepted only by the admin gateway service binding. */
+  ADMIN_INTERNAL_KEY: string;
   [name: string]: unknown;
 };
 
@@ -74,6 +76,7 @@ export type AgentControlRow = {
   pause_reason: string | null;
   estimated_neurons: number;
   utc_day: string;
+  updated_at?: number;
 };
 
 export type SessionContext = {
