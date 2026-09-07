@@ -42,7 +42,6 @@ export class SectionItemsModel {
     target_url: string | null,
     order: number,
   ) {
-    console.log(`[MODEL DEBUG] Inserting item into section: ${sectionId}`);
     return this.db
       .prepare(`
       INSERT INTO section_items (section_id, label, content, image_url, target_url, display_order)
@@ -69,7 +68,6 @@ export class SectionItemsModel {
     target_url: string | null,
     display_order: number,
   ) {
-    console.log(`[MODEL DEBUG] Updating item ID: ${id} with order: ${display_order}`);
     return this.db
       .prepare(`
       UPDATE section_items
