@@ -3,20 +3,17 @@
 import type { Context } from "hono";
 import type { Bindings } from "../../bindings";
 import { SnippetsPageModel } from "../../model/SnippetsPage/SnippetsPageModel";
+import {
+  hasOnlyKnownKeys,
+  parsePositiveId as parseContentId,
+  readContentRecord,
+} from "../../utils/contentValidation";
 import { logInternalError, respondWithInternalError } from "../../utils/serverErrors";
 
 type AppContext = Context<{ Bindings: Bindings }>;
 
 function parsePositiveId(value: string | undefined): number | null {
-  if (!value) return null;
-
-  const id = Number(value);
-
-  if (!Number.isInteger(id) || id <= 0) {
-    return null;
-  }
-
-  return id;
+  return parseContentId(value);
 }
 
 function parseOptionalParentId(value: FormDataEntryValue | null): number | null {
@@ -28,9 +25,9 @@ function parseOptionalParentId(value: FormDataEntryValue | null): number | null 
     throw new Error("Invalid parent_id");
   }
 
-  const parentId = Number(value);
+  const parentId = parseContentId(value);
 
-  if (!Number.isInteger(parentId) || parentId <= 0) {
+  if (parentId === null) {
     throw new Error("Invalid parent_id");
   }
 
@@ -42,9 +39,9 @@ function parseOptionalJsonParentId(value: unknown): number | null {
     return null;
   }
 
-  const parentId = Number(value);
+  const parentId = parseContentId(value);
 
-  if (!Number.isInteger(parentId) || parentId <= 0) {
+  if (parentId === null) {
     throw new Error("Invalid parent_id");
   }
 
@@ -60,13 +57,11 @@ function parseOptionalDisplayOrder(value: unknown): number | undefined {
     throw new Error("Invalid display_order");
   }
 
-  const displayOrder = Number(value);
-
-  if (!Number.isInteger(displayOrder) || displayOrder < 0) {
+  if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 0) {
     throw new Error("Invalid display_order");
   }
 
-  return displayOrder;
+  return value;
 }
 
 export const createSnippetsPageController = (prefix = "snippets/") => ({
@@ -207,12 +202,15 @@ export const createSnippetsPageController = (prefix = "snippets/") => ({
       const model = new SnippetsPageModel(c.env.DB, c.env.BUCKET, prefix);
 
       if (contentType.includes("application/json")) {
-        const body = await c.req.json<{
-          name?: string;
-          parent_id?: number | null;
-        }>();
+        const body = await readContentRecord(c.req.raw ?? c.req);
+        if (!body || !hasOnlyKnownKeys(body, ["name", "parent_id"])) {
+          return c.json({ error: "Folder payload contains an unsupported field" }, 400);
+        }
 
-        const name = body.name?.trim();
+        if (typeof body.name !== "string" || body.name.length > 200) {
+          return c.json({ error: "Name is required" }, 400);
+        }
+        const name = body.name.trim();
 
         if (!name) {
           return c.json({ error: "Name is required" }, 400);
@@ -268,12 +266,14 @@ export const createSnippetsPageController = (prefix = "snippets/") => ({
         return c.json({ error: "Invalid ID" }, 400);
       }
 
-      const body = await c.req.json<{
-        name?: string;
-        parent_id?: number | null;
-        display_order?: number;
-      }>();
+      const body = await readContentRecord(c.req.raw ?? c.req);
+      if (!body || !hasOnlyKnownKeys(body, ["name", "parent_id", "display_order"])) {
+        return c.json({ error: "Snippet payload contains an unsupported field" }, 400);
+      }
 
+      if (body.name !== undefined && (typeof body.name !== "string" || body.name.length > 200)) {
+        return c.json({ error: "Name is invalid" }, 400);
+      }
       const name = body.name === undefined ? undefined : body.name.trim();
       const parentId =
         body.parent_id === undefined ? undefined : parseOptionalJsonParentId(body.parent_id);
