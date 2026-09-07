@@ -100,3 +100,17 @@ from the current file name and is normalized when a stale name is requested.
 No offset or cursor parameter is involved in snippet document reads, and no
 D1 migration is required because path and excerpt values are derived at read
 time.
+
+## Admin gateway ordering and profile contracts
+
+The admin gateway uses two additive ordering/profile contracts during the
+dashboard parity rollout:
+
+- `PUT /api/projects/order` and `PUT /api/certificates/order` accept
+  `{ items: [{ id, display_order }] }` and update the complete order as one D1
+  batch.
+- `PUT /api/profile/:id` and `DELETE /api/profile/:id` address profile rows by
+  their stable numeric ID. The label-based routes remain for older clients.
+
+These writes also accept the server-held `X-Admin-Internal-Key` from the
+private Eury admin gateway. Browser callers must not send that header.
