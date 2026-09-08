@@ -24,9 +24,9 @@ test("normalizes route paths and falls back safely", () => {
   assert.equal(normalizeSocialPreviewPath("/"), "/");
   assert.equal(normalizeSocialPreviewPath(""), "/");
   assert.equal(getSocialPreviewMetadata("/unknown").route, "home");
-  assert.equal(getSocialPreviewMetadata("/").routeIndex, "01 / 09");
-  assert.equal(getSocialPreviewMetadata("/projects").routeIndex, "02 / 09");
-  assert.equal(getSocialPreviewMetadata("/unknown").routeIndex, "01 / 09");
+  assert.equal(getSocialPreviewMetadata("/").routeIndex, "01 / 10");
+  assert.equal(getSocialPreviewMetadata("/projects").routeIndex, "02 / 10");
+  assert.equal(getSocialPreviewMetadata("/unknown").routeIndex, "01 / 10");
   assert.equal(
     getSocialPreviewMetadata("/snippets/document/22/database-migrations.md").route,
     "snippets",
@@ -88,6 +88,7 @@ test("keeps route metadata grounded in existing public copy", async () => {
     "src/components/pages/termsAndConditionsPage/TermsAndConditions.tsx",
     "src/components/pages/netbirdPage/Netbird.tsx",
     "src/components/pages/atelierPage/Atelier.tsx",
+    "src/components/pages/agentPage/Agent.tsx",
   ];
 
   const sources = await Promise.all(
