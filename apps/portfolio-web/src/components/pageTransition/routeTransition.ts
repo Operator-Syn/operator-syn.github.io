@@ -15,6 +15,7 @@ const UTILITY_ROUTE_PREFIXES = [
   "/terms-and-conditions",
   "/netbird",
   "/atelier",
+  "/agent",
 ] as const;
 
 export const PAGE_TRANSITION_DURATION_MS = 560;
