@@ -2,13 +2,13 @@ import { Bot, ExternalLink, ShieldCheck } from "lucide-react";
 import StaticAppPage, { type StaticAppPageConfig } from "../staticAppPage/StaticAppPage";
 
 const agentPageConfig: StaticAppPageConfig = {
-  title: "Portfolio Assistant",
-  description: "Portfolio Assistant homepage for Syn-Forge and Google project verification.",
+  title: "Feilhann Agent",
+  description: "Feilhann Agent homepage for Syn-Forge and Google project verification.",
   url: "https://syn-forge.com/agent",
   kicker: "Syn-Forge authenticated assistant",
-  heading: "Portfolio Assistant",
+  heading: "Feilhann Agent",
   heroParagraphs: [
-    "This page identifies the Portfolio Assistant available from syn-forge.com. It answers questions about the public portfolio using a bounded, read-only evidence source.",
+    "This page identifies Feilhann Agent available from syn-forge.com. It answers questions about the public portfolio using a bounded, read-only evidence source.",
     "Google Sign-In is used to create a private assistant session for the visitor. Google account data is used for identity, access control, and security—not advertising or unrelated services.",
   ],
   summaryItems: [
@@ -29,14 +29,14 @@ const agentPageConfig: StaticAppPageConfig = {
       value: "Evidence-grounded portfolio questions and private thread history",
     },
   ],
-  policyReturnLabel: "Portfolio Assistant",
+  policyReturnLabel: "Feilhann Agent",
   policyReturnTo: "/agent",
   sections: [
     {
       title: "Google Project Verification",
       icon: ShieldCheck,
       paragraphs: [
-        "The Portfolio Assistant uses Google Sign-In through public-auth.syn-forge.com before opening a private conversation. The sign-in flow confirms the visitor's Google identity and returns them to the portfolio.",
+        "Feilhann Agent uses Google Sign-In through public-auth.syn-forge.com before opening a private conversation. The sign-in flow confirms the visitor's Google identity and returns them to the portfolio.",
         "The application uses the basic account information authorized on the Google consent screen to identify the visitor, maintain a session, and protect their private assistant threads.",
       ],
       listItems: [
