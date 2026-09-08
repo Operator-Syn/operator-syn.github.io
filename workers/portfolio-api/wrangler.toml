@@ -7,10 +7,6 @@ compatibility_date = "2024-01-01"
 VITE_CDN_URL = "https://personal-portfolio-bucket.syn-forge.com"
 R2_BUCKET_NAME = "personal-portfolio"
 
-[[services]]
-binding = "AUTH_WORKER"
-service = "auth-worker"
-
 [[d1_databases]]
 binding = "DB"
 database_name = "my-personal-portfolio"
