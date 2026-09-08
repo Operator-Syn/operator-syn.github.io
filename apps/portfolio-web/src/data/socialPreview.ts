@@ -118,9 +118,9 @@ export const SOCIAL_PREVIEW_ROUTES = [
   {
     route: "agent",
     pathname: "/agent",
-    label: "Portfolio Assistant",
-    title: "Portfolio Assistant",
-    description: "Portfolio Assistant homepage for Syn-Forge and Google project verification.",
+    label: "Feilhann Agent",
+    title: "Feilhann Agent",
+    description: "Feilhann Agent homepage for Syn-Forge and Google project verification.",
   },
 ] as const satisfies readonly SocialPreviewRouteDefinition[];
 
