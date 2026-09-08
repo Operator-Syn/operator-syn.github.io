@@ -17,7 +17,9 @@
     "/atelier",
     "/atelier/*",
     "/ai",
-    "/ai/*"
+    "/ai/*",
+    "/agent",
+    "/agent/*"
   ],
   "exclude": [
     "/social-image.png",
@@ -29,6 +31,7 @@
     "/netbird/social-image.png",
     "/atelier/social-image.png",
     "/ai/social-image.png",
+    "/agent/social-image.png",
     "/assets/*",
     "/cursors/*",
     "/llms.txt",
