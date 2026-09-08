@@ -90,7 +90,7 @@ function isInternalAdminRequest(request: Request, environment: PublicAuthEnviron
 function jsonError(
   code: string,
   message: string,
-  status: 400 | 401 | 403 | 404 | 409 | 426 | 429 | 502 | 503,
+  status: 400 | 401 | 403 | 404 | 409 | 410 | 426 | 429 | 502 | 503,
 ): Response {
   return Response.json({ error: { code, message } }, { status });
 }
@@ -301,19 +301,6 @@ async function findEmptyThread(
     return { status: "clear" };
   } catch {
     return { status: "unavailable" };
-  }
-}
-
-async function isAdmin(request: Request, environment: PublicAuthEnvironment): Promise<boolean> {
-  const cookie = request.headers.get("Cookie");
-  if (!cookie) return false;
-  try {
-    const response = await fetch(environment.ADMIN_AUTH_ENDPOINT, {
-      headers: { Cookie: cookie },
-    });
-    return response.ok;
-  } catch {
-    return false;
   }
 }
 
@@ -954,66 +941,13 @@ app.delete("/threads/:id", async (c) => {
   return c.json({ deleted: true });
 });
 
-app.post("/admin/reset", async (c) => {
-  if (!sameOrigin(c.req.raw, c.env)) return c.body(null, 403);
-  if (!(await isAdmin(c.req.raw, c.env))) return c.body(null, 403);
-  const body = await readBody(c.req.raw);
-  const sub = readString(body, "sub", 256);
-  const now = Date.now();
-  if (sub) {
-    await c.env.AUTH_DB.prepare("DELETE FROM rolling_token_usage WHERE sub = ?1").bind(sub).run();
-    await c.env.AUTH_DB.prepare(
-      "UPDATE users SET quota_epoch = quota_epoch + 1, updated_at = ?1 WHERE sub = ?2",
-    )
-      .bind(now, sub)
-      .run();
-    await c.env.AUTH_DB.prepare(
-      "UPDATE sessions SET revoked_at = ?1 WHERE sub = ?2 AND revoked_at IS NULL",
-    )
-      .bind(now, sub)
-      .run();
-    await c.env.AUTH_DB.prepare(
-      "UPDATE agent_tokens SET consumed_at = ?1 WHERE sub = ?2 AND consumed_at IS NULL",
-    )
-      .bind(now, sub)
-      .run();
-  } else {
-    await c.env.AUTH_DB.prepare("DELETE FROM rolling_token_usage").run();
-    await c.env.AUTH_DB.prepare("UPDATE users SET quota_epoch = quota_epoch + 1, updated_at = ?1")
-      .bind(now)
-      .run();
-    await c.env.AUTH_DB.prepare("UPDATE sessions SET revoked_at = ?1 WHERE revoked_at IS NULL")
-      .bind(now)
-      .run();
-    await c.env.AUTH_DB.prepare(
-      "UPDATE agent_tokens SET consumed_at = ?1 WHERE consumed_at IS NULL",
-    )
-      .bind(now)
-      .run();
-    await c.env.AUTH_DB.prepare(
-      "UPDATE agent_control SET estimated_neurons = 0, paused = 0, pause_reason = NULL, utc_day = ?1, updated_at = ?2 WHERE id = 1",
-    )
-      .bind(new Date(now).toISOString().slice(0, 10), now)
-      .run();
-  }
-  return c.json({ reset: true, subject: sub ?? "all" });
-});
+function retiredPublicAdminRoute(request: Request, environment: PublicAuthEnvironment): Response {
+  if (!sameOrigin(request, environment)) return new Response(null, { status: 403 });
+  return jsonError("LEGACY_ROUTE_RETIRED", "Use the Eury admin gateway.", 410);
+}
 
-app.post("/admin/control", async (c) => {
-  if (!sameOrigin(c.req.raw, c.env)) return c.body(null, 403);
-  if (!(await isAdmin(c.req.raw, c.env))) return c.body(null, 403);
-  const body = await readBody(c.req.raw);
-  const paused = body.paused;
-  if (typeof paused !== "boolean")
-    return c.json({ error: { code: "PAUSE_REQUIRED", message: "paused must be a boolean." } }, 400);
-  const reason = typeof body.reason === "string" ? body.reason.trim().slice(0, 200) : null;
-  await c.env.AUTH_DB.prepare(
-    "UPDATE agent_control SET paused = ?1, pause_reason = ?2, updated_at = ?3 WHERE id = 1",
-  )
-    .bind(paused ? 1 : 0, paused ? reason : null, Date.now())
-    .run();
-  return c.json({ paused, reason: paused ? reason : null });
-});
+app.post("/admin/reset", (c) => retiredPublicAdminRoute(c.req.raw, c.env));
+app.post("/admin/control", (c) => retiredPublicAdminRoute(c.req.raw, c.env));
 
 // These routes are reachable only through the Eury admin gateway's service
 // binding. They intentionally do not accept browser cookies or expose thread
