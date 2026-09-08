@@ -93,6 +93,9 @@ test("defines anchored overlay and disclosure motion tokens", async () => {
   assert.match(tocStyles, /\.snippet-document-toc-mobile\[data-state="open"\]/);
   assert.match(legalPolicyStyles, /\.legal-policy-page \.privacy-policy-action-panel/);
   assert.match(legalPolicyStyles, /\.legal-policy-page \.privacy-policy-quick-actions\.is-open/);
+  assert.match(legalPolicyStyles, /--policy-control-clearance:\s*calc\(/);
+  assert.match(legalPolicyStyles, /inset-inline-end:\s*var\(--policy-control-clearance\)/);
+  assert.match(legalPolicyStyles, /calc\(100vw - var\(--policy-control-clearance\)/);
 
   for (const source of [tokens, media, quickNavigation, tocStyles, legalPolicyStyles]) {
     assert.doesNotMatch(source, /!important/);
