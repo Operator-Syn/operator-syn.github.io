@@ -50,5 +50,5 @@ test("uses the shared ruled shell for NetBird and Atelier", async () => {
     resolve(repositoryRoot, "src/components/pages/agentPage/Agent.tsx"),
     "utf8",
   );
-  assert.match(agentSource, /heading: "Portfolio Assistant"/);
+  assert.match(agentSource, /heading: "Feilhann Agent"/);
 });
