@@ -31,7 +31,7 @@ const RECOVERY_ROUTES = [
     description: "Open the public guide for AI tools",
   },
   {
-    name: "Portfolio Assistant",
+    name: "Feilhann Agent",
     path: "/agent",
     description: "Review the authenticated assistant",
   },
