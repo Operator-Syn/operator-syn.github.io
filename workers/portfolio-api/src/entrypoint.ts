@@ -17,7 +17,6 @@ import { GalleryController } from "./controller/ProjectPage/GalleryController";
 import { ProjectsController } from "./controller/ProjectPage/ProjectsController";
 import { ProjectsPageController } from "./controller/ProjectsPageController";
 import { SnippetsPageController } from "./controller/SnippetsPage/SnippetsPageController";
-import { respondWithInternalError } from "./utils/serverErrors";
 
 const ProjectsMedia = MediaController;
 const CertificatesMedia = createMediaController("Certificates/");
@@ -105,7 +104,7 @@ app.get("/api/certificates/:id", CertificatesController.getById);
 app.get("/api/certificates/:certId/items", CertificateItemsController.listByCertificate);
 
 // ==========================================
-//   PRIVATE APIS (Auth Middleware Protected)
+//   PRIVATE APIS (Eury Gateway Protected)
 // ==========================================
 
 app.use("/api/*", async (c, next) => {
@@ -119,34 +118,14 @@ app.use("/api/*", async (c, next) => {
     return;
   }
 
-  if (
-    !["GET", "HEAD", "OPTIONS"].includes(c.req.method) &&
-    !ADMIN_WRITE_ORIGINS.has(c.req.header("Origin") ?? "")
-  ) {
+  if (!ADMIN_WRITE_ORIGINS.has(c.req.header("Origin") ?? "")) {
     return c.json({ error: "Origin is not allowed" }, 403);
   }
 
-  const cookie = c.req.header("Cookie");
-
-  if (!cookie || !cookie.includes("auth_token")) {
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
-  try {
-    const authRes = await c.env.AUTH_WORKER.fetch("https://auth-worker/auth/user", {
-      headers: {
-        Cookie: cookie,
-      },
-    });
-
-    if (!authRes.ok) {
-      return c.json({ error: "Forbidden" }, 403);
-    }
-
-    await next();
-  } catch (err: unknown) {
-    return respondWithInternalError(c, "AUTH middleware", err);
-  }
+  return c.json(
+    { error: { code: "LEGACY_ROUTE_RETIRED", message: "Use the Eury admin gateway." } },
+    410,
+  );
 });
 
 // --- MEDIA (Private CRUD) ---
