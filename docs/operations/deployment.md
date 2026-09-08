@@ -86,7 +86,7 @@ The following resources must already exist or be provisioned in the same
 Cloudflare account:
 
 - the syn-forge.com zone and DNS/certificate eligibility;
-- the separately managed auth-worker used by the portfolio API;
+- the auth-worker used by the Eury administration gateway;
 - the my-personal-portfolio D1 database and personal-portfolio R2 bucket;
 - the portfolio-agent-auth D1 database for public-auth;
 - the Cloudflare Pages project for the web application; and
@@ -95,9 +95,8 @@ Cloudflare account:
 
 The checked-in Worker configurations are authoritative for names and bindings:
 
-- workers/portfolio-api/wrangler.toml declares portfolio-api, the API DB/R2
-  bindings, the AUTH_WORKER service binding, and the
-  personal-portfolio.syn-forge.com custom domain.
+- workers/portfolio-api/wrangler.toml declares portfolio-api, its API DB/R2
+  bindings, and the personal-portfolio.syn-forge.com custom domain.
 - workers/portfolio-public-auth/wrangler.toml declares public-auth, the auth
   D1 binding, the portfolio-agent service binding, and
   public-auth.syn-forge.com.
@@ -138,9 +137,12 @@ workers/portfolio-api/wrangler.toml:
 
 - VITE_CDN_URL points to the public media hostname;
 - R2_BUCKET_NAME is personal-portfolio;
-- DB targets my-personal-portfolio;
-- BUCKET targets personal-portfolio; and
-- AUTH_WORKER targets auth-worker.
+- DB targets my-personal-portfolio; and
+- BUCKET targets personal-portfolio.
+
+The server-held `ADMIN_INTERNAL_KEY` is provisioned as a Worker secret and is
+the only write credential accepted from the Eury gateway; it is not part of
+these non-secret values.
 
 Do not add the API secrets to the MCP Worker. The MCP Worker only needs its
 PORTFOLIO_API Service Binding in production.
@@ -621,16 +623,21 @@ curl --fail --silent --show-error \
   https://personal-portfolio.syn-forge.com/api/snippets
 ~~~
 
-Verify that public reads return data or expected empty collections, and that a
-private route does not become public without an auth_token cookie:
+Verify that public reads return data or expected empty collections, and that
+browser-origin content writes are retired:
 
 ~~~bash
 curl --include --silent --request POST \
+  -H 'Origin: https://atelier.syn-forge.com' \
+  -H 'Cookie: auth_token=retirement-probe-only' \
+  --data '{}' \
   https://personal-portfolio.syn-forge.com/api/project
 ~~~
 
-Do not paste cookies, tokens, presigned URLs, or private response contents into
-logs or issue reports.
+An allowed browser origin should receive `410 LEGACY_ROUTE_RETIRED`; missing
+or untrusted origins should receive `403`. The private Eury gateway sends the
+server-held internal key instead. Do not paste cookies, tokens, presigned URLs,
+or private response contents into logs or issue reports.
 
 ### Pages checks
 
