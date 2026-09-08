@@ -42,9 +42,11 @@ These GET routes are registered before the private auth middleware:
 
 ## Private routes
 
-All routes below require an `auth_token` cookie. The Worker forwards the cookie
-to `AUTH_WORKER` at `https://auth-worker/auth/user`. Missing cookies return
-`401`; a failed auth response returns `403`.
+All routes below are private writes accepted only from the Eury admin gateway with
+the server-held `X-Admin-Internal-Key`. Browser-origin writes, including the
+legacy `auth_token` cookie path, are retired: configured admin origins return
+`410 LEGACY_ROUTE_RETIRED`, while missing or untrusted origins return `403`.
+Browser callers must not send the internal header.
 
 | Area | Routes |
 | --- | --- |
