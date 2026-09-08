@@ -26,7 +26,7 @@ export const routes: RouteItem[] = [
   { name: "NetBird", path: "/netbird", component: Netbird, showInNav: false },
   { name: "Atelier", path: "/atelier", component: Atelier, showInNav: false },
   { name: "AI and MCP", path: "/ai", component: Ai, showInNav: false },
-  { name: "Portfolio Assistant", path: "/agent", component: Agent, showInNav: false },
+  { name: "Feilhann Agent", path: "/agent", component: Agent, showInNav: false },
 ];
 
 export const navLinks: NavLinkItem[] = routes.filter((route) => route.showInNav !== false);
