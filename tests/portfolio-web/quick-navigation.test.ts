@@ -18,7 +18,7 @@ test("surfaces every hidden route in quick navigation", async () => {
 
   assert.deepEqual(
     hiddenRoutes.map((route) => route.path),
-    ["/privacy-policy", "/terms-and-conditions", "/netbird", "/atelier", "/ai"],
+    ["/privacy-policy", "/terms-and-conditions", "/netbird", "/atelier", "/ai", "/agent"],
   );
 
   for (const route of hiddenRoutes) {
