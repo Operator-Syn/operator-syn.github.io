@@ -46,4 +46,9 @@ test("uses the shared ruled shell for NetBird and Atelier", async () => {
   assert.doesNotMatch(staticAppStyles, /!important|border-radius: 999/);
   assert.match(netbirdSource, /heading: "NetBird"/);
   assert.match(atelierSource, /heading: "Atelier"/);
+  const agentSource = await readFile(
+    resolve(repositoryRoot, "src/components/pages/agentPage/Agent.tsx"),
+    "utf8",
+  );
+  assert.match(agentSource, /heading: "Portfolio Assistant"/);
 });
