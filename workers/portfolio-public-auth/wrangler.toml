@@ -8,7 +8,6 @@ PORTFOLIO_ORIGIN = "https://syn-forge.com"
 BROWSER_ORIGINS = "https://syn-forge.com,https://www.syn-forge.com,http://localhost:5173"
 SESSION_COOKIE_SAME_SITE = "None"
 GOOGLE_REDIRECT_URI = "https://public-auth.syn-forge.com/oauth/google/callback"
-ADMIN_AUTH_ENDPOINT = "https://auth.syn-forge.com/auth/user"
 
 [[d1_databases]]
 binding = "AUTH_DB"
@@ -35,7 +34,6 @@ PORTFOLIO_ORIGIN = "http://localhost:5173"
 BROWSER_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173"
 SESSION_COOKIE_SAME_SITE = "Lax"
 GOOGLE_REDIRECT_URI = "http://localhost:8787/oauth/google/callback"
-ADMIN_AUTH_ENDPOINT = "http://localhost:8789/auth/user"
 
 [[env.local.d1_databases]]
 binding = "AUTH_DB"
