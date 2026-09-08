@@ -20,7 +20,7 @@ const links = {
     ["01", "NetBird", "/netbird"],
     ["02", "Atelier", "/atelier"],
     ["03", "AI and MCP", "/ai"],
-    ["04", "Portfolio Assistant", "/agent"],
+    ["04", "Feilhann Agent", "/agent"],
   ],
 } as const;
 
