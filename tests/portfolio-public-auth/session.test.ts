@@ -54,7 +54,6 @@ function environment(database: SessionDatabase) {
     SESSION_COOKIE_SAME_SITE: "Lax",
     GOOGLE_REDIRECT_URI: "https://public-auth.syn-forge.com/oauth/google/callback",
     AGENT_AUDIENCE: "portfolio-agent",
-    ADMIN_AUTH_ENDPOINT: "https://auth.syn-forge.com/auth/user",
   };
 }
 
