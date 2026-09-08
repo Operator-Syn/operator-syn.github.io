@@ -303,8 +303,13 @@
 
 .legal-policy-page .privacy-policy-quick-actions {
     --policy-progress: 0%;
+    --policy-control-clearance: calc(
+        var(--floating-control-inline-end) +
+        3.25rem +
+        var(--floating-control-gap)
+    );
     position: fixed;
-    right: max(1rem, env(safe-area-inset-right));
+    inset-inline-end: var(--policy-control-clearance);
     bottom: max(1rem, env(safe-area-inset-bottom));
     z-index: 20;
     display: grid;
@@ -372,7 +377,10 @@
 }
 
 .legal-policy-page .privacy-policy-action-panel {
-    width: min(25rem, calc(100vw - 2rem));
+    width: min(
+        25rem,
+        calc(100vw - var(--policy-control-clearance) - var(--floating-control-edge-space))
+    );
     max-height: min(36rem, calc(100vh - 7.5rem));
     overflow: hidden;
     border: 1px solid var(--color-line-strong);
@@ -663,7 +671,7 @@
     }
 
     .legal-policy-page .privacy-policy-quick-actions {
-        right: max(0.75rem, env(safe-area-inset-right));
+        inset-inline-end: var(--policy-control-clearance);
         bottom: max(0.75rem, env(safe-area-inset-bottom));
     }
 
