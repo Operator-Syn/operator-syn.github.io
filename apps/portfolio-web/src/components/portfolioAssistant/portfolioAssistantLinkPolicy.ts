@@ -12,6 +12,7 @@ const KNOWN_PORTFOLIO_PATHS = new Set([
   "/netbird",
   "/atelier",
   "/ai",
+  "/agent",
 ]);
 
 function isAbsoluteUrl(value: string): boolean {
