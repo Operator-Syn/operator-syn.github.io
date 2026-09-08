@@ -106,7 +106,6 @@ function environment(
     SESSION_COOKIE_SAME_SITE: "None",
     GOOGLE_REDIRECT_URI: "https://public-auth.syn-forge.com/oauth/google/callback",
     AGENT_AUDIENCE: "portfolio-agent",
-    ADMIN_AUTH_ENDPOINT: "https://auth.syn-forge.com/auth/user",
     AGENT_INTERNAL_KEY: "test-internal-key",
   };
 }
