@@ -188,14 +188,9 @@ bounded user identity, quota totals, active counts, and recent thread
 metadata. They never return transcript messages, reasoning, prompts, tool
 payloads, session hashes, or OAuth artifacts.
 
-The admin reset endpoint is protected by the existing admin auth Worker and
-increments the user quota epoch, revokes sessions, and clears that subject's
-rolling reservations. Historical token rows are marked consumed for schema
-compatibility but are not an active authorization mechanism. A user-specific
-reset leaves the global neuron guard unchanged; a global reset also clears all
-rolling reservations and the aggregate estimate, then resumes the agent. The
-control endpoint can pause or resume the assistant with a bounded reason. These
-endpoints are not exposed through the public frontend.
+The former browser-facing `POST /admin/reset` and `POST /admin/control` routes are retired: configured browser origins receive `410 LEGACY_ROUTE_RETIRED`, while other origins receive `403`, with no cookie, auth-worker, or database lookup. Administrative actions are available only through the Eury gateway's internal service-binding seam.
+
+The internal admin reset endpoint increments the user quota epoch, revokes sessions, and clears that subject's rolling reservations. Historical token rows are marked consumed for schema compatibility but are not an active authorization mechanism. A user-specific reset leaves the global neuron guard unchanged; a global reset also clears all rolling reservations and the aggregate estimate, then resumes the agent. The internal control endpoint can pause or resume the assistant with a bounded reason. These endpoints are not exposed through the public frontend.
 
 See [[architecture/portfolio-agent|Portfolio Assistant Agent]] for model and
 MCP limits, and [[operations/deployment|Production deployment]] for
