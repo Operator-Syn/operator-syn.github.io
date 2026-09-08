@@ -14,10 +14,16 @@ class RecordingDatabase {
     };
     return {
       bind: (...args: unknown[]) => ({
+        first: async () => ({ sub: "google-sub" }),
         run: async () => record(args),
       }),
       run: async () => record([]),
     };
+  }
+
+  async batch(statements: Array<{ run: () => Promise<unknown> }>) {
+    await Promise.all(statements.map((statement) => statement.run()));
+    return [];
   }
 }
 
@@ -32,88 +38,103 @@ function environment(database: RecordingDatabase, browserOrigins = "https://syn-
     SESSION_COOKIE_SAME_SITE: "Lax",
     GOOGLE_REDIRECT_URI: "https://public-auth.syn-forge.com/oauth/google/callback",
     AGENT_AUDIENCE: "portfolio-agent",
-    ADMIN_AUTH_ENDPOINT: "https://auth.syn-forge.com/auth/user",
+    ADMIN_INTERNAL_KEY: "test-internal-key",
   };
 }
 
-async function postReset(
+async function postPublicAdmin(
   database: RecordingDatabase,
-  body: Record<string, unknown>,
-  origin = "https://syn-forge.com",
+  path: "/admin/reset" | "/admin/control",
+  origin: string | null = "https://syn-forge.com",
   browserOrigins = "https://syn-forge.com",
 ) {
-  const request = new Request("https://public-auth.syn-forge.com/admin/reset", {
+  const headers = new Headers({
+    Cookie: "auth_token=legacy-provider-token",
+    "Content-Type": "application/json",
+  });
+  if (origin) headers.set("Origin", origin);
+  const request = new Request(`https://public-auth.syn-forge.com${path}`, {
     method: "POST",
-    headers: {
-      Origin: origin,
-      Cookie: "admin-session=present",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
+    headers,
+    body: JSON.stringify({}),
   });
   return app.fetch(request, environment(database, browserOrigins) as never);
 }
 
-test("state-changing routes use the configured browser origins", async () => {
+async function postInternalReset(database: RecordingDatabase, body: Record<string, unknown>) {
+  const path =
+    typeof body.sub === "string"
+      ? `/internal/admin/agent/users/${encodeURIComponent(body.sub)}/reset`
+      : "/internal/admin/agent/reset";
+  const request = new Request(`https://public-auth.syn-forge.com${path}`, {
+    method: "POST",
+    headers: {
+      "X-Admin-Internal-Key": "test-internal-key",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  return app.fetch(request, environment(database) as never);
+}
+
+test("retired public agent admin routes fail closed without auth lookup or mutation", async () => {
   const database = new RecordingDatabase();
+  let authCalls = 0;
   const originalFetch = globalThis.fetch;
-  globalThis.fetch = async () => new Response(null, { status: 200 });
+  globalThis.fetch = async () => {
+    authCalls += 1;
+    return new Response(null, { status: 200 });
+  };
   try {
-    const localResponse = await postReset(
+    for (const path of ["/admin/reset", "/admin/control"] as const) {
+      const response = await postPublicAdmin(database, path);
+      assert.equal(response.status, 410);
+      assert.deepEqual(await response.json(), {
+        error: {
+          code: "LEGACY_ROUTE_RETIRED",
+          message: "Use the Eury admin gateway.",
+        },
+      });
+    }
+    const forbiddenResponse = await postPublicAdmin(
       database,
-      {},
-      "http://localhost:5173",
-      "http://localhost:5173",
-    );
-    assert.equal(localResponse.status, 200);
-    const forbiddenResponse = await postReset(
-      database,
-      {},
+      "/admin/reset",
       "https://evil.example",
-      "http://localhost:5173",
     );
     assert.equal(forbiddenResponse.status, 403);
+    const noOriginResponse = await postPublicAdmin(database, "/admin/reset", null);
+    assert.equal(noOriginResponse.status, 403);
   } finally {
     globalThis.fetch = originalFetch;
   }
+  assert.equal(database.queries.length, 0);
+  assert.equal(authCalls, 0);
 });
 
 test("user reset preserves the global neuron control row", async () => {
   const database = new RecordingDatabase();
-  const originalFetch = globalThis.fetch;
-  globalThis.fetch = async () => new Response(null, { status: 200 });
-  try {
-    const response = await postReset(database, { sub: "google-sub" });
-    assert.equal(response.status, 200);
-    assert.equal(
-      database.queries.some(({ sql }) => sql.includes("UPDATE agent_control")),
-      false,
-    );
-    assert.equal(
-      database.queries.some(({ sql }) => sql.includes("DELETE FROM rolling_token_usage")),
-      true,
-    );
-  } finally {
-    globalThis.fetch = originalFetch;
-  }
+  const response = await postInternalReset(database, { sub: "google-sub" });
+  assert.equal(response.status, 200);
+  assert.equal(
+    database.queries.some(({ sql }) => sql.includes("UPDATE agent_control")),
+    false,
+  );
+  assert.equal(
+    database.queries.some(({ sql }) => sql.includes("DELETE FROM rolling_token_usage")),
+    true,
+  );
 });
 
 test("global reset clears the global neuron control row", async () => {
   const database = new RecordingDatabase();
-  const originalFetch = globalThis.fetch;
-  globalThis.fetch = async () => new Response(null, { status: 200 });
-  try {
-    const response = await postReset(database, {});
-    assert.equal(response.status, 200);
-    assert.equal(
-      database.queries.some(({ sql }) => sql.includes("UPDATE agent_control")),
-      true,
-    );
-    assert.equal(
-      database.queries.some(({ sql }) => sql.includes("DELETE FROM rolling_token_usage")),
-      true,
-    );
-  } finally {
-    globalThis.fetch = originalFetch;
-  }
+  const response = await postInternalReset(database, {});
+  assert.equal(response.status, 200);
+  assert.equal(
+    database.queries.some(({ sql }) => sql.includes("UPDATE agent_control")),
+    true,
+  );
+  assert.equal(
+    database.queries.some(({ sql }) => sql.includes("DELETE FROM rolling_token_usage")),
+    true,
+  );
 });
