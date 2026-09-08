@@ -16,7 +16,6 @@ export type PublicAuthEnvironment = {
   BROWSER_ORIGINS: string;
   SESSION_COOKIE_SAME_SITE: string;
   GOOGLE_REDIRECT_URI: string;
-  ADMIN_AUTH_ENDPOINT: string;
   /** Server-held credential accepted only by the admin gateway service binding. */
   ADMIN_INTERNAL_KEY: string;
   [name: string]: unknown;
