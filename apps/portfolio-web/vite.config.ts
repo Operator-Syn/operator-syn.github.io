@@ -25,6 +25,7 @@ const staticRoutes = [
   "/netbird",
   "/atelier",
   "/ai",
+  "/agent",
 ];
 
 function slugifySnippetName(name: string) {
