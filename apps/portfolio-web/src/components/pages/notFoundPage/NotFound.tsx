@@ -30,6 +30,11 @@ const RECOVERY_ROUTES = [
     path: "/ai",
     description: "Open the public guide for AI tools",
   },
+  {
+    name: "Portfolio Assistant",
+    path: "/agent",
+    description: "Review the authenticated assistant",
+  },
 ] as const;
 
 export default function NotFound() {
