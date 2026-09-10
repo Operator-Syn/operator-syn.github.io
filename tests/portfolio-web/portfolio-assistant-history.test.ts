@@ -121,6 +121,8 @@ test("loads the authenticated rolling quota through public-auth", async () => {
     captured = { cache: init?.cache, credentials: init?.credentials, url: String(input) };
     return Response.json({
       usedTokens: 125_000,
+      settledTokens: 125_000,
+      provisionalTokens: 0,
       budgetTokens: 1_000_000,
       remainingTokens: 875_000,
       resetAt: Date.parse("2026-08-31T00:25:00.000Z"),
@@ -130,6 +132,8 @@ test("loads the authenticated rolling quota through public-auth", async () => {
   try {
     assert.deepEqual(await getAssistantQuota(), {
       usedTokens: 125_000,
+      settledTokens: 125_000,
+      provisionalTokens: 0,
       budgetTokens: 1_000_000,
       remainingTokens: 875_000,
       resetAt: Date.parse("2026-08-31T00:25:00.000Z"),
