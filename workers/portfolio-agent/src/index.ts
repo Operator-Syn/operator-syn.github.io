@@ -111,7 +111,22 @@ async function internalRequest(
     return Response.json(await stub.exportThread());
   }
   if (action === "delete" && request.method === "DELETE") {
-    return Response.json(await stub.deleteThread());
+    try {
+      return Response.json(await stub.deleteThread());
+    } catch (error) {
+      if (error instanceof Error && error.message === "THREAD_BUSY") {
+        return Response.json(
+          {
+            error: {
+              code: "THREAD_BUSY",
+              message: "Finish the active assistant response before deleting this thread.",
+            },
+          },
+          { status: 409 },
+        );
+      }
+      throw error;
+    }
   }
   return Response.json({ error: "Method not allowed" }, { status: 405 });
 }
