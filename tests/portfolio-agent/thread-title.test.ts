@@ -297,6 +297,7 @@ test("does not write a malformed generated title", async () => {
 test("contains provider failures and reports a bounded diagnostic", async () => {
   const database = new TitleDatabase();
   const diagnostics: PortfolioAgentDiagnostic[] = [];
+  let releaseCalls = 0;
 
   const result = await persistGeneratedThreadTitle({
     ...makeOptions(
@@ -306,15 +307,55 @@ test("contains provider failures and reports a bounded diagnostic", async () => 
       },
       diagnostics,
     ),
+    releaseQuota: async () => {
+      releaseCalls += 1;
+      return true;
+    },
   });
 
   assert.deepEqual(result, { outcome: "failed", reason: "provider-error" });
   assert.equal(database.updateCalls, 0);
+  assert.equal(releaseCalls, 0);
   assert.deepEqual(
     diagnostics.at(-1) && {
       phase: diagnostics.at(-1)?.phase,
       outcome: diagnostics.at(-1)?.outcome,
       reason: diagnostics.at(-1)?.reason,
+    },
+    { phase: "thread-title", outcome: "failed", reason: "provider-error" },
+  );
+});
+
+test("releases a title reservation on provider capacity failure", async () => {
+  const database = new TitleDatabase();
+  const diagnostics: PortfolioAgentDiagnostic[] = [];
+  let releaseCalls = 0;
+
+  const result = await persistGeneratedThreadTitle({
+    ...makeOptions(
+      database,
+      async () => {
+        throw new Error("daily Workers AI allocation has been used up");
+      },
+      diagnostics,
+    ),
+    releaseQuota: async (_database, reservationId) => {
+      assert.equal(reservationId, 1);
+      releaseCalls += 1;
+      return true;
+    },
+  });
+
+  assert.deepEqual(result, { outcome: "failed", reason: "provider-error" });
+  assert.equal(releaseCalls, 1);
+  assert.equal(database.updateCalls, 0);
+
+  const capacityDiagnostic = diagnostics.at(-1);
+  assert.deepEqual(
+    capacityDiagnostic && {
+      phase: capacityDiagnostic.phase,
+      outcome: capacityDiagnostic.outcome,
+      reason: capacityDiagnostic.reason,
     },
     { phase: "thread-title", outcome: "failed", reason: "provider-error" },
   );
