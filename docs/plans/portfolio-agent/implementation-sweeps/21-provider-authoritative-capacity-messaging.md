@@ -29,10 +29,9 @@ explicit UTC reset guidance.
 - [x] Removed the fixed per-turn estimate from the admission path. The control
       row now acts as an administrator pause switch and clears only its legacy
       `daily-neuron-budget` marker.
-- [x] Added a narrow classifier for Workers AI's out-of-capacity signal
-      (including provider error code `3040`) and the exact user-facing copy:
-      "The model is at its maximum daily capacity. Please try again at 00:00
-      UTC."
+- [x] Added a provider-capacity classifier for Workers AI account-allocation
+      codes `3036`/`4006` and out-of-capacity code `3040`, with safe user-facing
+      messages for allocation exhaustion and temporary capacity failures.
 - [x] Kept the 22,000-token/30-minute per-user reservation separate from the
       provider's account-wide capacity and added regression coverage for both
       paths.
