@@ -170,6 +170,8 @@ test("internal agent list bounds search and page size", async () => {
         updatedAt: 1_700_000_000_000,
         quota: {
           usedTokens: 250,
+          settledTokens: 250,
+          provisionalTokens: 0,
           budgetTokens: 1_000_000,
           remainingTokens: 999_750,
           resetAt: 1_700_003_600_000,
