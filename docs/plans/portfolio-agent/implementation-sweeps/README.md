@@ -76,6 +76,7 @@ reliability work remain navigable without copying their evidence.
 - [[plans/portfolio-agent/sweeps/32-shared-mcp-discovery-deadline|Sweep 32 — shared MCP discovery deadline]]
 - [[plans/portfolio-agent/sweeps/33-structured-diagnostics|Sweep 33 — structured diagnostics]]
 - [[plans/portfolio-agent/sweeps/34-cross-record-evidence-grounding|Sweep 34 — cross-record evidence grounding]]
+- [[plans/portfolio-agent/sweeps/38-refund-provider-capacity-quota|Sweep 38 — refundable provider-capacity quota reservations]]
 
 ## Related notes
 
