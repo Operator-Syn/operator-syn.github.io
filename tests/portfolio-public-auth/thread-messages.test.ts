@@ -360,3 +360,35 @@ test("fails closed when the agent history payload is malformed", async () => {
     },
   });
 });
+
+test("preserves an active-turn deletion conflict", async () => {
+  const response = await app.fetch(
+    new Request(`https://public-auth.syn-forge.com/threads/${THREAD_ID}`, {
+      method: "DELETE",
+      headers: {
+        Origin: ORIGIN,
+        Cookie: `${SESSION_COOKIE}=${SESSION_VALUE}`,
+      },
+    }),
+    environment(new ThreadDatabase(true, false), {
+      fetch: async () =>
+        Response.json(
+          {
+            error: {
+              code: "THREAD_BUSY",
+              message: "Finish the active assistant response before deleting this thread.",
+            },
+          },
+          { status: 409 },
+        ),
+    }) as never,
+  );
+
+  assert.equal(response.status, 409);
+  assert.deepEqual(await response.json(), {
+    error: {
+      code: "THREAD_BUSY",
+      message: "Finish the active assistant response before deleting this thread.",
+    },
+  });
+});
