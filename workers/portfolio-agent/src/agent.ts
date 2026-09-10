@@ -18,6 +18,7 @@ import {
   MCP_CONNECTION_RETRY_MAX_DELAY_MS,
   MCP_DISCOVERY_TIMEOUT_MS,
   MCP_SERVER_NAME,
+  MODEL_ALLOCATION_MESSAGE,
   MODEL_CAPACITY_MESSAGE,
   MODEL_ID,
   type PortfolioAgentEnvironment,
@@ -27,7 +28,7 @@ import {
   defaultPortfolioAgentDiagnosticSink,
   emitPortfolioAgentDiagnostic,
 } from "./diagnostics.ts";
-import { isModelCapacityError } from "./errors.ts";
+import { classifyModelCapacityError } from "./errors.ts";
 import {
   createPortfolioEvidenceState,
   hasCompletePortfolioToolCatalog,
@@ -64,7 +65,10 @@ import {
   checkRollingQuotaAvailability,
   consumeRollingQuota,
   estimateQuotaUnits,
+  markRollingTokenUsageInFlight,
+  markRollingTokenUsageUnknown,
   PROVISIONAL_OUTPUT_TOKEN_ALLOWANCE,
+  releaseRollingTokenReservation,
   settleRollingTokenUsage,
 } from "./quota.ts";
 import { boundPortfolioAnswerStream, coalesceToolInputDeltas } from "./stream.ts";
@@ -98,7 +102,9 @@ type PortfolioCatalog =
 function modelStreamError(error: unknown): string {
   const errorType = error instanceof Error ? error.name : typeof error;
   console.error(`[portfolio-agent] model stream failed (${errorType})`);
-  if (isModelCapacityError(error)) return MODEL_CAPACITY_MESSAGE;
+  const capacity = classifyModelCapacityError(error);
+  if (capacity?.class === "account-allocation") return MODEL_ALLOCATION_MESSAGE;
+  if (capacity?.class === "out-of-capacity") return MODEL_CAPACITY_MESSAGE;
   return "The assistant could not complete this response. Please try again.";
 }
 
@@ -443,8 +449,14 @@ export class PortfolioAgent extends AIChatAgent<PortfolioAgentEnvironment, unkno
       phase: "quota",
       outcome: "succeeded",
       quotaDecision: "reserved",
+      quotaState: "reserved",
       requestId: options?.requestId,
     });
+    try {
+      await markRollingTokenUsageInFlight(this.environment.AUTH_DB, quota.reservationId);
+    } catch {
+      // A missing/old migration must not turn a model request into a user-visible failure.
+    }
     const modelStartedAt = Date.now();
     this.emitDiagnostic({
       phase: "model",
@@ -453,111 +465,161 @@ export class PortfolioAgent extends AIChatAgent<PortfolioAgentEnvironment, unkno
     });
     const workersai = createWorkersAI({ binding: this.environment.AI as never });
     let evidenceState = createPortfolioEvidenceState();
-    const result = streamText({
-      model: workersai(MODEL_ID, { sessionAffinity: this.sessionAffinity }),
-      system: systemPrompt,
-      messages: modelMessages,
-      tools: selectedTools,
-      prepareStep: () => ({ toolChoice: portfolioToolChoice(evidenceState) }),
-      stopWhen: () => shouldStopPortfolioToolLoop(evidenceState),
-      abortSignal: options?.abortSignal,
-      onToolExecutionStart: () => {
-        this.emitDiagnostic({
-          phase: "mcp-tool",
-          outcome: "started",
-          toolCount: 1,
-          requestId: options?.requestId,
-        });
-      },
-      onToolExecutionEnd: ({ toolCall, toolOutput }) => {
-        const previousSuccesses = evidenceState.successfulResults;
-        evidenceState = recordPortfolioToolResult(evidenceState, toolCall.toolName, toolOutput);
-        const usable = evidenceState.successfulResults > previousSuccesses;
-        this.emitDiagnostic({
-          phase: "mcp-tool",
-          outcome: usable ? "succeeded" : "failed",
-          reason: usable ? undefined : "unusable-result",
-          toolCount: 1,
-          requestId: options?.requestId,
-        });
-      },
-      onEnd: async ({ usage, finishReason, text }) => {
-        const modelSucceeded = finishReason !== "error" && evidenceState.successfulResults > 0;
-        const titleEligible = isThreadTitleEligible(
-          finishReason,
-          text,
-          options?.abortSignal?.aborted ?? false,
-        );
-        this.emitDiagnostic({
-          phase: "model",
-          outcome: modelSucceeded ? "succeeded" : "failed",
-          reason: modelSucceeded
-            ? undefined
-            : finishReason === "error"
-              ? "provider-error"
-              : "unusable-result",
-          elapsedMs: Date.now() - modelStartedAt,
-          requestId: options?.requestId,
-        });
-        this.emitDiagnostic({
-          phase: "settlement",
-          outcome: "started",
-          requestId: options?.requestId,
-        });
-        if (quota.allowed) {
-          try {
-            const settled = await settleRollingTokenUsage(
-              this.environment.AUTH_DB,
-              quota.reservationId,
-              usage,
-            );
-            if (!settled) {
+    let result: ReturnType<typeof streamText>;
+    try {
+      result = streamText({
+        model: workersai(MODEL_ID, { sessionAffinity: this.sessionAffinity }),
+        system: systemPrompt,
+        messages: modelMessages,
+        tools: selectedTools,
+        prepareStep: () => ({ toolChoice: portfolioToolChoice(evidenceState) }),
+        stopWhen: () => shouldStopPortfolioToolLoop(evidenceState),
+        abortSignal: options?.abortSignal,
+        onToolExecutionStart: () => {
+          this.emitDiagnostic({
+            phase: "mcp-tool",
+            outcome: "started",
+            toolCount: 1,
+            requestId: options?.requestId,
+          });
+        },
+        onToolExecutionEnd: ({ toolCall, toolOutput }) => {
+          const previousSuccesses = evidenceState.successfulResults;
+          evidenceState = recordPortfolioToolResult(evidenceState, toolCall.toolName, toolOutput);
+          const usable = evidenceState.successfulResults > previousSuccesses;
+          this.emitDiagnostic({
+            phase: "mcp-tool",
+            outcome: usable ? "succeeded" : "failed",
+            reason: usable ? undefined : "unusable-result",
+            toolCount: 1,
+            requestId: options?.requestId,
+          });
+        },
+        onEnd: async ({ usage, finishReason, text }) => {
+          const modelSucceeded = finishReason !== "error" && evidenceState.successfulResults > 0;
+          const diagnosticFinishReason = ["stop", "length", "tool-calls", "error"].includes(
+            finishReason,
+          )
+            ? finishReason
+            : "unknown";
+          const aborted = options?.abortSignal?.aborted ?? false;
+          const titleEligible = isThreadTitleEligible(
+            finishReason,
+            text,
+            options?.abortSignal?.aborted ?? false,
+          );
+          this.emitDiagnostic({
+            phase: "model",
+            outcome: modelSucceeded ? "succeeded" : "failed",
+            reason: modelSucceeded
+              ? undefined
+              : finishReason === "error"
+                ? "provider-error"
+                : aborted
+                  ? "aborted"
+                  : "unusable-result",
+            finishReason: diagnosticFinishReason as
+              | "stop"
+              | "length"
+              | "tool-calls"
+              | "error"
+              | "unknown",
+            streamOutcome: modelSucceeded
+              ? "completed"
+              : aborted
+                ? "aborted"
+                : finishReason === "error"
+                  ? "provider-error"
+                  : "unknown",
+            elapsedMs: Date.now() - modelStartedAt,
+            requestId: options?.requestId,
+          });
+          this.emitDiagnostic({
+            phase: "settlement",
+            outcome: "started",
+            requestId: options?.requestId,
+          });
+          if (quota.allowed) {
+            try {
+              const settled = await settleRollingTokenUsage(
+                this.environment.AUTH_DB,
+                quota.reservationId,
+                usage,
+              );
+              if (!settled) {
+                await markRollingTokenUsageUnknown(
+                  this.environment.AUTH_DB,
+                  quota.reservationId,
+                ).catch(() => false);
+                this.emitDiagnostic({
+                  phase: "settlement",
+                  outcome: "failed",
+                  quotaDecision: "settlement-failed",
+                  reason: "unknown-usage",
+                  quotaState: "unknown",
+                  requestId: options?.requestId,
+                });
+                console.error(
+                  "[portfolio-agent] actual token usage settlement did not update reservation",
+                );
+              } else {
+                this.emitDiagnostic({
+                  phase: "settlement",
+                  outcome: "succeeded",
+                  quotaDecision: "settled",
+                  quotaState: "settled",
+                  requestId: options?.requestId,
+                });
+              }
+            } catch (error) {
+              await markRollingTokenUsageUnknown(
+                this.environment.AUTH_DB,
+                quota.reservationId,
+              ).catch(() => false);
               this.emitDiagnostic({
                 phase: "settlement",
                 outcome: "failed",
                 quotaDecision: "settlement-failed",
-                reason: "settlement-failed",
+                reason: "unknown-usage",
+                quotaState: "unknown",
                 requestId: options?.requestId,
               });
+              const errorType = error instanceof Error ? error.name : typeof error;
               console.error(
-                "[portfolio-agent] actual token usage settlement did not update reservation",
+                `[portfolio-agent] actual token usage settlement failed (${errorType})`,
               );
-            } else {
-              this.emitDiagnostic({
-                phase: "settlement",
-                outcome: "succeeded",
-                quotaDecision: "settled",
-                requestId: options?.requestId,
-              });
             }
-          } catch (error) {
-            this.emitDiagnostic({
-              phase: "settlement",
-              outcome: "failed",
-              quotaDecision: "settlement-failed",
-              reason: "settlement-failed",
-              requestId: options?.requestId,
-            });
-            const errorType = error instanceof Error ? error.name : typeof error;
-            console.error(`[portfolio-agent] actual token usage settlement failed (${errorType})`);
           }
-        }
-        if (titleEligible) {
-          await this.persistGeneratedThreadTitle(text, options?.abortSignal, options?.requestId);
-        }
-        try {
-          await this.environment.AUTH_DB.prepare(
-            "UPDATE threads SET updated_at = ?1 WHERE id = ?2 AND sub = ?3",
-          )
-            .bind(Date.now(), identity.tid, identity.sub)
-            .run();
-        } catch (error) {
-          const errorType = error instanceof Error ? error.name : typeof error;
-          console.error(`[portfolio-agent] turn metadata update failed (${errorType})`);
-        }
-        console.log("[portfolio-agent] aggregate turn completed");
-      },
-    });
+          if (titleEligible) {
+            await this.persistGeneratedThreadTitle(text, options?.abortSignal, options?.requestId);
+          }
+          try {
+            await this.environment.AUTH_DB.prepare(
+              "UPDATE threads SET updated_at = ?1 WHERE id = ?2 AND sub = ?3",
+            )
+              .bind(Date.now(), identity.tid, identity.sub)
+              .run();
+          } catch (error) {
+            const errorType = error instanceof Error ? error.name : typeof error;
+            console.error(`[portfolio-agent] turn metadata update failed (${errorType})`);
+          }
+          console.log("[portfolio-agent] aggregate turn completed");
+        },
+      });
+    } catch (error) {
+      await releaseRollingTokenReservation(this.environment.AUTH_DB, quota.reservationId).catch(
+        () => false,
+      );
+      this.emitDiagnostic({
+        phase: "quota",
+        outcome: "succeeded",
+        quotaDecision: "released",
+        quotaState: "released",
+        reason: "pre-model-failure",
+        requestId: options?.requestId,
+      });
+      throw error;
+    }
 
     const stream = createUIMessageStream({
       originalMessages: this.messages,
@@ -573,7 +635,34 @@ export class PortfolioAgent extends AIChatAgent<PortfolioAgentEnvironment, unkno
                 sendSources: false,
                 sendStart: false,
                 sendFinish: false,
-                onError: (error) => modelStreamError(error),
+                onError: (error) => {
+                  const aborted = options?.abortSignal?.aborted ?? false;
+                  const providerCapacity = classifyModelCapacityError(error);
+                  this.emitDiagnostic({
+                    phase: "model",
+                    outcome: "failed",
+                    reason: aborted
+                      ? "aborted"
+                      : providerCapacity
+                        ? "provider-error"
+                        : "stream-error",
+                    quotaDecision: "provisional",
+                    quotaState: "unknown",
+                    streamOutcome: aborted
+                      ? "aborted"
+                      : providerCapacity
+                        ? "provider-error"
+                        : "unknown",
+                    providerErrorClass: providerCapacity?.class,
+                    providerErrorCode: providerCapacity?.code ?? undefined,
+                    requestId: options?.requestId,
+                  });
+                  const errorType = error instanceof Error ? error.name : typeof error;
+                  console.error(
+                    `[portfolio-agent] model stream failed (${errorType})${options?.requestId ? ` request=${options.requestId}` : ""}`,
+                  );
+                  return modelStreamError(error);
+                },
               }),
             ),
             {
@@ -649,7 +738,8 @@ export class PortfolioAgent extends AIChatAgent<PortfolioAgentEnvironment, unkno
   }
 
   async deleteThread(): Promise<{ deleted: true }> {
-    this.resetTurnState();
+    const stable = await this.waitUntilStable({ timeout: 5_000 });
+    if (!stable) throw new Error("THREAD_BUSY");
     this.messages = [];
     await this.persistMessages([], [], { _deleteStaleRows: true });
     return { deleted: true };
