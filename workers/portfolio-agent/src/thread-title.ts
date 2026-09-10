@@ -2,6 +2,7 @@ import type { D1Database } from "@cloudflare/workers-types";
 import type { ModelMessage } from "ai";
 import type { AgentProps } from "./config.ts";
 import { emitPortfolioAgentDiagnostic, type PortfolioAgentDiagnosticSink } from "./diagnostics.ts";
+import { isRefundableModelCapacityFailure } from "./errors.ts";
 import {
   buildThreadTitlePrompt,
   estimateModelTokens,
@@ -15,6 +16,7 @@ import {
   type ActualTokenUsage,
   consumeRollingQuota,
   estimateQuotaUnits,
+  releaseRollingTokenReservation,
   settleRollingTokenUsage,
 } from "./quota.ts";
 
@@ -62,6 +64,7 @@ export type PersistGeneratedThreadTitleOptions = {
   diagnosticSink?: PortfolioAgentDiagnosticSink;
   generateTitle: ThreadTitleGenerator;
   reserveQuota?: typeof consumeRollingQuota;
+  releaseQuota?: typeof releaseRollingTokenReservation;
   settleUsage?: typeof settleRollingTokenUsage;
 };
 
@@ -160,8 +163,12 @@ export async function persistGeneratedThreadTitle(
         reasoning: "none",
         abortSignal: options.abortSignal,
       });
-    } catch {
+    } catch (error) {
       if (options.abortSignal?.aborted) return skipped(options, startedAt, "aborted");
+      if (isRefundableModelCapacityFailure(error, false)) {
+        const releaseQuota = options.releaseQuota ?? releaseRollingTokenReservation;
+        await releaseQuota(options.database, titleQuota.reservationId).catch(() => false);
+      }
       emitTitleDiagnostic(options, "failed", startedAt, "provider-error");
       return { outcome: "failed", reason: "provider-error" };
     }
