@@ -131,6 +131,8 @@ async function getSession(
 
 type RollingUsageRow = {
   used_tokens: number | null;
+  settled_tokens: number | null;
+  provisional_tokens: number | null;
   oldest_created_at: number | null;
 };
 
@@ -140,20 +142,29 @@ async function readRollingQuota(
   now = Date.now(),
 ): Promise<{
   usedTokens: number;
+  settledTokens: number;
+  provisionalTokens: number;
   budgetTokens: number;
   remainingTokens: number;
   resetAt: number | null;
 }> {
   const cutoff = now - ROLLING_TOKEN_WINDOW_SECONDS * 1_000;
   const usage = await environment.AUTH_DB.prepare(
-    "SELECT COALESCE(SUM(CASE WHEN actual_input_tokens IS NOT NULL AND actual_output_tokens IS NOT NULL THEN actual_input_tokens + actual_output_tokens ELSE estimated_tokens END), 0) AS used_tokens, MIN(created_at) AS oldest_created_at FROM rolling_token_usage WHERE sub = ?1 AND created_at > ?2",
+    "SELECT COALESCE(SUM(CASE WHEN actual_input_tokens IS NOT NULL AND actual_output_tokens IS NOT NULL THEN actual_input_tokens + actual_output_tokens WHEN state IN ('reserved', 'in-flight', 'unknown') THEN estimated_tokens ELSE 0 END), 0) AS used_tokens, COALESCE(SUM(CASE WHEN actual_input_tokens IS NOT NULL AND actual_output_tokens IS NOT NULL THEN actual_input_tokens + actual_output_tokens ELSE 0 END), 0) AS settled_tokens, COALESCE(SUM(CASE WHEN state IN ('reserved', 'in-flight', 'unknown') AND (actual_input_tokens IS NULL OR actual_output_tokens IS NULL) THEN estimated_tokens ELSE 0 END), 0) AS provisional_tokens, MIN(CASE WHEN state IN ('reserved', 'in-flight', 'unknown') AND (actual_input_tokens IS NULL OR actual_output_tokens IS NULL) THEN created_at END) AS oldest_created_at FROM rolling_token_usage WHERE sub = ?1 AND created_at > ?2",
   )
     .bind(sub, cutoff)
     .first<RollingUsageRow>();
   const usedTokens = Math.max(0, Number(usage?.used_tokens ?? 0));
+  const provisionalTokens = Math.max(0, Number(usage?.provisional_tokens ?? 0));
+  const settledTokens = Math.max(
+    0,
+    Number(usage?.settled_tokens ?? Math.max(0, usedTokens - provisionalTokens)),
+  );
   const oldestCreatedAt = usage?.oldest_created_at;
   return {
     usedTokens,
+    settledTokens,
+    provisionalTokens,
     budgetTokens: ROLLING_TOKEN_BUDGET,
     remainingTokens: Math.max(0, ROLLING_TOKEN_BUDGET - usedTokens),
     resetAt:
@@ -931,6 +942,12 @@ app.delete("/threads/:id", async (c) => {
     `/internal/threads/${encodeURIComponent(threadId)}`,
     "DELETE",
   );
+  if (response.status === 409)
+    return jsonError(
+      "THREAD_BUSY",
+      "Finish the active assistant response before deleting this thread.",
+      409,
+    );
   if (!response.ok)
     return jsonError("AGENT_UNAVAILABLE", "Thread deletion is temporarily unavailable.", 502);
   await c.env.AUTH_DB.prepare(
