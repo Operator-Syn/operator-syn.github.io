@@ -10,7 +10,10 @@ import {
   checkRollingQuotaAvailability,
   consumeRollingQuota,
   estimateQuotaUnits,
+  markRollingTokenUsageInFlight,
+  markRollingTokenUsageUnknown,
   PROVISIONAL_OUTPUT_TOKEN_ALLOWANCE,
+  releaseRollingTokenReservation,
   settleRollingTokenUsage,
 } from "../../workers/portfolio-agent/src/quota.ts";
 
@@ -21,6 +24,7 @@ type Event = {
   estimated_tokens: number;
   actual_input_tokens: number | null;
   actual_output_tokens: number | null;
+  state?: string;
 };
 
 class QuotaDatabase {
@@ -71,6 +75,15 @@ class QuotaDatabase {
       if (!event) return { meta: { changes: 0, last_row_id: 0 } };
       event.actual_input_tokens = inputTokens;
       event.actual_output_tokens = outputTokens;
+      event.state = "settled";
+      return { meta: { changes: 1, last_row_id: 0 } };
+    }
+    if (sql.startsWith("UPDATE rolling_token_usage SET state")) {
+      const [id] = args as [number];
+      const state = sql.match(/SET state = '([^']+)'/)?.[1] ?? "unknown";
+      const event = this.events.find((candidate) => candidate.id === id);
+      if (!event) return { meta: { changes: 0, last_row_id: 0 } };
+      event.state = state;
       return { meta: { changes: 1, last_row_id: 0 } };
     }
     if (sql.startsWith("INSERT INTO rolling_token_usage")) {
@@ -87,6 +100,7 @@ class QuotaDatabase {
           estimated_tokens: requested,
           actual_input_tokens: null,
           actual_output_tokens: null,
+          state: "reserved",
         });
         return { meta: { changes: 1, last_row_id: id } };
       }
@@ -96,6 +110,7 @@ class QuotaDatabase {
   }
 
   private eventTokens(event: Event): number {
+    if (event.state === "released") return 0;
     return event.actual_input_tokens !== null && event.actual_output_tokens !== null
       ? event.actual_input_tokens + event.actual_output_tokens
       : event.estimated_tokens;
@@ -108,7 +123,7 @@ class QuotaDatabase {
         pause_reason: this.control.pause_reason,
       } as T;
     }
-    if (sql.includes("SUM(CASE WHEN actual_input_tokens")) {
+    if (sql.includes("FROM rolling_token_usage")) {
       const [sub, cutoff] = args as [string, number];
       const matching = this.events.filter(
         (event) => event.sub === sub && event.created_at > cutoff,
@@ -228,6 +243,7 @@ test("settles provider input and output usage over the provisional reservation",
     estimated_tokens: 900,
     actual_input_tokens: 30,
     actual_output_tokens: 80,
+    state: "settled",
   });
 
   const next = await consumeRollingQuota(
@@ -237,6 +253,40 @@ test("settles provider input and output usage over the provisional reservation",
     now + 1,
   );
   assert.equal(next.allowed, true);
+});
+
+test("releases pre-model reservations and keeps unknown provider usage provisional", async () => {
+  const database = new QuotaDatabase();
+  const now = Date.parse("2026-08-31T00:00:00.000Z");
+  const released = await consumeRollingQuota(database as unknown as D1Database, "user-a", 900, now);
+  assert.equal(released.allowed, true);
+  if (!released.allowed) return;
+  assert.equal(
+    await releaseRollingTokenReservation(database as unknown as D1Database, released.reservationId),
+    true,
+  );
+  assert.equal(
+    await checkRollingQuotaAvailability(database as unknown as D1Database, "user-a", now),
+    "available",
+  );
+
+  const unknown = await consumeRollingQuota(
+    database as unknown as D1Database,
+    "user-a",
+    900,
+    now + 1,
+  );
+  assert.equal(unknown.allowed, true);
+  if (!unknown.allowed) return;
+  assert.equal(
+    await markRollingTokenUsageInFlight(database as unknown as D1Database, unknown.reservationId),
+    true,
+  );
+  assert.equal(
+    await markRollingTokenUsageUnknown(database as unknown as D1Database, unknown.reservationId),
+    true,
+  );
+  assert.equal(database.events.at(-1)?.state, "unknown");
 });
 
 test("weights uncached, cached, and output usage into quota units", () => {
