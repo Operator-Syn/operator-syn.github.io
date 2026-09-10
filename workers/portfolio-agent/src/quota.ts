@@ -25,10 +25,19 @@ export type WeightedQuotaUsage = {
   totalUnits: number;
 };
 
+export type RollingTokenReservationState =
+  | "reserved"
+  | "in-flight"
+  | "settled"
+  | "released"
+  | "unknown";
+
 export type RollingQuotaAvailability = "available" | "rolling-limit" | "paused" | "configuration";
 
 type RollingUsage = {
   used_tokens: number;
+  settled_tokens?: number;
+  provisional_tokens?: number;
   oldest_created_at: number | null;
 };
 
@@ -37,6 +46,8 @@ export type RollingBudgetDecision =
       allowed: true;
       reservationId: number;
       usedTokens: number;
+      settledTokens?: number;
+      provisionalTokens?: number;
       remainingTokens: number;
       resetAt: number;
     }
@@ -44,6 +55,8 @@ export type RollingBudgetDecision =
       allowed: false;
       reason: "rolling-limit" | "configuration";
       usedTokens: number;
+      settledTokens?: number;
+      provisionalTokens?: number;
       remainingTokens: number;
       resetAt: number;
     };
@@ -64,13 +77,22 @@ function usageResult(
   now: number,
 ): {
   usedTokens: number;
+  settledTokens: number;
+  provisionalTokens: number;
   remainingTokens: number;
   resetAt: number;
 } {
   const usedTokens = Math.max(0, usage?.used_tokens ?? 0);
+  const provisionalTokens = Math.max(0, usage?.provisional_tokens ?? 0);
+  const settledTokens = Math.max(
+    0,
+    usage?.settled_tokens ?? Math.max(0, usedTokens - provisionalTokens),
+  );
   const oldestCreatedAt = usage?.oldest_created_at;
   return {
     usedTokens,
+    settledTokens,
+    provisionalTokens,
     remainingTokens: Math.max(0, ROLLING_TOKEN_BUDGET - usedTokens),
     resetAt:
       typeof oldestCreatedAt === "number"
@@ -86,7 +108,7 @@ async function readRollingUsage(
 ): Promise<RollingUsage | null> {
   return database
     .prepare(
-      "SELECT COALESCE(SUM(CASE WHEN actual_input_tokens IS NOT NULL AND actual_output_tokens IS NOT NULL THEN actual_input_tokens + actual_output_tokens ELSE estimated_tokens END), 0) AS used_tokens, MIN(created_at) AS oldest_created_at FROM rolling_token_usage WHERE sub = ?1 AND created_at > ?2",
+      "SELECT COALESCE(SUM(CASE WHEN actual_input_tokens IS NOT NULL AND actual_output_tokens IS NOT NULL THEN actual_input_tokens + actual_output_tokens WHEN state IN ('reserved', 'in-flight', 'unknown') THEN estimated_tokens ELSE 0 END), 0) AS used_tokens, COALESCE(SUM(CASE WHEN actual_input_tokens IS NOT NULL AND actual_output_tokens IS NOT NULL THEN actual_input_tokens + actual_output_tokens ELSE 0 END), 0) AS settled_tokens, COALESCE(SUM(CASE WHEN state IN ('reserved', 'in-flight', 'unknown') AND (actual_input_tokens IS NULL OR actual_output_tokens IS NULL) THEN estimated_tokens ELSE 0 END), 0) AS provisional_tokens, MIN(CASE WHEN state IN ('reserved', 'in-flight', 'unknown') AND (actual_input_tokens IS NULL OR actual_output_tokens IS NULL) THEN created_at END) AS oldest_created_at FROM rolling_token_usage WHERE sub = ?1 AND created_at > ?2",
     )
     .bind(sub, cutoff)
     .first<RollingUsage>();
@@ -112,7 +134,7 @@ async function reserveRollingTokens(
   // final tokens based on the same stale SUM.
   const inserted = await database
     .prepare(
-      "INSERT INTO rolling_token_usage (sub, created_at, estimated_tokens) SELECT ?1, ?2, ?3 WHERE ?3 <= ?4 AND ?3 + COALESCE((SELECT SUM(CASE WHEN actual_input_tokens IS NOT NULL AND actual_output_tokens IS NOT NULL THEN actual_input_tokens + actual_output_tokens ELSE estimated_tokens END) FROM rolling_token_usage WHERE sub = ?1 AND created_at > ?5), 0) <= ?4",
+      "INSERT INTO rolling_token_usage (sub, created_at, estimated_tokens, state) SELECT ?1, ?2, ?3, 'reserved' WHERE ?3 <= ?4 AND ?3 + COALESCE((SELECT SUM(CASE WHEN actual_input_tokens IS NOT NULL AND actual_output_tokens IS NOT NULL THEN actual_input_tokens + actual_output_tokens WHEN state IN ('reserved', 'in-flight', 'unknown') THEN estimated_tokens ELSE 0 END) FROM rolling_token_usage WHERE sub = ?1 AND created_at > ?5), 0) <= ?4",
     )
     .bind(sub, now, requested, ROLLING_TOKEN_BUDGET, cutoff)
     .run();
@@ -196,9 +218,52 @@ export async function settleRollingTokenUsage(
   if (!normalized || !Number.isSafeInteger(reservationId) || reservationId <= 0) return false;
   const result = await database
     .prepare(
-      "UPDATE rolling_token_usage SET actual_input_tokens = ?1, actual_output_tokens = ?2 WHERE id = ?3",
+      "UPDATE rolling_token_usage SET actual_input_tokens = ?1, actual_output_tokens = ?2, state = 'settled', settled_at = ?4 WHERE id = ?3 AND state IN ('reserved', 'in-flight', 'unknown')",
     )
-    .bind(normalized.inputUnits, normalized.outputUnits, reservationId)
+    .bind(normalized.inputUnits, normalized.outputUnits, reservationId, Date.now())
+    .run();
+  return result.meta.changes === 1;
+}
+
+export async function markRollingTokenUsageInFlight(
+  database: D1Database,
+  reservationId: number,
+): Promise<boolean> {
+  if (!Number.isSafeInteger(reservationId) || reservationId <= 0) return false;
+  const result = await database
+    .prepare(
+      "UPDATE rolling_token_usage SET state = 'in-flight' WHERE id = ?1 AND state = 'reserved'",
+    )
+    .bind(reservationId)
+    .run();
+  return result.meta.changes === 1;
+}
+
+export async function markRollingTokenUsageUnknown(
+  database: D1Database,
+  reservationId: number,
+): Promise<boolean> {
+  if (!Number.isSafeInteger(reservationId) || reservationId <= 0) return false;
+  const result = await database
+    .prepare(
+      "UPDATE rolling_token_usage SET state = 'unknown' WHERE id = ?1 AND state IN ('reserved', 'in-flight')",
+    )
+    .bind(reservationId)
+    .run();
+  return result.meta.changes === 1;
+}
+
+/** Release a reservation only from the pre-provider setup failure path. */
+export async function releaseRollingTokenReservation(
+  database: D1Database,
+  reservationId: number,
+): Promise<boolean> {
+  if (!Number.isSafeInteger(reservationId) || reservationId <= 0) return false;
+  const result = await database
+    .prepare(
+      "UPDATE rolling_token_usage SET state = 'released' WHERE id = ?1 AND state IN ('reserved', 'in-flight')",
+    )
+    .bind(reservationId)
     .run();
   return result.meta.changes === 1;
 }
