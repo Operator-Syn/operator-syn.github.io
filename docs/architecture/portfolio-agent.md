@@ -313,9 +313,7 @@ is charged at zero. The Worker prefers the AI SDK's provider-reported
 input and output quota-unit components for compatibility. Reservation rows also
 carry a lifecycle state: `reserved` before model execution, `in-flight` while a
 provider request is running, `settled` after provider usage is recorded,
-`released` for a proven pre-model failure, and `unknown` when execution began
-but usage could not be recovered. The quota endpoint reports settled and
-provisional usage separately while preserving the combined `usedTokens` total.
+`released` for a proven pre-model failure or a classified provider allocation/capacity rejection before any model output, and `unknown` when execution began or usage could not be recovered. The quota endpoint reports settled and provisional usage separately while preserving the combined `usedTokens` total.
 A cheap availability check runs before MCP catalog work for already exhausted
 subjects, while the post-conversion reservation remains authoritative for exact
 prompt size and races. A full rolling budget produces a bounded assistant
@@ -330,10 +328,13 @@ admission gate. The `agent_control` row remains an administrator pause switch.
 When Workers AI reports an exhausted provider allocation, the agent surfaces
 **The provider's daily Workers AI allocation has been used up. Try again after
 00:00 UTC.** Temporary provider-capacity failures use a separate retry-later
-message. These provider limits are distinct from the per-user rolling budget.
-The implementation records bounded provisional reservations and settled token
-totals; user identity is not sent to the model and Google access tokens are not
-stored.
+message. A classified allocation or capacity rejection that produces no model
+output releases its provisional reservation; partial-output, generic stream, and
+aborted failures remain provisional or `unknown` because provider usage may exist.
+These provider limits are distinct from the per-user rolling budget. The
+implementation records bounded provisional reservations and settled token
+totals without charging a failed pre-output capacity attempt; user identity is
+not sent to the model and Google access tokens are not stored.
 
 The Cloudflare dashboard reports provider usage in Neurons. Its "today" value
 uses the UTC day boundary, while a "last 24 hours" chart can include the prior
