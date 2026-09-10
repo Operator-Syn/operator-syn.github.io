@@ -65,6 +65,7 @@ import {
 } from "./portfolioAssistantApi.ts";
 import { portfolioAssistantAvailability } from "./portfolioAssistantAvailability.ts";
 import { portfolioAssistantConfig } from "./portfolioAssistantConfig.ts";
+import { describeAssistantError } from "./portfolioAssistantErrors.ts";
 import {
   normalizeAssistantMarkdownText,
   transformAssistantMarkdownUrl,
@@ -111,8 +112,6 @@ declare global {
 
 const { publicAuthOrigin, turnstileSiteKey } = portfolioAssistantConfig;
 const AGENT_QUERY_CACHE_TTL_MS = 4 * 60 * 1_000;
-const MODEL_CAPACITY_MESSAGE =
-  "The model is at its maximum daily capacity. Please try again at 00:00 UTC.";
 const ASSISTANT_COMPOSER_MAX_HEIGHT_PX = 128;
 const ASSISTANT_HISTORY_PAGE_SIZE = 24;
 const ASSISTANT_HISTORY_TOP_THRESHOLD_PX = 96;
@@ -162,20 +161,6 @@ function safeGoogleProfilePictureUrl(value: string | null | undefined): string |
   } catch {
     return null;
   }
-}
-
-function isModelCapacityClientError(error: unknown): boolean {
-  const message =
-    error instanceof Error
-      ? error.message
-      : typeof error === "string"
-        ? error
-        : error &&
-            typeof error === "object" &&
-            typeof (error as { message?: unknown }).message === "string"
-          ? (error as { message: string }).message
-          : "";
-  return /maximum daily capacity/i.test(message);
 }
 
 function handleComposerKeyDown(event: ReactKeyboardEvent<HTMLTextAreaElement>) {
@@ -603,6 +588,7 @@ function AssistantThreadSelect({
 
 type AssistantThreadActionsMenuProps = {
   activeThreadId: string | null;
+  deleteDisabled?: boolean;
   onDelete: () => void;
   onExport: () => void;
   onLogout: () => void;
@@ -610,6 +596,7 @@ type AssistantThreadActionsMenuProps = {
 
 function AssistantThreadActionsMenu({
   activeThreadId,
+  deleteDisabled = false,
   onDelete,
   onExport,
   onLogout,
@@ -682,7 +669,7 @@ function AssistantThreadActionsMenu({
           <button
             aria-label="Delete assistant thread"
             className="portfolio-assistant-actions-item"
-            disabled={!activeThreadId}
+            disabled={!activeThreadId || deleteDisabled}
             onClick={() => runAction(onDelete, false)}
             type="button"
           >
@@ -1713,6 +1700,8 @@ function AssistantQuotaStatus({
   }
 
   const usedQuotaUnits = Math.max(0, quota.usedTokens);
+  const settledQuotaUnits = Math.max(0, quota.settledTokens);
+  const provisionalQuotaUnits = Math.max(0, quota.provisionalTokens);
   const budgetQuotaUnits = Math.max(1, quota.budgetTokens);
   const remainingQuotaUnits = Math.max(0, Math.min(budgetQuotaUnits, quota.remainingTokens));
   const usagePercent = Math.min(100, Math.max(0, (usedQuotaUnits / budgetQuotaUnits) * 100));
@@ -1767,6 +1756,13 @@ function AssistantQuotaStatus({
             />
           </button>
         </div>
+        <small>{formatAssistantTokenCount(settledQuotaUnits)} settled quota units recorded.</small>
+        {provisionalQuotaUnits > 0 ? (
+          <small className="portfolio-assistant-quota-error">
+            {formatAssistantTokenCount(provisionalQuotaUnits)} provisional quota units are held for
+            interrupted turns and will roll off if they cannot be settled.
+          </small>
+        ) : null}
         {error ? <small className="portfolio-assistant-quota-error">{error}</small> : null}
       </div>
     </details>
@@ -1783,6 +1779,7 @@ function AssistantChat({
   threadId,
   onConnectionError,
   onThreadActivityChange,
+  onThreadBusyChange,
   onThreadTitleSettled,
   shouldNameThread,
   userDisplayName,
@@ -1797,6 +1794,7 @@ function AssistantChat({
   threadId: string;
   onConnectionError: (message: string) => void;
   onThreadActivityChange: (threadId: string, hasActivity: boolean) => void;
+  onThreadBusyChange: (threadId: string, isBusy: boolean) => void;
   onThreadTitleSettled: () => void;
   shouldNameThread: boolean;
   userDisplayName: string;
@@ -1874,7 +1872,8 @@ function AssistantChat({
   useEffect(() => {
     void refreshQuota();
   }, [refreshQuota]);
-  const modelCapacityReached = isModelCapacityClientError(error);
+  const errorPresentation = describeAssistantError(error);
+  const providerAllocationExhausted = errorPresentation.title === "Provider allocation exhausted.";
   const displayedMessages = useMemo(() => {
     const tailId = initialHistoryTailIdRef.current;
     if (!tailId || loadedHistoryIdsRef.current.size === messages.length) return messages;
@@ -1895,6 +1894,10 @@ function AssistantChat({
     );
   }, [isStreaming, renderedMessages]);
   const showSubmittingActivity = isSubmitting && !isStreaming;
+  const isTurnBusy = isSubmitting || isStreaming || isRecovering || isRetrying;
+  useEffect(() => {
+    onThreadBusyChange(threadId, isTurnBusy);
+  }, [isTurnBusy, onThreadBusyChange, threadId]);
   const showStatus =
     isRetrying ||
     isRecovering ||
@@ -2008,6 +2011,7 @@ function AssistantChat({
   const handleRetry = useCallback(async () => {
     if (isRetrying || isStreaming || isRecovering) return;
     setIsRetrying(true);
+    onThreadBusyChange(threadId, true);
     clearError();
     try {
       await regenerate();
@@ -2017,7 +2021,16 @@ function AssistantChat({
       setIsRetrying(false);
       void refreshQuota();
     }
-  }, [clearError, isRecovering, isRetrying, isStreaming, refreshQuota, regenerate]);
+  }, [
+    clearError,
+    isRecovering,
+    isRetrying,
+    isStreaming,
+    onThreadBusyChange,
+    refreshQuota,
+    regenerate,
+    threadId,
+  ]);
 
   const submitQuestion = (question: string) => {
     const value = question.trim();
@@ -2032,6 +2045,7 @@ function AssistantChat({
       return;
     if (error) clearError();
     onThreadActivityChange(threadId, true);
+    onThreadBusyChange(threadId, true);
     submitPendingRef.current = true;
     setIsSubmitting(true);
     shouldFollowTranscriptRef.current = true;
@@ -2077,22 +2091,25 @@ function AssistantChat({
           {error ? (
             <div className="portfolio-assistant-chat-error" role="alert">
               <div>
-                <strong>
-                  {modelCapacityReached ? "Model capacity reached." : "Response interrupted."}
-                </strong>
-                <p>
-                  {modelCapacityReached
-                    ? MODEL_CAPACITY_MESSAGE
-                    : "This model response stopped before an answer arrived. Try the last question again or send a new one."}
-                </p>
+                <strong>{errorPresentation.title}</strong>
+                <p>{errorPresentation.message}</p>
               </div>
               <button
                 className="action-quiet"
-                disabled={isRetrying || isStreaming || isRecovering}
+                disabled={providerAllocationExhausted || isRetrying || isStreaming || isRecovering}
                 onClick={() => void handleRetry()}
                 type="button"
+                title={
+                  providerAllocationExhausted
+                    ? "Retry after the provider allocation resets at 00:00 UTC"
+                    : undefined
+                }
               >
-                {isRetrying ? "Retrying…" : "Try again"}
+                {providerAllocationExhausted
+                  ? "Unavailable until reset"
+                  : isRetrying
+                    ? "Retrying…"
+                    : "Try again"}
               </button>
             </div>
           ) : null}
@@ -2166,9 +2183,7 @@ function AssistantChat({
               : showSubmittingActivity
                 ? "Sending question…"
                 : error
-                  ? modelCapacityReached
-                    ? MODEL_CAPACITY_MESSAGE
-                    : "The response was interrupted. Try again or ask a new question."
+                  ? errorPresentation.message
                   : "The assistant connection was interrupted. You can try again."}
         </output>
       ) : null}
@@ -2178,6 +2193,7 @@ function AssistantChat({
 
 function AssistantChatBoundary({
   onThreadActivityChange,
+  onThreadBusyChange,
   onThreadTitleSettled,
   shouldNameThread,
   threadId,
@@ -2186,6 +2202,7 @@ function AssistantChatBoundary({
   userPictureUrl,
 }: {
   onThreadActivityChange: (threadId: string, hasActivity: boolean) => void;
+  onThreadBusyChange: (threadId: string, isBusy: boolean) => void;
   onThreadTitleSettled: () => void;
   shouldNameThread: boolean;
   threadId: string;
@@ -2267,6 +2284,7 @@ function AssistantChatBoundary({
           olderError={history.olderError}
           onConnectionError={handleConnectionError}
           onThreadActivityChange={onThreadActivityChange}
+          onThreadBusyChange={onThreadBusyChange}
           onThreadTitleSettled={onThreadTitleSettled}
           shouldNameThread={shouldNameThread}
           threadId={threadId}
@@ -2290,6 +2308,7 @@ function AuthenticatedAssistant({
   const [threads, setThreads] = useState<AssistantThread[]>([]);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [activeThreadHasActivity, setActiveThreadHasActivity] = useState<boolean | null>(null);
+  const [activeThreadBusy, setActiveThreadBusy] = useState(false);
   const [isCreatingThread, setIsCreatingThread] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletePendingThreadId, setDeletePendingThreadId] = useState<string | null>(null);
@@ -2327,6 +2346,7 @@ function AuthenticatedAssistant({
   const handleThreadChange = useCallback((threadId: string) => {
     setActiveThreadId(threadId || null);
     setActiveThreadHasActivity(null);
+    setActiveThreadBusy(false);
   }, []);
 
   const canCreateNewThread =
@@ -2349,11 +2369,11 @@ function AuthenticatedAssistant({
   };
 
   const requestDelete = () => {
-    if (activeThreadId) setDeletePendingThreadId(activeThreadId);
+    if (activeThreadId && !activeThreadBusy) setDeletePendingThreadId(activeThreadId);
   };
 
   const handleDelete = async () => {
-    if (!deletePendingThreadId || isDeleting) return;
+    if (!deletePendingThreadId || isDeleting || activeThreadBusy) return;
     setIsDeleting(true);
     try {
       await deleteThread(deletePendingThreadId);
@@ -2363,6 +2383,7 @@ function AuthenticatedAssistant({
         current === deletePendingThreadId ? (remaining[0]?.id ?? null) : current,
       );
       setActiveThreadHasActivity(null);
+      setActiveThreadBusy(false);
       setDeletePendingThreadId(null);
       setError(null);
     } catch (deleteError: unknown) {
@@ -2404,6 +2425,13 @@ function AuthenticatedAssistant({
       setActiveThreadHasActivity((current) =>
         activeThreadId === threadId ? hasActivity : current,
       );
+    },
+    [activeThreadId],
+  );
+
+  const handleThreadBusyChange = useCallback(
+    (threadId: string, isBusy: boolean) => {
+      setActiveThreadBusy((current) => (activeThreadId === threadId ? isBusy : current));
     },
     [activeThreadId],
   );
@@ -2452,6 +2480,7 @@ function AuthenticatedAssistant({
         </button>
         <AssistantThreadActionsMenu
           activeThreadId={activeThreadId}
+          deleteDisabled={activeThreadBusy}
           onDelete={requestDelete}
           onExport={() => void handleExport()}
           onLogout={() => void handleLogout()}
@@ -2463,6 +2492,7 @@ function AuthenticatedAssistant({
           key={activeThreadId}
           onConnectionError={setError}
           onThreadActivityChange={handleThreadActivityChange}
+          onThreadBusyChange={handleThreadBusyChange}
           onThreadTitleSettled={handleThreadTitleSettled}
           shouldNameThread={shouldNameActiveThread}
           threadId={activeThreadId}
@@ -2491,7 +2521,7 @@ function AuthenticatedAssistant({
             </button>
             <button
               className="action-quiet app-modal-danger"
-              disabled={isDeleting}
+              disabled={isDeleting || activeThreadBusy}
               onClick={() => void handleDelete()}
               type="button"
             >
