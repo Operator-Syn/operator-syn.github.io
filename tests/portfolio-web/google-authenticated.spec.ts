@@ -41,13 +41,33 @@ test("audits the authenticated assistant WebSocket and grounded response", async
     .toBe(true);
 
   const composer = panel.locator(".portfolio-assistant-composer textarea");
+  const sourceDisclosure = panel.locator(".portfolio-assistant-source-disclosure");
+  const initialSourceCount = await sourceDisclosure.count();
+  const initialAssistantCount = await panel
+    .locator("article.portfolio-assistant-message.assistant")
+    .count();
   await composer.fill("Which projects use TypeScript?");
   await panel.getByRole("button", { name: "Send portfolio question" }).click();
-  const sourceDisclosure = panel.locator(".portfolio-assistant-source-disclosure").first();
-  await expect(sourceDisclosure).toBeVisible({ timeout: 90_000 });
-  await sourceDisclosure.locator("summary").click();
+
+  await expect
+    .poll(
+      async () => {
+        const error = panel.locator(".portfolio-assistant-chat-error");
+        if (await error.count()) return `error: ${await error.innerText()}`;
+        if ((await sourceDisclosure.count()) > initialSourceCount) return "source-ready";
+        return "pending";
+      },
+      { timeout: 90_000 },
+    )
+    .toBe("source-ready");
+  await expect(panel.locator("article.portfolio-assistant-message.assistant")).toHaveCount(
+    initialAssistantCount + 1,
+  );
+  const latestSourceDisclosure = sourceDisclosure.last();
+  await expect(latestSourceDisclosure).toBeVisible();
+  await latestSourceDisclosure.locator("summary").click();
   await expect(
-    sourceDisclosure.locator(".portfolio-assistant-source-reference").first(),
+    latestSourceDisclosure.locator(".portfolio-assistant-source-reference").first(),
   ).toBeVisible();
   await expect
     .poll(
