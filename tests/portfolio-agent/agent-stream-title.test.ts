@@ -2,7 +2,9 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import type { D1Database } from "@cloudflare/workers-types";
 import { streamText } from "ai";
+import { isRefundableModelCapacityFailure } from "../../workers/portfolio-agent/src/errors.ts";
 import type { QuotaDecision } from "../../workers/portfolio-agent/src/quota.ts";
+import { isModelOutputChunkType } from "../../workers/portfolio-agent/src/stream.ts";
 import {
   isThreadTitleEligible,
   persistGeneratedThreadTitle,
@@ -109,4 +111,90 @@ test("persists a title from a completed visible stream without evidence success"
   assert.equal(titleCalls, 1);
   assert.equal(title, "TypeScript Portfolio");
   assert.equal(await result.text, ANSWER);
+});
+
+test("refunds a pre-output provider capacity stream failure", async () => {
+  let modelOutputObserved = false;
+  let releaseCalls = 0;
+  let onEndCalls = 0;
+  const model = {
+    specificationVersion: "v4",
+    provider: "portfolio-capacity-fixture",
+    modelId: "pre-output-capacity-failure",
+    supportedUrls: {},
+    async doGenerate() {
+      throw new Error("unused");
+    },
+    async doStream() {
+      throw new Error("daily Workers AI allocation has been used up");
+    },
+  };
+
+  const result = streamText({
+    model: model as never,
+    messages: [{ role: "user", content: QUESTION }],
+    onChunk: ({ chunk }) => {
+      if (isModelOutputChunkType(chunk.type)) modelOutputObserved = true;
+    },
+    onError: async ({ error }) => {
+      if (isRefundableModelCapacityFailure(error, modelOutputObserved)) releaseCalls += 1;
+    },
+    onEnd: () => {
+      onEndCalls += 1;
+    },
+  });
+
+  const chunks: string[] = [];
+  for await (const chunk of result.fullStream) chunks.push(chunk.type);
+  assert.deepEqual(chunks, ["start", "error"]);
+  assert.equal(modelOutputObserved, false);
+  assert.equal(releaseCalls, 1);
+  assert.equal(onEndCalls, 0);
+});
+
+test("keeps a partial provider failure provisional", async () => {
+  let modelOutputObserved = false;
+  let releaseCalls = 0;
+  let onEndCalls = 0;
+  const model = {
+    specificationVersion: "v4",
+    provider: "portfolio-capacity-fixture",
+    modelId: "partial-capacity-failure",
+    supportedUrls: {},
+    async doGenerate() {
+      throw new Error("unused");
+    },
+    async doStream() {
+      return {
+        stream: new ReadableStream({
+          start(controller) {
+            controller.enqueue({ type: "stream-start", warnings: [] });
+            controller.enqueue({ type: "text-start", id: "partial" });
+            controller.enqueue({ type: "text-delta", id: "partial", delta: "partial" });
+            controller.enqueue({ type: "error", error: new Error("out of capacity") });
+            controller.close();
+          },
+        }),
+      };
+    },
+  };
+
+  const result = streamText({
+    model: model as never,
+    messages: [{ role: "user", content: QUESTION }],
+    onChunk: ({ chunk }) => {
+      if (isModelOutputChunkType(chunk.type)) modelOutputObserved = true;
+    },
+    onError: async ({ error }) => {
+      if (isRefundableModelCapacityFailure(error, modelOutputObserved)) releaseCalls += 1;
+    },
+    onEnd: () => {
+      onEndCalls += 1;
+    },
+  });
+
+  for await (const chunk of result.fullStream) void chunk;
+  assert.equal(modelOutputObserved, true);
+  assert.equal(releaseCalls, 0);
+  assert.equal(onEndCalls, 1);
 });
