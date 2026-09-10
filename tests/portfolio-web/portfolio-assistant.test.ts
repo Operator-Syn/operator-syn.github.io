@@ -9,6 +9,10 @@ import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
+  describeAssistantError,
+  MODEL_ALLOCATION_MESSAGE,
+} from "../../apps/portfolio-web/src/components/portfolioAssistant/portfolioAssistantErrors.ts";
+import {
   normalizeAssistantMarkdownHref,
   normalizeAssistantMarkdownText,
   transformAssistantMarkdownUrl,
@@ -71,6 +75,22 @@ function renderAssistantMarkdown(value: string): string {
     ),
   );
 }
+
+test("renders a provider allocation failure instead of a generic interruption", () => {
+  assert.deepEqual(
+    describeAssistantError(
+      new Error("The provider's daily Workers AI allocation has been used up."),
+    ),
+    {
+      title: "Provider allocation exhausted.",
+      message: MODEL_ALLOCATION_MESSAGE,
+    },
+  );
+  assert.equal(
+    describeAssistantError(new Error("network stream failed")).title,
+    "Response interrupted.",
+  );
+});
 
 test("normalizes assistant Markdown links before they reach SPA navigation", () => {
   assert.equal(
@@ -148,6 +168,17 @@ test("mounts the portfolio assistant globally with bounded authenticated chat co
   assert.match(fabSource, /New assistant thread/);
   assert.match(fabSource, /Export assistant thread/);
   assert.match(fabSource, /Delete assistant thread/);
+  assert.match(fabSource, /activeThreadBusy/);
+  assert.match(fabSource, /deleteDisabled/);
+  assert.match(fabSource, /if \(activeThreadId && !activeThreadBusy\) setDeletePendingThreadId/);
+  assert.match(
+    fabSource,
+    /if \(!deletePendingThreadId \|\| isDeleting \|\| activeThreadBusy\) return/,
+  );
+  assert.match(fabSource, /provisional quota units/);
+  assert.match(fabSource, /settled quota units recorded/);
+  assert.match(fabSource, /providerAllocationExhausted \|\| isRetrying/);
+  assert.match(fabSource, /Unavailable until reset/);
   assert.match(fabSource, /Legacy context summary/);
   assert.match(fabSource, /messageReasoning\(message\)/);
   assert.match(fabSource, /<details className="portfolio-assistant-reasoning">/);
@@ -210,9 +241,7 @@ test("mounts the portfolio assistant globally with bounded authenticated chat co
   assert.doesNotMatch(fabSource, /onData:\s*handleData/);
   assert.doesNotMatch(fabSource, /visibleCompactionNotice/);
   assert.doesNotMatch(fabSource, /maxLength=\{2_000\}/);
-  assert.match(fabSource, /Response interrupted/);
-  assert.match(fabSource, /Model capacity reached/);
-  assert.match(fabSource, /maximum daily capacity/);
+  assert.match(fabSource, /describeAssistantError/);
   assert.match(fabSource, /useAssistantConnectionGate/);
   assert.match(fabSource, /Rolling budget reached/);
   assert.match(fabSource, /Shared capacity paused/);
@@ -757,6 +786,7 @@ test("keeps empty active threads from creating another thread", async () => {
   const source = await readFile(fabPath, "utf8");
   assert.match(source, /activeThreadHasActivity/);
   assert.match(source, /onThreadActivityChange/);
+  assert.match(source, /onThreadBusyChange/);
   assert.match(source, /canStartAnotherThread/);
   assert.match(source, /disabled=\{!canCreateNewThread \|\| isCreatingThread\}/);
   assert.match(source, /Ask a question before creating another thread/);
