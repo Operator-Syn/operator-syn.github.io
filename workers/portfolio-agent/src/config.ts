@@ -10,7 +10,9 @@ export const MCP_CONNECTION_RETRY_MAX_DELAY_MS = 2_000;
 export const ROLLING_TOKEN_BUDGET = 1_000_000;
 export const ROLLING_TOKEN_WINDOW_MS = 60 * 60 * 1_000;
 export const MODEL_CAPACITY_MESSAGE =
-  "The model is at its maximum daily capacity. Please try again at 00:00 UTC.";
+  "The model is temporarily at capacity. Please try again later.";
+export const MODEL_ALLOCATION_MESSAGE =
+  "The provider's daily Workers AI allocation has been used up. Try again after 00:00 UTC.";
 
 export type AgentProps = {
   sub: string;
