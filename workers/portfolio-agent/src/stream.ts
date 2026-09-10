@@ -7,6 +7,31 @@ function isToolInputDelta(chunk: UIMessageChunk): chunk is ToolInputDelta {
   return chunk.type === "tool-input-delta";
 }
 
+/**
+ * Identify chunks that prove the provider emitted model output. Control, error,
+ * and local tool-result chunks must not make a pre-output capacity rejection
+ * non-refundable.
+ */
+export function isModelOutputChunkType(type: string): boolean {
+  return (
+    type === "text-start" ||
+    type === "text-delta" ||
+    type === "text-end" ||
+    type === "reasoning-start" ||
+    type === "reasoning-delta" ||
+    type === "reasoning-end" ||
+    type === "tool-call" ||
+    type === "tool-input-start" ||
+    type === "tool-input-delta" ||
+    type === "tool-input-end" ||
+    type === "tool-approval-request" ||
+    type === "source-url" ||
+    type === "source-document" ||
+    type === "file" ||
+    type === "reasoning-file"
+  );
+}
+
 export function coalesceToolInputDeltas(
   stream: ReadableStream<UIMessageChunk>,
 ): ReadableStream<UIMessageChunk> {
