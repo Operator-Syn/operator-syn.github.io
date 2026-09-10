@@ -310,8 +310,12 @@ is charged at zero. The Worker prefers the AI SDK's provider-reported
 `inputTokenDetails.noCacheTokens` and otherwise derives uncached input as
 `inputTokens - inputTokenDetails.cacheReadTokens`. The existing
 `actual_input_tokens` and `actual_output_tokens` columns store the weighted
-input and output quota-unit components for compatibility, while incomplete
-reservations continue to fall back to their provisional quota-unit estimate.
+input and output quota-unit components for compatibility. Reservation rows also
+carry a lifecycle state: `reserved` before model execution, `in-flight` while a
+provider request is running, `settled` after provider usage is recorded,
+`released` for a proven pre-model failure, and `unknown` when execution began
+but usage could not be recovered. The quota endpoint reports settled and
+provisional usage separately while preserving the combined `usedTokens` total.
 A cheap availability check runs before MCP catalog work for already exhausted
 subjects, while the post-conversion reservation remains authoritative for exact
 prompt size and races. A full rolling budget produces a bounded assistant
@@ -323,11 +327,19 @@ for account-wide capacity. The previous 8,000-neuron local estimate was only an
 approximation; it could pause the assistant even when the provider was still
 well below its 10,000-neuron daily free allocation, so it is no longer an
 admission gate. The `agent_control` row remains an administrator pause switch.
-When Workers AI returns its out-of-capacity signal, the agent surfaces
-**The model is at its maximum daily capacity. Please try again at 00:00 UTC.**
-This is distinct from the per-user rolling budget. The implementation records
-bounded provisional reservations and settled token totals; user identity is not sent to the model and
-Google access tokens are not stored.
+When Workers AI reports an exhausted provider allocation, the agent surfaces
+**The provider's daily Workers AI allocation has been used up. Try again after
+00:00 UTC.** Temporary provider-capacity failures use a separate retry-later
+message. These provider limits are distinct from the per-user rolling budget.
+The implementation records bounded provisional reservations and settled token
+totals; user identity is not sent to the model and Google access tokens are not
+stored.
+
+The Cloudflare dashboard reports provider usage in Neurons. Its "today" value
+uses the UTC day boundary, while a "last 24 hours" chart can include the prior
+UTC day. The assistant's quota meter reports application quota units and may
+include provisional reservations from interrupted turns; the two meters are
+not interchangeable.
 
 Local source and checks establish the implementation only. D1 creation,
 migration application, runtime-key provisioning, Worker deployment, and live
