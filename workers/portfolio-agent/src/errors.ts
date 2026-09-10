@@ -87,4 +87,15 @@ export function isModelCapacityError(error: unknown): boolean {
   return classifyModelCapacityError(error) !== null;
 }
 
+/**
+ * A provider-capacity rejection is refundable only when the model has not emitted
+ * any output. Once output exists, provider usage is not safely recoverable.
+ */
+export function isRefundableModelCapacityFailure(
+  error: unknown,
+  modelOutputObserved: boolean,
+): boolean {
+  return !modelOutputObserved && classifyModelCapacityError(error) !== null;
+}
+
 export { MODEL_CAPACITY_MESSAGE };
