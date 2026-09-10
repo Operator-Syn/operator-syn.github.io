@@ -23,7 +23,10 @@ const DIAGNOSTIC_REASONS = [
   "rolling-limit",
   "configuration",
   "provider-error",
+  "stream-error",
   "settlement-failed",
+  "unknown-usage",
+  "pre-model-failure",
   "aborted",
   "completed",
   "not-required",
@@ -45,12 +48,25 @@ const QUOTA_DECISIONS = [
   "reserved",
   "settled",
   "settlement-failed",
+  "released",
+  "provisional",
 ] as const;
+
+const FINISH_REASONS = ["stop", "length", "tool-calls", "error", "unknown"] as const;
+const STREAM_OUTCOMES = ["completed", "provider-error", "aborted", "unknown"] as const;
+const QUOTA_STATES = ["reserved", "in-flight", "settled", "released", "unknown"] as const;
+const PROVIDER_ERROR_CLASSES = ["account-allocation", "out-of-capacity"] as const;
+const PROVIDER_ERROR_CODES = [3036, 3040, 4006] as const;
 
 export type PortfolioAgentDiagnosticPhase = (typeof DIAGNOSTIC_PHASES)[number];
 export type PortfolioAgentDiagnosticOutcome = (typeof DIAGNOSTIC_OUTCOMES)[number];
 export type PortfolioAgentDiagnosticReason = (typeof DIAGNOSTIC_REASONS)[number];
 export type PortfolioAgentQuotaDecision = (typeof QUOTA_DECISIONS)[number];
+export type PortfolioAgentFinishReason = (typeof FINISH_REASONS)[number];
+export type PortfolioAgentStreamOutcome = (typeof STREAM_OUTCOMES)[number];
+export type PortfolioAgentQuotaState = (typeof QUOTA_STATES)[number];
+export type PortfolioAgentProviderErrorClass = (typeof PROVIDER_ERROR_CLASSES)[number];
+export type PortfolioAgentProviderErrorCode = (typeof PROVIDER_ERROR_CODES)[number];
 
 export type PortfolioAgentDiagnostic = {
   phase: PortfolioAgentDiagnosticPhase;
@@ -61,6 +77,11 @@ export type PortfolioAgentDiagnostic = {
   quotaDecision?: PortfolioAgentQuotaDecision;
   reason?: PortfolioAgentDiagnosticReason;
   requestId?: string;
+  finishReason?: PortfolioAgentFinishReason;
+  streamOutcome?: PortfolioAgentStreamOutcome;
+  quotaState?: PortfolioAgentQuotaState;
+  providerErrorClass?: PortfolioAgentProviderErrorClass;
+  providerErrorCode?: PortfolioAgentProviderErrorCode;
 };
 
 export type PortfolioAgentDiagnosticSink = (event: PortfolioAgentDiagnostic) => void;
@@ -116,6 +137,15 @@ export function normalizePortfolioAgentDiagnostic(input: unknown): PortfolioAgen
   }
   const requestId = boundedRequestId(record.requestId);
   if (requestId) event.requestId = requestId;
+  if (isValue(FINISH_REASONS, record.finishReason)) event.finishReason = record.finishReason;
+  if (isValue(STREAM_OUTCOMES, record.streamOutcome)) event.streamOutcome = record.streamOutcome;
+  if (isValue(QUOTA_STATES, record.quotaState)) event.quotaState = record.quotaState;
+  if (isValue(PROVIDER_ERROR_CLASSES, record.providerErrorClass)) {
+    event.providerErrorClass = record.providerErrorClass;
+  }
+  if (PROVIDER_ERROR_CODES.includes(record.providerErrorCode as PortfolioAgentProviderErrorCode)) {
+    event.providerErrorCode = record.providerErrorCode as PortfolioAgentProviderErrorCode;
+  }
   return event;
 }
 
