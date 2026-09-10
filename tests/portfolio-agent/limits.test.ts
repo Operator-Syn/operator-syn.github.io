@@ -12,6 +12,7 @@ import {
 import {
   classifyModelCapacityError,
   isModelCapacityError,
+  isRefundableModelCapacityFailure,
 } from "../../workers/portfolio-agent/src/errors.ts";
 import {
   buildSystemPrompt,
@@ -300,6 +301,29 @@ test("distinguishes the Workers AI daily capacity signal from ordinary failures"
     MODEL_ALLOCATION_MESSAGE,
     "The provider's daily Workers AI allocation has been used up. Try again after 00:00 UTC.",
   );
+});
+
+test("releases only pre-output provider capacity failures", () => {
+  assert.equal(
+    isRefundableModelCapacityFailure(
+      new Error("daily Workers AI allocation has been used up"),
+      false,
+    ),
+    true,
+  );
+  assert.equal(isRefundableModelCapacityFailure({ code: 3040 }, true), false);
+  assert.equal(isRefundableModelCapacityFailure(new Error("provider unavailable"), false), false);
+});
+
+test("wires provider stream failures to idempotent quota release", async () => {
+  const source = await readFile(agentPath, "utf8");
+
+  assert.match(source, /onChunk: \(\{ chunk \}\) =>/);
+  assert.match(source, /isRefundableModelCapacityFailure\(error, modelOutputObserved\)/);
+  assert.match(source, /onError: async \(\{ error \}\)/);
+  assert.match(source, /releaseRollingTokenReservation/);
+  assert.match(source, /quotaFinalized/);
+  assert.match(source, /if \(quota\.allowed && !quotaFinalized\)/);
 });
 
 test("uses the rolling quota without a thread burst gate", async () => {
