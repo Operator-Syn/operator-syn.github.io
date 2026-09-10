@@ -11,7 +11,12 @@ class QuotaDatabase {
   readonly queries: Array<{ sql: string; args: unknown[] }> = [];
 
   constructor(
-    private readonly usage: { used_tokens: number | null; oldest_created_at: number | null },
+    private readonly usage: {
+      used_tokens: number | null;
+      settled_tokens?: number | null;
+      provisional_tokens?: number | null;
+      oldest_created_at: number | null;
+    },
   ) {}
 
   prepare(sql: string) {
@@ -75,12 +80,19 @@ function quotaRequest() {
 
 test("returns only the signed-in user's active rolling quota", async () => {
   const oldestCreatedAt = NOW - 5 * 60_000;
-  const database = new QuotaDatabase({ used_tokens: 125_000, oldest_created_at: oldestCreatedAt });
+  const database = new QuotaDatabase({
+    used_tokens: 125_000,
+    settled_tokens: 100_000,
+    provisional_tokens: 25_000,
+    oldest_created_at: oldestCreatedAt,
+  });
   const response = await app.fetch(quotaRequest(), environment(database) as never);
 
   assert.equal(response.status, 200);
   assert.deepEqual(await response.json(), {
     usedTokens: 125_000,
+    settledTokens: 100_000,
+    provisionalTokens: 25_000,
     budgetTokens: 1_000_000,
     remainingTokens: 875_000,
     resetAt: oldestCreatedAt + 60 * 60_000,
@@ -95,12 +107,19 @@ test("returns only the signed-in user's active rolling quota", async () => {
 });
 
 test("reports no pending refresh when the rolling window is empty", async () => {
-  const database = new QuotaDatabase({ used_tokens: 0, oldest_created_at: null });
+  const database = new QuotaDatabase({
+    used_tokens: 0,
+    settled_tokens: 0,
+    provisional_tokens: 0,
+    oldest_created_at: null,
+  });
   const response = await app.fetch(quotaRequest(), environment(database) as never);
 
   assert.equal(response.status, 200);
   assert.deepEqual(await response.json(), {
     usedTokens: 0,
+    settledTokens: 0,
+    provisionalTokens: 0,
     budgetTokens: 1_000_000,
     remainingTokens: 1_000_000,
     resetAt: null,
