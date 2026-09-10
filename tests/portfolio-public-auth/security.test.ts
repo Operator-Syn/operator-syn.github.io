@@ -30,6 +30,10 @@ const profilePictureMigration = resolve(
   import.meta.dirname,
   "../../workers/portfolio-public-auth/migrations/0003_add_google_profile_picture.sql",
 );
+const reservationStateMigration = resolve(
+  import.meta.dirname,
+  "../../workers/portfolio-public-auth/migrations/0004_add_token_reservation_state.sql",
+);
 const authIndex = resolve(import.meta.dirname, "../../workers/portfolio-public-auth/src/index.ts");
 
 test("uses bounded public-auth session and quota constants", () => {
@@ -126,6 +130,11 @@ test("stores rolling reservations by subject and creation time", async () => {
   assert.match(profileMigration, /ALTER TABLE users/);
   assert.match(profileMigration, /ADD COLUMN picture_url TEXT/);
   assert.match(profileMigration, /length\(picture_url\) <= 2048/);
+  const reservationMigration = await readFile(reservationStateMigration, "utf8");
+  assert.match(reservationMigration, /ADD COLUMN state TEXT NOT NULL DEFAULT 'reserved'/);
+  assert.match(reservationMigration, /'in-flight'/);
+  assert.match(reservationMigration, /'unknown'/);
+  assert.match(reservationMigration, /state = 'settled'/);
 });
 
 test("keeps the retired bearer-token route absent", async () => {
