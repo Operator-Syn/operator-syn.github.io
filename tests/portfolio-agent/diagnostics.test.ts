@@ -18,6 +18,11 @@ test("emits only bounded diagnostic fields and redacts untrusted metadata", () =
     quotaDecision: "available",
     reason: "timeout",
     requestId: "req_42",
+    finishReason: "error",
+    streamOutcome: "provider-error",
+    quotaState: "unknown",
+    providerErrorClass: "account-allocation",
+    providerErrorCode: 4006,
     question: "private question text",
     rawMcpPayload: { secret: "private payload" },
   } as never);
@@ -32,6 +37,11 @@ test("emits only bounded diagnostic fields and redacts untrusted metadata", () =
       quotaDecision: "available",
       reason: "timeout",
       requestId: "req_42",
+      finishReason: "error",
+      streamOutcome: "provider-error",
+      quotaState: "unknown",
+      providerErrorClass: "account-allocation",
+      providerErrorCode: 4006,
     },
   ]);
   assert.doesNotMatch(JSON.stringify(events), /private question|private payload|secret/);
