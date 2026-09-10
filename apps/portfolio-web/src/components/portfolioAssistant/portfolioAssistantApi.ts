@@ -39,6 +39,8 @@ export type AssistantConnectionPreparation = {
 
 export type PortfolioAssistantQuota = {
   usedTokens: number;
+  settledTokens: number;
+  provisionalTokens: number;
   budgetTokens: number;
   remainingTokens: number;
   resetAt: number | null;
@@ -123,6 +125,8 @@ export async function getAssistantQuota(): Promise<PortfolioAssistantQuota> {
     cache: "no-store",
   });
   const { budgetTokens, remainingTokens, resetAt, usedTokens } = result;
+  const provisionalTokens = result.provisionalTokens ?? 0;
+  const settledTokens = result.settledTokens ?? Math.max(0, (usedTokens ?? 0) - provisionalTokens);
   if (
     typeof usedTokens !== "number" ||
     !Number.isFinite(usedTokens) ||
@@ -133,12 +137,20 @@ export async function getAssistantQuota(): Promise<PortfolioAssistantQuota> {
     usedTokens < 0 ||
     budgetTokens <= 0 ||
     remainingTokens < 0 ||
+    typeof settledTokens !== "number" ||
+    !Number.isFinite(settledTokens) ||
+    settledTokens < 0 ||
+    typeof provisionalTokens !== "number" ||
+    !Number.isFinite(provisionalTokens) ||
+    provisionalTokens < 0 ||
     (resetAt !== null && (typeof resetAt !== "number" || !Number.isFinite(resetAt) || resetAt < 0))
   ) {
     throw new Error("The assistant budget could not be loaded.");
   }
   return {
     usedTokens,
+    settledTokens,
+    provisionalTokens,
     budgetTokens,
     remainingTokens,
     resetAt,
