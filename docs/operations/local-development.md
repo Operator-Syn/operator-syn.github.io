@@ -116,11 +116,15 @@ The grounded model question is intentionally skipped unless the explicit live
 gate is enabled:
 
 ```bash
-PLAYWRIGHT_LIVE_ASSISTANT=1 npm run test:e2e -- --project=desktop
+npm run test:e2e:live
 ```
 
-That opt-in test creates a real assistant turn and can consume the rolling
+That dedicated smoke creates a real assistant turn and can consume the rolling
 Workers AI budget, so run it only at the approval-gated live-smoke checkpoint.
+It requires a fresh valid saved Google session and fails if the provider returns
+an allocation/capacity message or if the response does not add a new cited
+assistant message. A provider allocation failure is distinct from the user's
+rolling quota and is reported as an exhausted daily Workers AI allocation.
 The normal suite may still open and close an authenticated WebSocket while
 checking the panel; it does not send a model question. If the state expires,
 repeat the manual recorder flow. Treat the state file as a live session secret
@@ -194,7 +198,11 @@ Server logs prefixed [portfolio-agent:diagnostic] contain allowlisted JSON event
 for MCP, quota, model, and settlement phases. Use the phase and outcome to
 separate a skipped/static turn, MCP discovery or grounding failure, provider
 stream failure, and completed settlement; question text, raw tool data, and
-credentials are intentionally absent. See
+credentials are intentionally absent. Provider diagnostics may include only
+allowlisted capacity classes/codes (`account-allocation`/`3036` or `4006`, and
+`out-of-capacity`/`3040`). Quota diagnostics distinguish settled usage from
+provisional reservations held after an interrupted provider turn. Use the
+opaque request ID to correlate browser and Worker events. See
 [[plans/portfolio-agent/sweeps/33-structured-diagnostics|Sweep 33]] for the
 event contract.
 
