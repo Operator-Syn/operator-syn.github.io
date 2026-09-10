@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import type { Page } from "playwright/test";
+import type { CDPSession, Page } from "playwright/test";
 
 const JWT_PATTERN = /(?:^|[^A-Za-z0-9_-])eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/;
 const SENSITIVE_QUERY_PARAMETER = /^(?:token|access_token|id_token|authorization|jwt)$/i;
@@ -15,8 +15,15 @@ export type BrowserAuditEvent = {
     | "websocket-created"
     | "websocket-closed"
     | "websocket-error"
-    | "websocket-premature-close";
+    | "websocket-premature-close"
+    | "websocket-frame"
+    | "http-response";
   url?: string;
+  status?: number;
+  direction?: "sent" | "received";
+  frameType?: string;
+  closeCode?: number;
+  closeReason?: string;
 };
 
 export type BrowserUrlInspection = {
@@ -79,6 +86,57 @@ function isAllowedTelemetryRequest(rawUrl: string): boolean {
   }
 }
 
+function getSafeWebSocketFrameType(payload: string | Buffer): string | null {
+  const text = typeof payload === "string" ? payload : payload.toString("utf8");
+  try {
+    const type = (JSON.parse(text) as { type?: unknown }).type;
+    return typeof type === "string" && /^[A-Za-z0-9_-]{1,80}$/.test(type) ? type : "unknown";
+  } catch {
+    return null;
+  }
+}
+
+function safeCloseReason(reason: unknown): string {
+  if (typeof reason !== "string" || reason.trim().length === 0) return "empty";
+  if (/capacity|allocation|quota|limit/i.test(reason)) return "capacity";
+  if (/abort|cancel|close/i.test(reason)) return "aborted";
+  if (/error|fail|exception/i.test(reason)) return "error";
+  return "other";
+}
+
+async function installChromiumWebSocketAudit(
+  page: Page,
+  events: BrowserAuditEvent[],
+): Promise<void> {
+  let session: CDPSession | null = null;
+  try {
+    session = await page.context().newCDPSession(page);
+    await session.send("Network.enable");
+  } catch {
+    return;
+  }
+  if (!session) return;
+  const urls = new Map<string, string>();
+  session.on("Network.webSocketCreated", (event: { requestId: string; url: string }) => {
+    urls.set(event.requestId, inspectBrowserUrl(event.url).safeUrl);
+  });
+  session.on(
+    "Network.webSocketClosed",
+    (event: { requestId: string; code?: number; reason?: string }) => {
+      events.push({
+        kind: "websocket-closed",
+        url: urls.get(event.requestId),
+        closeCode: event.code,
+        closeReason: safeCloseReason(event.reason),
+      });
+      urls.delete(event.requestId);
+    },
+  );
+  session.on("Network.webSocketFrameError", (event: { requestId: string }) => {
+    events.push({ kind: "websocket-error", url: urls.get(event.requestId) });
+  });
+}
+
 export function installAssistantBrowserAudit(page: Page): {
   events: BrowserAuditEvent[];
   assertClean: () => void;
@@ -112,6 +170,13 @@ export function installAssistantBrowserAudit(page: Page): {
     events.push({ kind: "request-failed", url: inspection.safeUrl });
   });
 
+  page.on("response", (response) => {
+    if (isAllowedTelemetryRequest(response.url())) return;
+    const inspection = inspectBrowserUrl(response.url());
+    credentialExposure ||= inspection.credentialExposed;
+    events.push({ kind: "http-response", status: response.status(), url: inspection.safeUrl });
+  });
+
   page.on("websocket", (websocket) => {
     const inspection = inspectBrowserUrl(websocket.url());
     credentialExposure ||=
@@ -121,7 +186,29 @@ export function installAssistantBrowserAudit(page: Page): {
     websocket.on("socketerror", () =>
       events.push({ kind: "websocket-error", url: inspection.safeUrl }),
     );
+    websocket.on("framesent", ({ payload }) => {
+      const frameType = getSafeWebSocketFrameType(payload);
+      if (frameType)
+        events.push({
+          kind: "websocket-frame",
+          direction: "sent",
+          frameType,
+          url: inspection.safeUrl,
+        });
+    });
+    websocket.on("framereceived", ({ payload }) => {
+      const frameType = getSafeWebSocketFrameType(payload);
+      if (frameType)
+        events.push({
+          kind: "websocket-frame",
+          direction: "received",
+          frameType,
+          url: inspection.safeUrl,
+        });
+    });
   });
+
+  void installChromiumWebSocketAudit(page, events);
 
   return {
     events,
