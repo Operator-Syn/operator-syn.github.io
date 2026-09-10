@@ -28,7 +28,7 @@ import {
   defaultPortfolioAgentDiagnosticSink,
   emitPortfolioAgentDiagnostic,
 } from "./diagnostics.ts";
-import { classifyModelCapacityError } from "./errors.ts";
+import { classifyModelCapacityError, isRefundableModelCapacityFailure } from "./errors.ts";
 import {
   createPortfolioEvidenceState,
   hasCompletePortfolioToolCatalog,
@@ -71,7 +71,11 @@ import {
   releaseRollingTokenReservation,
   settleRollingTokenUsage,
 } from "./quota.ts";
-import { boundPortfolioAnswerStream, coalesceToolInputDeltas } from "./stream.ts";
+import {
+  boundPortfolioAnswerStream,
+  coalesceToolInputDeltas,
+  isModelOutputChunkType,
+} from "./stream.ts";
 import {
   isThreadTitleEligible,
   persistGeneratedThreadTitle as persistThreadTitle,
@@ -457,6 +461,28 @@ export class PortfolioAgent extends AIChatAgent<PortfolioAgentEnvironment, unkno
     } catch {
       // A missing/old migration must not turn a model request into a user-visible failure.
     }
+    let modelOutputObserved = false;
+    let quotaFinalized = false;
+    const releaseProviderCapacityReservation = async (error: unknown): Promise<boolean> => {
+      if (quotaFinalized || !isRefundableModelCapacityFailure(error, modelOutputObserved)) {
+        return false;
+      }
+      const released = await releaseRollingTokenReservation(
+        this.environment.AUTH_DB,
+        quota.reservationId,
+      ).catch(() => false);
+      if (!released) return false;
+      quotaFinalized = true;
+      this.emitDiagnostic({
+        phase: "quota",
+        outcome: "succeeded",
+        quotaDecision: "released",
+        quotaState: "released",
+        reason: "provider-error",
+        requestId: options?.requestId,
+      });
+      return true;
+    };
     const modelStartedAt = Date.now();
     this.emitDiagnostic({
       phase: "model",
@@ -475,6 +501,12 @@ export class PortfolioAgent extends AIChatAgent<PortfolioAgentEnvironment, unkno
         prepareStep: () => ({ toolChoice: portfolioToolChoice(evidenceState) }),
         stopWhen: () => shouldStopPortfolioToolLoop(evidenceState),
         abortSignal: options?.abortSignal,
+        onChunk: ({ chunk }) => {
+          if (isModelOutputChunkType(chunk.type)) modelOutputObserved = true;
+        },
+        onError: async ({ error }) => {
+          await releaseProviderCapacityReservation(error);
+        },
         onToolExecutionStart: () => {
           this.emitDiagnostic({
             phase: "mcp-tool",
@@ -539,7 +571,7 @@ export class PortfolioAgent extends AIChatAgent<PortfolioAgentEnvironment, unkno
             outcome: "started",
             requestId: options?.requestId,
           });
-          if (quota.allowed) {
+          if (quota.allowed && !quotaFinalized) {
             try {
               const settled = await settleRollingTokenUsage(
                 this.environment.AUTH_DB,
@@ -607,17 +639,21 @@ export class PortfolioAgent extends AIChatAgent<PortfolioAgentEnvironment, unkno
         },
       });
     } catch (error) {
-      await releaseRollingTokenReservation(this.environment.AUTH_DB, quota.reservationId).catch(
-        () => false,
-      );
-      this.emitDiagnostic({
-        phase: "quota",
-        outcome: "succeeded",
-        quotaDecision: "released",
-        quotaState: "released",
-        reason: "pre-model-failure",
-        requestId: options?.requestId,
-      });
+      const released = await releaseRollingTokenReservation(
+        this.environment.AUTH_DB,
+        quota.reservationId,
+      ).catch(() => false);
+      if (released) {
+        quotaFinalized = true;
+        this.emitDiagnostic({
+          phase: "quota",
+          outcome: "succeeded",
+          quotaDecision: "released",
+          quotaState: "released",
+          reason: "pre-model-failure",
+          requestId: options?.requestId,
+        });
+      }
       throw error;
     }
 
@@ -646,8 +682,8 @@ export class PortfolioAgent extends AIChatAgent<PortfolioAgentEnvironment, unkno
                       : providerCapacity
                         ? "provider-error"
                         : "stream-error",
-                    quotaDecision: "provisional",
-                    quotaState: "unknown",
+                    quotaDecision: quotaFinalized ? "released" : "provisional",
+                    quotaState: quotaFinalized ? "released" : "unknown",
                     streamOutcome: aborted
                       ? "aborted"
                       : providerCapacity
