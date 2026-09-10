@@ -60,9 +60,11 @@ message after the authenticated WebSocket is established. The gateway remains
 available so the transcript can be read and the same thread can continue when
 older reservations roll off. The `agent_control` row is an administrator pause
 switch; the old local neuron estimate is not used to deny access because it can
-disagree with the provider's usage dashboard. When Workers AI itself reports
-that the model is out of capacity, the agent returns **The model is at its
-maximum daily capacity. Please try again at 00:00 UTC.**
+disagree with the provider's usage dashboard. When Workers AI reports an
+exhausted provider allocation, the agent returns **The provider's daily
+Workers AI allocation has been used up. Try again after 00:00 UTC.** Temporary
+provider-capacity failures use a separate retry-later message. This is distinct
+from the per-user rolling quota.
 
 Allowed browser origins come from the Worker environment's `BROWSER_ORIGINS`
 list. Production config names the production portfolio origins plus the
