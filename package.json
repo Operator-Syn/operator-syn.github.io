@@ -45,6 +45,7 @@
     "test:project-pagination": "npm run test:project-pagination --workspace=@syn-forge/portfolio-api --",
     "test:social-preview": "npm run test:social-preview --workspace=@syn-forge/portfolio-web --",
     "test:e2e": "npm run test:e2e --workspace=@syn-forge/portfolio-web --",
+    "test:e2e:live": "node scripts/run-live-e2e.mjs",
     "test:portfolio-mcp": "npm run test --workspace=@syn-forge/portfolio-mcp --",
     "test:public-auth": "npm run test --workspace=@syn-forge/portfolio-public-auth --",
     "test:portfolio-agent": "npm run test --workspace=@syn-forge/portfolio-agent --",
