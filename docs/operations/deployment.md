@@ -158,10 +158,11 @@ manual, reviewed operations and are not performed by GitHub Actions.
 2. Review workers/portfolio-public-auth/migrations/0000_portfolio_agent_auth.sql,
    workers/portfolio-public-auth/migrations/0001_add_rolling_token_usage.sql,
    workers/portfolio-public-auth/migrations/0002_add_actual_token_usage.sql, and
-   workers/portfolio-public-auth/migrations/0003_add_google_profile_picture.sql.
+   workers/portfolio-public-auth/migrations/0003_add_google_profile_picture.sql, and
+   workers/portfolio-public-auth/migrations/0004_add_token_reservation_state.sql.
    Before the first deploy, run npm run migrate:public-auth; it applies pending
    remote auth migrations with one affirmative Wrangler prompt response and stops
-   on failure. All migrations through 0003 must be applied before deploying
+   on failure. All migrations through 0004 must be applied before deploying
    the assistant Workers: the agent settles actual input plus output usage for
    the 1,000,000-token budget, and public-auth returns the validated profile
    image URL.
@@ -540,8 +541,9 @@ budget uses the reviewed public-auth D1 migrations
 `workers/portfolio-public-auth/migrations/0001_add_rolling_token_usage.sql` and
 `workers/portfolio-public-auth/migrations/0002_add_actual_token_usage.sql`;
 the current public-auth identity payload also requires
-`workers/portfolio-public-auth/migrations/0003_add_google_profile_picture.sql`.
-Apply migrations through 0003 before deploying the assistant Workers. The
+`workers/portfolio-public-auth/migrations/0003_add_google_profile_picture.sql` and
+`workers/portfolio-public-auth/migrations/0004_add_token_reservation_state.sql`.
+Apply migrations through 0004 before deploying the assistant Workers. The
 agent version settles actual input plus output usage. `portfolio-agent` reads
 the Durable Object's persisted
 `AIChatAgent` UI messages through its private
@@ -581,9 +583,17 @@ longer an admission gate. The auth Worker clears its legacy
 `daily-neuron-budget` marker once before authorizing an assistant connection;
 the marker is not a provider meter or an independent access block. An
 `AGENT_PAUSED` response now means an explicit administrator pause or missing
-control configuration. If Workers AI itself reports out-of-capacity, the agent
-returns: **The model is at its maximum daily capacity. Please try again at
-00:00 UTC.**
+control configuration. If Workers AI reports an exhausted provider allocation,
+the agent returns: **The provider's daily Workers AI allocation has been used
+up. Try again after 00:00 UTC.** A temporary out-of-capacity response is
+reported separately as a retry-later message. This provider state is distinct
+from the user's 1,000,000-unit rolling quota.
+
+Cloudflare's Workers AI dashboard reports Neurons, not the assistant's quota
+units. "Neurons used today" follows the UTC day and resets at 00:00 UTC; a
+"last 24 hours" chart can include usage from the previous UTC day. The
+assistant meter can also include provisional reservations from interrupted
+turns, so its total will not necessarily match the dashboard.
 
 Do not pass runtime secrets on the command line. Wrangler uses the secrets and
 variables already provisioned on each Worker. The history route itself remains
@@ -699,6 +709,13 @@ retry action. Run the redacted Playwright audit for this flow and record live
 results separately from source/build checks; never retain traces, HAR files,
 cookies, authorization headers, or raw WebSocket URLs.
 
+For the release-gated real model turn, use `npm run test:e2e:live` with the
+refreshed `playwright/.auth/google.json` state. This command targets the desktop
+project, requires a new cited assistant message, and fails on the
+provider-allocation message or any interrupted-response alert. Do not run it
+repeatedly while the provider allocation is exhausted; each accepted turn can
+reserve application quota units.
+
 ## Deployment records
 
 Record the deployment version, commit, time, and verification result. Wrangler
@@ -802,6 +819,7 @@ Repository sources:
 - [Public-auth rolling-usage migration](../../workers/portfolio-public-auth/migrations/0001_add_rolling_token_usage.sql)
 - [Public-auth actual-token-usage migration](../../workers/portfolio-public-auth/migrations/0002_add_actual_token_usage.sql)
 - [Public-auth Google profile migration](../../workers/portfolio-public-auth/migrations/0003_add_google_profile_picture.sql)
+- [Public-auth token reservation state migration](../../workers/portfolio-public-auth/migrations/0004_add_token_reservation_state.sql)
 - [Portfolio agent manifest](../../workers/portfolio-agent/package.json)
 - [Portfolio agent Wrangler configuration](../../workers/portfolio-agent/wrangler.toml)
 - [D1 migration workflow](../database/migrations.md)
